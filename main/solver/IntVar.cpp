@@ -17,4 +17,45 @@ int IntVar::size() const {
 	return cur_size_;
 }
 
+void IntVar::bind(const int a) {
+	if (map_[a] >= cur_size_) {
+		cur_size_ = 0;
+	}
+	else {
+		swap(map_[a], 0);
+	}
+}
+
+void IntVar::remove(const int a) {
+	if (map_[a] < cur_size_) {
+		swap(map_[a], cur_size_ - 1);
+		--cur_size_;
+	}
+}
+
+void IntVar::mark(const int a) {
+	if (map_[a] < cur_size_ && map_[a] >= mark_) {
+		swap(map_[a], mark_);
+		++mark_;
+	}
+}
+
+void IntVar::restrict(){
+	cur_size_ = mark_;
+}
+
+void IntVar::clear_mark() {
+	mark_ = 0;
+}
+
+void IntVar::swap(const int i, const int j) {
+	//swap dom_[i] and dom_[j].
+	dom_[i] = dom_[i] ^ dom_[j];
+	dom_[j] = dom_[i] ^ dom_[j];
+	dom_[i] = dom_[i] ^ dom_[j];
+
+	//update map_
+	map_[dom_[i]] = i;
+	map_[dom_[j]] = j;
+}
 }
