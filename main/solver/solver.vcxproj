@@ -166,10 +166,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CPEntity.cpp" />
+    <ClCompile Include="IntVar.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CPEntity.h" />
+    <ClInclude Include="IntVar.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

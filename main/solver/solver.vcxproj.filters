@@ -32,9 +32,15 @@
     <ClCompile Include="CPEntity.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="IntVar.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CPEntity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IntVar.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
