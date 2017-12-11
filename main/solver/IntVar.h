@@ -67,7 +67,7 @@ protected:
 	std::vector<Constraint* > cs_;
 
 	bitPre *b_;
-	 */
+	*/
 
 
 };
