@@ -19,9 +19,7 @@ IntVar::IntVar(const int id, vector<int>& values, const string name) :
 
 void IntVar::remove_value(const int a, const int p) {
 	tuple<int, bitset<BITSIZE>> t = bit_doms_[a / BITSIZE].back();
-	if (get<0>(t) < p) {
-		get<0>()
-	}
+
 }
 
 tuple<int, int> IntVar::get_bit_index(const int idx) const {
