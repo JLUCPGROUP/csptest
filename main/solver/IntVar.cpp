@@ -1,63 +1,34 @@
 ﻿#include "IntVar.h"
+#include <tuple>
+
 namespace cudacp {
-IntVar::IntVar(const int id, const string name, const vector<int> values) :
-	id_(id), curr_size_(values.size()), init_size_(values.size()), name_(name), dom_(values) {
+IntVar::IntVar(const int id, vector<int>& values, const string name) :
+	id_(id), name_(name), num_bit_(ceil(values.size() / BITSIZE)), init_size_(values.size()), curr_size_(values.size()), last_limit_(values.size() % BITSIZE), vals_(values) {
+	//initial bit_doms_
+	bit_doms_.resize(num_bit_);
+	for (size_t i = 0; i < num_bit_; i++) {
+		bitset<BITSIZE> a;
+		a.set();
+		const tuple<int, bitset<BITSIZE>> t = make_tuple(0, a);
+		bit_doms_[i].reserve(BITSIZE);
+		bit_doms_[i].push_back(t);
+	}
 
-	for (int i = 0; i < curr_size_; ++i)
-		map_[dom_[i]] = i;
-
+	get<1>(bit_doms_[num_bit_ - 1].back()) <<= BITSIZE - last_limit_;
 }
 
-
-bool IntVar::constains(const int value) {
-	return map_[value] < curr_size_;
-}
-
-int IntVar::size() const {
-	return curr_size_;
-}
-
-void IntVar::swap(const int i, const int j) {
-	//swap dom_[i] and dom[j]
-	dom_[i] = dom_[i] ^ dom_[j];
-	dom_[j] = dom_[i] ^ dom_[j];
-	dom_[i] = dom_[i] ^ dom_[j];
-
-	//update map
-	map_[dom_[i]] = j;
-	map_[dom_[j]] = i;
-}
-
-void IntVar::bind(const int v) {
-	if (map_[v] < curr_size_)
-		curr_size_ = 0;
-	else {
-		swap(map_[v], 0);
-		curr_size_ = 1;
+void IntVar::remove_value(const int a, const int p) {
+	tuple<int, bitset<BITSIZE>> t = bit_doms_[a / BITSIZE].back();
+	if (get<0>(t) < p) {
+		get<0>()
 	}
 }
 
-void IntVar::remove(const int v) {
-	if (map_[v] < curr_size_) {
-		swap(map_[v], curr_size_ - 1);
-		--curr_size_;
-	}
+tuple<int, int> IntVar::get_bit_index(const int idx) const {
+	tuple<int, int> a;
+	get<0>(a) = idx / BITSIZE;
+	get<1>(a) = idx % BITSIZE;
+	return a;
 }
 
-void IntVar::clear_marks() {
-	mark_ = 0;
-}
-
-void IntVar::mark(const int v) {
-	if (map_[v] < curr_size_&&map_[v] >= mark_) {
-		swap(map_[v], mark_);
-		++mark_;
-	}
-}
-
-void IntVar::restrict(){
-	curr_size_ = mark_;
-}
-
-	 
 }
