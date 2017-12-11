@@ -165,14 +165,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CPEntity.cpp" />
     <ClCompile Include="IntVar4.cpp" />
     <ClCompile Include="IntVar.cpp" />
     <ClCompile Include="IntVar2.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CPEntity.h" />
     <ClInclude Include="IntVar4.h" />
     <ClInclude Include="IntVar.h" />
     <ClInclude Include="IntVar2.h" />

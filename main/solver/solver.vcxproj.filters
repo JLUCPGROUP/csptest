@@ -29,9 +29,6 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CPEntity.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="IntVar2.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -43,9 +40,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CPEntity.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="IntVar2.h">
       <Filter>头文件</Filter>
     </ClInclude>

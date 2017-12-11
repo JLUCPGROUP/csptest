@@ -233,8 +233,9 @@ public:
 	virtual void buildObjectiveMaximize(ExpressionObjective type, vector<XVariable *> &list) override;
 
 private:
-	int var_cnt = 0;
-	int con_cnt = 0;
+	int num_vars_ = 0;
+	int num_cons_ = 0;
+	unordered_map<string, int> vars_map_;
 };
 
 API_DECLSPEC void GetHModel(string file_path, HModel* m) {
@@ -375,15 +376,17 @@ void XCSP3PrintCallbacks::endObjectives() {
 }
 
 
-void XCSP3PrintCallbacks::buildVariableInteger(string id, int minValue, int maxValue) {
-	hm->AddVar(var_cnt, id, minValue, maxValue);
-	var_cnt++;
+void XCSP3PrintCallbacks::buildVariableInteger(const string id, const int minValue, const int maxValue) {
+	hm->AddVar(num_vars_, id, minValue, maxValue);
+	vars_map_[id] = num_vars_;
+	num_vars_++;
 }
 
 
-void XCSP3PrintCallbacks::buildVariableInteger(string id, vector<int> &values) {
-	hm->AddVar(var_cnt, id, values);
-	var_cnt++;
+void XCSP3PrintCallbacks::buildVariableInteger(const string id, vector<int> &values) {
+	hm->AddVar(num_vars_, id, values);
+	vars_map_[id] = num_vars_;
+	num_vars_++;
 }
 
 
@@ -391,8 +394,8 @@ void XCSP3PrintCallbacks::buildConstraintExtension(string id, vector<XVariable *
 	vector<string> scope(list.size());
 	for (size_t i = 0; i < scope.size(); ++i)
 		scope[i] = list[i]->id;
-	hm->AddTab(con_cnt, support, tuples, scope);
-	con_cnt++;
+	hm->AddTab(num_cons_, support, tuples, scope);
+	num_cons_++;
 }
 
 
@@ -409,8 +412,8 @@ void XCSP3PrintCallbacks::buildConstraintExtensionAs(string id, vector<XVariable
 	vector<string> scope(list.size());
 	for (size_t i = 0; i < scope.size(); ++i)
 		scope[i] = list[i]->id;
-	hm->AddTabAsPrevious(hm->tabs[con_cnt - 1], scope);
-	con_cnt++;
+	hm->AddTabAsPrevious(hm->tabs[num_cons_ - 1], scope);
+	num_cons_++;
 }
 
 

@@ -45,7 +45,7 @@ void HVar::Show() {
 HVar::~HVar() {}
 ////////////////////////////////////////////////////////////////////
 HTab::HTab(const int id, const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp) :
-	id(id), semantics(sem), scope(scp) {
+	HCon(id, scp) {
 	unsigned long all_size = 1;
 	for (auto i : scp)
 		all_size *= i->vals.size();
@@ -77,15 +77,12 @@ HTab::HTab(const int id, const bool sem, vector<vector<int>>& ts, vector<HVar*>&
 
 	semantics = true;
 	isSTD = true;
-	//Show();
-	//	tuples = ts;
 }
 
 HTab::HTab(HTab * t, vector<HVar *>& scp) :
-	id(t->id + 1),
-	semantics(t->semantics),
-	scope(scp),
-	isSTD(true) {
+	HCon(t->id + 1, scp),
+	semantics(t->semantics) {
+	isSTD = true;
 	tuples = t->tuples;
 }
 
@@ -126,6 +123,10 @@ void HTab::GetTuple(int idx, vector<int>& src_t, vector<int>& std_t) {
 		src_t[i] = v->anti_map[std_t[i]];
 		idx /= v->vals.size();
 	}
+}
+
+HPre::HPre(const int id, string expr) :HCon(id) {
+	
 }
 
 //void HTab::GetTuple(int idx, vector<int>& t) {
@@ -205,7 +206,7 @@ void HModel::AddTabAsPrevious(HTab* t, vector<string>& scp) {
 	mas_ = max(mas_, nt->scope.size());
 }
 
-void HModel::Show() {
+void HModel::show() {
 	cout << "--------------Variables--------------" << endl;
 	cout << "size: " << vars.size() << "\tmax domain size :" << mds_ << endl;
 	for (auto v : vars)
