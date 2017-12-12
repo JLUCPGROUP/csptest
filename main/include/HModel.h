@@ -96,8 +96,6 @@ auto or = [](std::vector<int>& a) {return std::any_of(a.begin(), a.end(), [&a](i
 //auto xor =[](std::vector<int>& a){return std::for_each(a.begin(), a.end(),[](int b))}
 }
 
-static ExpType get_type(std::string expr);
-
 func_map int_pres_map =
 {
 	{ "neg", ops::neg },
@@ -152,21 +150,24 @@ public:
 private:
 };
 
-class API_DECLSPEC HCon {
+//class API_DECLSPEC HCon {
+//public:
+//	int id;
+//	//string name;
+//	vector<HVar*> scope;
+//	bool isSTD = false;
+//	ConType type;
+//	HCon(const int id, const ConType ct) :
+//		id(id), type(ct) {};
+//	HCon(const int id, const ConType ct, vector<HVar*>& scp) :
+//		id(id), scope(scp), type(ct) {};
+//};
+
+class API_DECLSPEC HTab {
 public:
 	int id;
-	//string name;
 	vector<HVar*> scope;
 	bool isSTD = false;
-	ConType type;
-	HCon(const int id, ConType ct) :
-		id(id) {};
-	HCon(const int id, vector<HVar*>& scp, ConType ct) :
-		id(id), scope(scp) {};
-};
-
-class API_DECLSPEC HTab :public HCon {
-public:
 	bool semantics;
 	vector<vector<int>> tuples;
 	HTab(const int id, const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp);
@@ -184,48 +185,58 @@ private:
 	API_DECLSPEC friend ostream& operator<<(ostream &os, const vector<HVar*>& a);
 };
 
-class API_DECLSPEC HPre :public HCon {
-public:
-	bool isSTD = false;
-	HPre(const int id, string expr);
-	vector<string> data;
-	void get_postfix(string expr);
-
-	//int GetAllSize() const;
-	//void GetSTDTuple(vector<int>& src_tuple, vector<int>& std_tuple);
-	//void GetORITuple(vector<int>& std_tuple, vector<int>& ori_tuple);
-	//bool SAT(vector<int>& t);
-	//bool SAT_STD(vector<int>& t);
-	//void Show();
-	//void GetTuple(int idx, vector<int>& t, vector<int>& t_idx);
-private:
-	//临时变量
-	//vector<int> tmp_t_;
-	//API_DECLSPEC friend ostream& operator<<(ostream &os, const vector<HVar*>& a);
-};
+//class API_DECLSPEC HPre :public HCon {
+//public:
+//	bool isSTD = false;
+//	HPre(const int id, string expr);
+//	vector<string> data;
+//	//void get_postfix(string expr);
+//
+//	//int GetAllSize() const;
+//	//void GetSTDTuple(vector<int>& src_tuple, vector<int>& std_tuple);
+//	//void GetORITuple(vector<int>& std_tuple, vector<int>& ori_tuple);
+//	//bool SAT(vector<int>& t);
+//	//bool SAT_STD(vector<int>& t);
+//	//void Show();
+//	//void GetTuple(int idx, vector<int>& t, vector<int>& t_idx);
+//private:
+//	//临时变量
+//	//vector<int> tmp_t_;
+//	//API_DECLSPEC friend ostream& operator<<(ostream &os, const vector<HVar*>& a);
+//};
 
 class API_DECLSPEC HModel {
 public:
 	vector<HVar*> vars;
 	vector<HTab*> tabs;
-	vector<HCon*> cons;
-	unordered_map<string, HVar*> var_n_;
-	//	unordered_map<int, HVar*> var_i_;
+	unordered_map<HVar*, vector<HTab*>> subscriptions;
+
 	HModel();
 	virtual ~HModel();
-	void AddVar(const int id, const string name, const int min_val,
-		const int max_val);
-	void AddVar(const int id, const string name, vector<int>& v);
-	void AddTab(const int id, const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp);
-	void AddTab(const int id, const bool sem, vector<vector<int>>& ts, vector<string>& scp);
-	void AddTabAsPrevious(HTab* t, vector<string>& scp);
-	void AddPre(const int id, const string expr);
+	int AddVar(const string name, const int min_val, const int max_val);
+	int AddVar(const string name, vector<int>& v);
+	//int AddCon(const ConType type, const string expr);
+	//int AddCon(const ConType type, const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp);
+	//void AddCon(HCon* c, vector<string>& scp);
+	int AddTab(const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp);
+	int AddTab(const bool sem, vector<vector<int>>& ts, vector<string>& scp);
+	int AddTab(const int id, const string expr);
+	int AddTabAsPrevious(HTab* t, vector<string>& scp);
 	int max_domain_size() const { return mds_; }
+	int max_arity() const { return mas_; };
 	void show();
 private:
 	void get_postfix(const string expr, vector<string>& stack, vector<HVar*>& scp);
+	ExpType get_type(std::string expr);
+	void subscript(HTab *t);
+	//int get_cid();
+	//int get_vid();
+	void get_scope(vector<string>& scp_str, vector<HVar*>& scp);
+	unordered_map<string, HVar*> var_n_;
 	size_t mds_ = 0;
 	size_t mas_ = 0;
+	//int g_cid_ = -1;
+	//int g_vid_ = -1;
 };
 
 } /* namespace cudacp */
