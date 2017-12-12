@@ -6,8 +6,31 @@
 */
 
 #include "HModel.h"
+#include "XCSP3PrintCallbacks.h"
 
 namespace cudacp {
+
+ExpType Funcs::get_type(std::string expr) {
+	if (Funcs::int_pres_map.find(expr) != Funcs::int_pres_map.end()) {
+		return ET_OP;
+	}
+	else {
+		if (expr[0] >= '0'&&expr[0] <= '9') {
+			return ET_CONST;
+		}
+		else {
+			return ET_VAR;
+		}
+	}
+
+}
+
+PostfixExpr::PostfixExpr(const string exprs) {
+
+}
+
+//int PostfixExpr::get_operator(string s) {}
+
 ////////////////////////////////////////////////////////////////////
 HVar::HVar(const int id, const string name, const int min_val,
 	const int max_val) :
@@ -45,7 +68,7 @@ void HVar::Show() {
 HVar::~HVar() {}
 ////////////////////////////////////////////////////////////////////
 HTab::HTab(const int id, const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp) :
-	HCon(id, scp) {
+	HCon(id, scp, CT_EXT) {
 	unsigned long all_size = 1;
 	for (auto i : scp)
 		all_size *= i->vals.size();
@@ -80,7 +103,7 @@ HTab::HTab(const int id, const bool sem, vector<vector<int>>& ts, vector<HVar*>&
 }
 
 HTab::HTab(HTab * t, vector<HVar *>& scp) :
-	HCon(t->id + 1, scp),
+	HCon(t->id + 1, scp, CT_EXT),
 	semantics(t->semantics) {
 	isSTD = true;
 	tuples = t->tuples;
@@ -125,8 +148,44 @@ void HTab::GetTuple(int idx, vector<int>& src_t, vector<int>& std_t) {
 	}
 }
 
-HPre::HPre(const int id, string expr) :HCon(id) {
-	
+HPre::HPre(const int id, string expr) :HCon(id, CT_INT) {
+	get_postfix(expr);
+}
+
+void HPre::get_postfix(const string expr) {
+	string s = expr;
+	string tmp;
+	int op;
+	unsigned i = 0;
+	int j = -1;
+	int startpos = 0;
+	for (i = 0; i < s.length(); ++i) {
+		switch (s[i]) {
+		case '(':
+			tmp = s.substr(startpos, i - startpos);
+			data.push_back(tmp);
+			if (Funcs::get_type(expr) == ET_VAR) {
+
+			}
+			startpos = i + 1;
+			break;
+		case ')':
+			tmp = s.substr(startpos, i - startpos);
+			data.push_back(tmp);
+			startpos = i + 1;
+			break;
+		case ',':
+			tmp = s.substr(startpos, i - startpos);
+			data.push_back(tmp);
+			startpos = i + 1;
+			break;
+		case ' ':
+			startpos = i + 1;
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 //void HTab::GetTuple(int idx, vector<int>& t) {
@@ -186,7 +245,7 @@ void HModel::AddVar(const int id, const string name, vector<int>& v) {
 
 void HModel::AddTab(const int id, const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp) {
 	HTab* t = new HTab(id, sem, ts, scp);
-	tabs.push_back(t);
+	cons.push_back(t);
 	mas_ = max(mas_, t->scope.size());
 }
 
@@ -206,6 +265,12 @@ void HModel::AddTabAsPrevious(HTab* t, vector<string>& scp) {
 	mas_ = max(mas_, nt->scope.size());
 }
 
+void HModel::AddPre(const int id, const string expr) {
+	vector<string> stack;
+	vector<HVar*> scp;
+	get_postfix(expr, stack, scp);
+}
+
 void HModel::show() {
 	cout << "--------------Variables--------------" << endl;
 	cout << "size: " << vars.size() << "\tmax domain size :" << mds_ << endl;
@@ -215,6 +280,48 @@ void HModel::show() {
 	cout << "size: " << tabs.size() << "\tmax arity size :" << mas_ << endl;
 	for (auto t : tabs)
 		t->Show();
+}
+
+void HModel::get_postfix(const string expr, vector<string>& stack, vector<HVar*>& scp) {
+	string s = expr;
+	string tmp;
+	int op;
+	unsigned i = 0;
+	int j = -1;
+	int startpos = 0;
+	for (i = 0; i < s.length(); ++i) {
+		switch (s[i]) {
+		case '(':
+			tmp = s.substr(startpos, i - startpos);
+			stack.push_back(tmp);
+			if (Funcs::get_type(tmp) == ET_VAR)
+				if (find(scp.begin(), scp.end(), tmp) != scp.end())
+					scp.push_back(var_n_[tmp]);
+			startpos = i + 1;
+			break;
+		case ')':
+			tmp = s.substr(startpos, i - startpos);
+			stack.push_back(tmp);
+			if (Funcs::get_type(tmp) == ET_VAR)
+				if (find(scp.begin(), scp.end(), tmp) != scp.end())
+					scp.push_back(var_n_[tmp]);
+			startpos = i + 1;
+			break;
+		case ',':
+			tmp = s.substr(startpos, i - startpos);
+			stack.push_back(tmp);
+			if (Funcs::get_type(tmp) == ET_VAR)
+				if (find(scp.begin(), scp.end(), tmp) != scp.end())
+					scp.push_back(var_n_[tmp]);
+			startpos = i + 1;
+			break;
+		case ' ':
+			startpos = i + 1;
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 HModel::~HModel() {

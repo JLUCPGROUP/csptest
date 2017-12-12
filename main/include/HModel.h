@@ -54,13 +54,22 @@ enum PredicateOperator {
 	PO_DIST = INT_MIN + 103	///<abs(x-y)
 };
 
+enum ExpType {
+	ET_OP, ET_CONST, ET_VAR
+};
 
-namespace Functions {
+enum ConType {
+	CT_EXT, CT_INT
+};
+typedef std::unordered_map<std::string, std::function<int(std::vector<int>&)>> func_map;
+
+namespace Funcs {
 //auto Opposite = 
 //unordered_map<string, function<int(int, int)>> predictions = {
 //	{ '*', [](int i, int j) {return i * j; } },
 //};
 //auto mod = [](int i, int j) {return i%j; };
+namespace ops {
 auto neg = [](std::vector<int>& a) {return 0 - a[0]; };
 auto abs = [](std::vector<int>& a) {return std::abs(a[0]); };
 auto add = [](std::vector<int>& a) {return accumulate(a.begin(), a.end(), 0); };
@@ -70,29 +79,61 @@ auto div = [](std::vector<int>& a) {return a[0] / a[1]; };
 auto mod = [](std::vector<int>& a) {return a[0] % a[1]; };
 auto sqr = [](std::vector<int>& a) {return static_cast<int>(sqrt(a[0])); };
 auto pow = [](std::vector<int>& a) {return std::pow(a[0], a[1]); };
-auto min = [](std::vector<int>& a) {return std::min_element(a.begin(), a.end()); };
-auto max = [](std::vector<int>& a) {return std::max_element(a.begin(), a.end()); };
+auto min = [](std::vector<int>& a) {return *min_element(a.begin(), a.end()); };
+auto max = [](std::vector<int>& a) {return *max_element(a.begin(), a.end()); };
 auto dis = [](std::vector<int>& a) {return abs(std::vector<int>(sub(a))); };
 
 auto le = [](std::vector<int>& a) {return a[0] <= a[1]; };
 auto lt = [](std::vector<int>& a) {return a[0] < a[1]; };
+auto ge = [](std::vector<int>& a) {return a[0] >= a[1]; };
+auto gt = [](std::vector<int>& a) {return a[0] > a[1]; };
+auto ne = [](std::vector<int>& a) {return a[0] != a[1]; };
+auto eq = [](std::vector<int>& a) {return std::all_of(a.begin(), a.end(), [&a](int n) {return n == a[0]; }); };
 
-std::unordered_map<std::string, std::function<int(std::vector<int>&)>> int_pres_map =
+auto not = [](std::vector<int>& a) {return !a[0]; };
+auto and = [](std::vector<int>& a) {return std::all_of(a.begin(), a.end(), [&a](int n) {return n && a[0]; }); };
+auto or = [](std::vector<int>& a) {return std::any_of(a.begin(), a.end(), [&a](int n) {return n || a[0]; }); };
+//auto xor =[](std::vector<int>& a){return std::for_each(a.begin(), a.end(),[](int b))}
+}
+
+static ExpType get_type(std::string expr);
+
+func_map int_pres_map =
 {
-	{"neg", neg},
-	{"abs", abs},
-	{"add", add},
+	{ "neg", ops::neg },
+	{ "abs", ops::abs },
+	{ "add", ops::add },
+	{ "sub", ops::sub },
+	{ "mul", ops::mul },
+	{ "div", ops::div },
+	{ "mod", ops::mod },
+	{ "sqr", ops::sqr },
+	{ "pow", ops::pow },
+	{ "min", ops::min },
+	{ "max", ops::max },
+	{ "le", ops::le },
+	{ "lt", ops::lt },
+	{ "ge", ops::ge },
+	{ "gt", ops::gt },
+	{ "ne", ops::ne },
+	{ "eq", ops::eq },
+	{ "not", ops::not},
+	{ "and", ops::and },
+	{ "or", ops:: or },
 };
-//function<int<vector<int>&>>
 
 }
 
 using namespace std;
 class API_DECLSPEC PostfixExpr {
-	vector<int> data_;
-	void push(int expr);
-	void pop();
-	int top();
+public:
+	vector<int> stack;
+	vector<string> data;
+	explicit PostfixExpr(const string exprs);
+	//int get_operator(string s);
+	//void push(int expr);
+	//void pop();
+	//int top();
 };
 
 class API_DECLSPEC HVar {
@@ -117,9 +158,10 @@ public:
 	//string name;
 	vector<HVar*> scope;
 	bool isSTD = false;
-	HCon(const int id) :
+	ConType type;
+	HCon(const int id, ConType ct) :
 		id(id) {};
-	HCon(const int id, vector<HVar*>& scp) :
+	HCon(const int id, vector<HVar*>& scp, ConType ct) :
 		id(id), scope(scp) {};
 };
 
@@ -146,6 +188,9 @@ class API_DECLSPEC HPre :public HCon {
 public:
 	bool isSTD = false;
 	HPre(const int id, string expr);
+	vector<string> data;
+	void get_postfix(string expr);
+
 	//int GetAllSize() const;
 	//void GetSTDTuple(vector<int>& src_tuple, vector<int>& std_tuple);
 	//void GetORITuple(vector<int>& std_tuple, vector<int>& ori_tuple);
@@ -163,6 +208,7 @@ class API_DECLSPEC HModel {
 public:
 	vector<HVar*> vars;
 	vector<HTab*> tabs;
+	vector<HCon*> cons;
 	unordered_map<string, HVar*> var_n_;
 	//	unordered_map<int, HVar*> var_i_;
 	HModel();
@@ -173,9 +219,11 @@ public:
 	void AddTab(const int id, const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp);
 	void AddTab(const int id, const bool sem, vector<vector<int>>& ts, vector<string>& scp);
 	void AddTabAsPrevious(HTab* t, vector<string>& scp);
+	void AddPre(const int id, const string expr);
 	int max_domain_size() const { return mds_; }
 	void show();
 private:
+	void get_postfix(const string expr, vector<string>& stack, vector<HVar*>& scp);
 	size_t mds_ = 0;
 	size_t mas_ = 0;
 };
