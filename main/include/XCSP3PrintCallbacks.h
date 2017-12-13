@@ -377,14 +377,14 @@ void XCSP3PrintCallbacks::endObjectives() {
 
 
 void XCSP3PrintCallbacks::buildVariableInteger(const string id, const int minValue, const int maxValue) {
-	hm->AddVar(num_vars_, id, minValue, maxValue);
-	vars_map_[id] = num_vars_;
+	const int vid = hm->AddVar(id, minValue, maxValue);
+	vars_map_[id] = vid;
 	num_vars_++;
 }
 
 
 void XCSP3PrintCallbacks::buildVariableInteger(const string id, vector<int> &values) {
-	hm->AddVar(num_vars_, id, values);
+	hm->AddVar(id, values);
 	vars_map_[id] = num_vars_;
 	num_vars_++;
 }
@@ -394,7 +394,7 @@ void XCSP3PrintCallbacks::buildConstraintExtension(string id, vector<XVariable *
 	vector<string> scope(list.size());
 	for (size_t i = 0; i < scope.size(); ++i)
 		scope[i] = list[i]->id;
-	hm->AddTab(num_cons_, support, tuples, scope);
+	hm->AddTab(support, tuples, scope);
 	num_cons_++;
 }
 
@@ -418,7 +418,9 @@ void XCSP3PrintCallbacks::buildConstraintExtensionAs(string id, vector<XVariable
 
 
 void XCSP3PrintCallbacks::buildConstraintIntension(string id, string expr) {
-	cout << "\n    intension constraint : " << id << " : " << expr << endl;
+	//cout << "\n    intension constraint : " << id << " : " << expr << endl;
+	hm->AddTab(expr);
+	num_cons_++;
 }
 
 

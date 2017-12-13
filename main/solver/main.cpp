@@ -19,7 +19,7 @@ int main() {
 	cout << bm_path << endl;
 	HModel *hm = new HModel();
 	GetHModel(bm_path, hm);
-	hm->show();
+	//hm->show();
 
 	delete hm;
 	return 0;
