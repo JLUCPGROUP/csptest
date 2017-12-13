@@ -16,8 +16,8 @@ PostfixExpr::PostfixExpr(const string exprs) {
 //int PostfixExpr::get_operator(string s) {}
 
 ////////////////////////////////////////////////////////////////////
-HVar::HVar(const int id, const string name, const int min_val, const int max_val) :
-	id(id), name(name), std_max(max_val - min_val) {
+HVar::HVar(const int id, const int uid, const string name, const int min_val, const int max_val) :
+	id(id), uid(uid), name(name), std_max(max_val - min_val) {
 	int j = 0;
 	const int size = max_val - min_val + 1;
 	vals.resize(size);
@@ -30,8 +30,8 @@ HVar::HVar(const int id, const string name, const int min_val, const int max_val
 	}
 }
 
-HVar::HVar(const int id, const string name, vector<int>& v) :
-	id(id), name(name), std_max(v.size() - 1) {
+HVar::HVar(const int id, const int uid, const string name, vector<int>& v) :
+	id(id), uid(uid), name(name), std_max(v.size() - 1) {
 	vals.resize(vals.size());
 	for (size_t i = 0; i < vals.size(); ++i) {
 		val_map[v[i]] = i;
@@ -204,8 +204,10 @@ HModel::HModel() {
 
 int HModel::AddVar(const string name, const int min_val, const int max_val) {
 	const int id = vars.size();
-	HVar* var = new HVar(id, name, min_val, max_val);
-	var_n_[name] = var;
+	const int uid = get_var_uid();
+	HVar* var = new HVar(id, uid, name, min_val, max_val);
+	str_var_map_[name] = var;
+	int_var_map_[uid] = var;
 	vars.push_back(var);
 	mds_ = max(mds_, var->vals.size());
 	return id;
@@ -213,8 +215,10 @@ int HModel::AddVar(const string name, const int min_val, const int max_val) {
 
 int HModel::AddVar(const string name, vector<int>& v) {
 	const int id = vars.size();
-	HVar* var = new HVar(id, name, v);
-	var_n_[name] = var;
+	const int uid = get_var_uid();
+	HVar* var = new HVar(id, uid, name, v);
+	str_var_map_[name] = var;
+	int_var_map_[uid] = var;
 	vars.push_back(var);
 	mds_ = max(mds_, var->vals.size());
 	return id;
@@ -275,12 +279,10 @@ int HModel::AddTab(const string expr) {
 	get_scope(scp_str, scp);
 	vector<int> params(scp.size());
 
-	for (auto s : scp_str)
+	for (const auto s : scp_str)
 		cout << s << endl;
-	for (auto s : stack)
+	for (const auto s : stack)
 		cout << s << endl;
-
-
 
 	return 0;
 }
@@ -294,6 +296,19 @@ void HModel::show() {
 	cout << "size: " << tabs.size() << "\tmax arity size :" << mas_ << endl;
 	for (auto t : tabs)
 		t->Show();
+}
+
+int HModel::regist(const string exp_name, function<int(std::vector<int>&)> exp) {
+	const int id = get_exp_uid();
+	if (Funcs::str_expr_map.find(exp_name) != Funcs::str_expr_map.end()) {
+		Funcs::str_expr_map[exp_name] = id;
+		Funcs::int_expr_map[id] = exp;
+		return id;
+	}
+	else {
+		cout << "existing" << endl;
+		return INT_MIN;
+	}
 }
 
 void HModel::get_postfix(const string expr, vector<string>& stack, vector<string>& scp) {
@@ -310,7 +325,7 @@ void HModel::get_postfix(const string expr, vector<string>& stack, vector<string
 			if (tmp != "") {
 				stack.push_back(tmp);
 				stack.push_back("(");
-				if (get_type(tmp) == ET_VAR)
+				if (get<0>(get_type(tmp)) == ET_VAR)
 					if (find(scp.begin(), scp.end(), tmp) == scp.end())
 						scp.push_back(tmp);
 			}
@@ -321,7 +336,7 @@ void HModel::get_postfix(const string expr, vector<string>& stack, vector<string
 			if (tmp != "") {
 				stack.push_back(tmp);
 				stack.push_back(")");
-				if (get_type(tmp) == ET_VAR)
+				if (get<0>(get_type(tmp)) == ET_VAR)
 					if (find(scp.begin(), scp.end(), tmp) == scp.end())
 						scp.push_back(tmp);
 			}
@@ -335,7 +350,7 @@ void HModel::get_postfix(const string expr, vector<string>& stack, vector<string
 			if (tmp != "") {
 				stack.push_back(tmp);
 				stack.push_back(",");
-				if (get_type(tmp) == ET_VAR)
+				if (get<0>(get_type(tmp)) == ET_VAR)
 					if (find(scp.begin(), scp.end(), tmp) == scp.end())
 						scp.push_back(tmp);
 			}
@@ -361,7 +376,7 @@ void HModel::get_postfix(const string expr, vector<string>& stack, vector<string
 		}
 		else if (exp == ")") {
 			for (j = last_lpar_idx; j < i; ++j) {
-				if (get_type(stack[j]) != ET_OP) {
+				if (get<0>(get_type(stack[j])) != ET_OP) {
 					postfix_stack.push_back(stack[j]);
 				}
 			}
@@ -376,15 +391,16 @@ void HModel::get_postfix(const string expr, vector<string>& stack, vector<string
 
 }
 
-ExpType HModel::get_type(std::string expr) {
-	if (Funcs::int_pres_map.find(expr) != Funcs::int_pres_map.end())
-		return ET_OP;
+tuple<ExpType, int> HModel::get_type(std::string expr) {
+	tuple<ExpType, int> t;
+	if (Funcs::str_expr_map.find(expr) != Funcs::str_expr_map.end())
+		return make_tuple(ET_OP, Funcs::str_expr_map[expr]);
 	if (expr[0] >= '0'&& expr[0] <= '9')
-		return ET_CONST;
-	if (var_n_.find(expr) != var_n_.end())
-		return ET_VAR;
+		return make_tuple(ET_CONST, atoi(expr.c_str()));
+	if (str_var_map_.find(expr) != str_var_map_.end())
+		return make_tuple(ET_VAR, str_var_map_[expr]->uid);
 	cout << "undefined" << endl;
-	return ET_OP;
+	return make_tuple(ET_NULL, INT_MIN);
 }
 
 void HModel::subscript(HTab *t) {
@@ -395,7 +411,15 @@ void HModel::subscript(HTab *t) {
 void HModel::get_scope(vector<string>& scp_str, vector<HVar*>& scp) {
 	scp.resize(scp_str.size());
 	for (int i = 0; i < scp_str.size(); ++i)
-		scp[i] = var_n_[scp_str[i]];
+		scp[i] = str_var_map_[scp_str[i]];
+}
+
+int HModel::get_exp_uid() {
+	return ++exp_id_;
+}
+
+int HModel::get_var_uid() {
+	return ++var_uid_;
 }
 
 HModel::~HModel() {
