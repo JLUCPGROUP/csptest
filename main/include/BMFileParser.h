@@ -5,8 +5,7 @@
  *      Author: leezear
  */
 
-#ifndef BMFILEPARSER_H_
-#define BMFILEPARSER_H_
+#pragma once
 
 #include <stdio.h>
 #include <string.h>
@@ -49,9 +48,8 @@ static void OnCharacters(void *ctx, const xmlChar *ch, int len) {
 }
 
 bool API_DECLSPEC FindBMPath(const string file_name) {
-	errno_t err;
 	FILE *f;
-	err = fopen_s(&f, file_name.c_str(), "rb");
+	errno_t err = fopen_s(&f, file_name.c_str(), "rb");
 	char chars[1024];
 	int res = fread(chars, 1, 4, f);
 	if (res <= 0) {
@@ -83,4 +81,3 @@ bool API_DECLSPEC FindBMPath(const string file_name) {
 	fclose(f);
 	return true;
 }
-#endif /* BMFILEPARSER_H_ */

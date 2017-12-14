@@ -26,17 +26,14 @@
 #ifndef _XMLParser_libxml2_h_
 #define _XMLParser_libxml2_h_
 
-#include <iostream>
-#include <stdexcept>
-#include <cerrno>
-#include <climits>
+
 #include <libxml/parser.h>
+#include <fstream>
 
 #include "XMLParser.h"
 #include "XCSP3CoreCallbacks.h"
-#include "XCSP3Constants.h"
-#include "UTF8String.h"
- //#define debug
+
+//#define debug
 
 namespace XCSP3Core {
 using namespace std;
@@ -45,7 +42,7 @@ using namespace std;
 /**
  * @brief the parser using the libxml2 library
  */
-class API_DECLSPEC XCSP3CoreParser {
+class XCSP3CoreParser {
 
 protected:
 	XMLParser cspParser;
@@ -89,5 +86,4 @@ protected:
 };
 
 }
-
 #endif

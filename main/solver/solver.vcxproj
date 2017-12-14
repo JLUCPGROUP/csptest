@@ -160,11 +160,6 @@
     </Xml>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\model\model.vcxproj">
-      <Project>{4f77c693-21b3-486a-8ab8-b8494eab532f}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="IntVar4.cpp" />
     <ClCompile Include="IntVar.cpp" />
     <ClCompile Include="IntVar2.cpp" />
@@ -174,6 +169,11 @@
     <ClInclude Include="IntVar4.h" />
     <ClInclude Include="IntVar.h" />
     <ClInclude Include="IntVar2.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\model\model.vcxproj">
+      <Project>{4f77c693-21b3-486a-8ab8-b8494eab532f}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

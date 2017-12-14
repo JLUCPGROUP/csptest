@@ -349,7 +349,7 @@ void XInitialCondition::extractCondition(XCondition &xc) { // Create the op and 
     if(tmp0 == "lt") xc.op = LT;
     if(tmp0 == "ge") xc.op = GE;
     if(tmp0 == "gt") xc.op = GT;
-    if(tmp0 == "in") xc.op = O_IN;
+    if(tmp0 == "in") xc.op = IN;
     if(tmp0 == "eq") xc.op = EQ;
     if(tmp0 == "ne") xc.op = NE;
     //std::cout << condition <<": "<< tmp0 << " " <<tmp1 << std::endl;
@@ -430,6 +430,10 @@ void XConstraintAllDiffMatrix::unfoldParameters(XConstraintGroup *, vector<XVari
     throw runtime_error("Group Alldiff Matrix and list is not yet supported");
 }
 
+void XConstraintOrdered::unfoldParameters(XConstraintGroup *group, vector<XVariable *> &arguments, XConstraint *original) {
+    XConstraint::unfoldParameters(group, arguments, original);
+    XLengths::unfoldParameters(group, arguments, original);
+}
 
 void XConstraintLex::unfoldParameters(XConstraintGroup *group, vector<XVariable *> &arguments, XConstraint *original) {
     XConstraintLex *xc = dynamic_cast<XConstraintLex *>(original);

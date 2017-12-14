@@ -24,8 +24,7 @@
  *=============================================================================
  */
 
-#ifndef COSOCO_ATTRIBUTELIST_H
-#define COSOCO_ATTRIBUTELIST_H
+#pragma once
 
 #include <libxml/xmlstring.h>
 namespace XCSP3Core {
@@ -91,4 +90,3 @@ namespace XCSP3Core {
     };
 
 }
-#endif //COSOCO_ATTRIBUTELIST_H

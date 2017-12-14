@@ -5,8 +5,8 @@
 *      Author: leezear
 */
 
-#ifndef HMODEL_H_
-#define HMODEL_H_
+#pragma once
+
 #define _EXPORTING
 #ifdef _EXPORTING
 #define API_DECLSPEC __declspec(dllexport)
@@ -56,7 +56,7 @@ enum PredicateOperator {
 };
 
 enum ExpType {
-	ET_OP, ET_CONST, ET_VAR, ET_NULL
+	ET_OP, ET_CONST, ET_VAR, ET_MARK, ET_NULL
 };
 
 enum ConType {
@@ -275,12 +275,13 @@ public:
 	void show();
 	int regist(string exp_name, function<int(std::vector<int>&)>);
 private:
-	void get_postfix(const string expr, vector<string>& stack, vector<string>& scp);
+	void get_postfix(const string expr, vector<string>& stack, vector<int>& data, vector<int>& params, vector<string>& scp);
 	tuple<ExpType, int> get_type(std::string expr);
 	void subscript(HTab *t);
 	void get_scope(vector<string>& scp_str, vector<HVar*>& scp);
-	int get_exp_uid();
-	int get_var_uid();
+	int get_var_id(const int id) const;
+	int generate_exp_uid();
+	int generate_var_uid();
 	unordered_map<string, HVar*> str_var_map_;
 	unordered_map<int, HVar*> int_var_map_;
 	size_t mds_ = 0;
@@ -291,4 +292,3 @@ private:
 
 } /* namespace cudacp */
 
-#endif /* HMODEL_H_ */

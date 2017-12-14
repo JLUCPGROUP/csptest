@@ -159,6 +159,7 @@
     <ClCompile Include="XCSP3CoreParser.cc" />
     <ClCompile Include="XCSP3Manager.cc" />
     <ClCompile Include="XCSP3Tree.cc" />
+    <ClCompile Include="XCSP3TreeNode.cc" />
     <ClCompile Include="XMLParser.cc" />
     <ClCompile Include="XMLParserTags.cc" />
   </ItemGroup>

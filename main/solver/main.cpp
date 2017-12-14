@@ -1,10 +1,10 @@
 #pragma once
 #include <sstream>
-#include <fstream>
 #include <string>
 #include "XCSP3PrintCallbacks.h"
 #include "BMFileParser.h"
 #include "Timer.h"
+
 using namespace cudacp;
 using namespace std;
 //#define LOGFILE
@@ -19,7 +19,7 @@ int main() {
 	cout << bm_path << endl;
 	HModel *hm = new HModel();
 	GetHModel(bm_path, hm);
-	//hm->show();
+	hm->show();
 
 	delete hm;
 	return 0;
