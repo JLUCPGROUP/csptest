@@ -24,7 +24,15 @@
  *=============================================================================
  */
 
-#pragma once
+#ifndef COSOCO_UTF8STRING_H
+#define COSOCO_UTF8STRING_H
+
+#define _EXPORTING
+#ifdef _EXPORTING
+#define API_DECLSPEC __declspec(dllexport)
+#else
+#define API_DECLSPEC __declspec(dllimport)
+#endif
 
 #include <iostream>
 #include <stdexcept>
@@ -50,7 +58,7 @@
 
 using namespace std;
 namespace XCSP3Core {
-    class UTF8String {
+    class API_DECLSPEC UTF8String {
     public:
         typedef unsigned char Byte;
 
@@ -188,7 +196,7 @@ namespace XCSP3Core {
 
 
 
-        friend ostream &operator<<(ostream &f, const UTF8String s);
+		API_DECLSPEC friend ostream &operator<<(ostream &f, const UTF8String s);
 
         class Tokenizer {
         private:
@@ -236,3 +244,4 @@ namespace XCSP3Core {
 
 
 }
+#endif //COSOCO_UTF8STRING_H

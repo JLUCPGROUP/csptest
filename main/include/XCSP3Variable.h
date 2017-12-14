@@ -32,11 +32,11 @@
 
 namespace XCSP3Core {
 
-    class XInterval {
+    class API_DECLSPEC XInterval {
     public :
         int min, max;
         XInterval(int mn, int mx) : min(mn), max(mx) { }
-        friend ostream &operator<<(ostream &f, const XInterval &ie);
+		API_DECLSPEC friend ostream &operator<<(ostream &f, const XInterval &ie);
     };
 
 
@@ -61,7 +61,7 @@ namespace XCSP3Core {
         XVariable(std::string idd, XDomainInteger *dom);
         XVariable(std::string idd, XDomainInteger *dom, std::vector<int> indexes);
         virtual ~XVariable();
-        friend ostream &operator<<(ostream &f, const XVariable &ie);
+		API_DECLSPEC friend ostream &operator<<(ostream &f, const XVariable &ie);
     };
 
 
@@ -79,15 +79,6 @@ namespace XCSP3Core {
         XInteger(std::string lid, int n) : XVariable(lid, NULL), value(n) { }
 
     };
-
-    /*
-     * This is a fake variable used for representing a Tree
-     */
-    class XTree : public XVariable {
-    public:
-        XTree(std::string lid) : XVariable(lid, NULL) { }
-    };
-
 
     class XEInterval : public XVariable {
     public :

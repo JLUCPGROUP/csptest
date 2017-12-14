@@ -63,7 +63,7 @@ static int min(T v1, T v2, T v3) {
 	if (v2 == -1) v2 = std::numeric_limits<T>::max();
 	if (v3 == -1) v3 = std::numeric_limits<T>::max();
 
-	return std::min( { v1, v2, v3 } );
+	return std::min({ v1, v2, v3 });
 }
 
 Node *Tree::fromStringToTree(std::string current) {
@@ -80,15 +80,15 @@ Node *Tree::fromStringToTree(std::string current) {
 
 		string currentElement = current.substr(0, nb);
 		if (currentElement != "" && nb != posOpenParenthesis)
-			createBasicParameter(currentElement,stack,params);
-		
+			createBasicParameter(currentElement, stack, params);
+
 
 		if (nb == posCloseParenthesis)
-			closeOperator(stack,params);
+			closeOperator(stack, params);
 
 
 		if (nb == posOpenParenthesis)
-			createOperator(currentElement,stack,params);
+			createOperator(currentElement, stack, params);
 
 		current = current.substr(nb + 1);
 		if (current == "") break;
@@ -99,17 +99,50 @@ Node *Tree::fromStringToTree(std::string current) {
 	return params.back();
 }
 
-extern NodeOperator* createNodeOperator(std::string currentElement);
-void Tree::createOperator(string currentElement, std::vector<NodeOperator*> &stack,std::vector<Node*> &params) {
+void Tree::createOperator(string currentElement, ::vector<NodeOperator*> &stack, std::vector<Node*> &params) {
+	NodeOperator *tmp = nullptr;
+	if (currentElement == "neg") tmp = new NodeNeg();
+	if (currentElement == "abs") tmp = new NodeAbs();
 
-	NodeOperator *tmp = createNodeOperator(currentElement);
+	if (currentElement == "add") tmp = new NodeAdd();
+	if (currentElement == "sub") tmp = new NodeSub();
+	if (currentElement == "mul") tmp = new NodeMult();
+	if (currentElement == "div") tmp = new NodeDiv();
+	if (currentElement == "mod") tmp = new NodeMod();
+
+	if (currentElement == "sqr") tmp = new NodeSquare();
+	if (currentElement == "pow") tmp = new NodePow();
+
+	if (currentElement == "min") tmp = new NodeMin();
+	if (currentElement == "max") tmp = new NodeMax();
+	if (currentElement == "dist") tmp = new NodeDist();
+
+	if (currentElement == "le") tmp = new NodeLE();
+	if (currentElement == "lt") tmp = new NodeLT();
+	if (currentElement == "ge") tmp = new NodeGE();
+	if (currentElement == "gt") tmp = new NodeGT();
+
+	if (currentElement == "ne") tmp = new NodeNE();
+	if (currentElement == "eq") tmp = new NodeEQ();
+
+	if (currentElement == "not") tmp = new NodeNot();
+	if (currentElement == "and") tmp = new NodeAnd();
+	if (currentElement == "or") tmp = new NodeOr();
+	if (currentElement == "xor") tmp = new NodeXor();
+	if (currentElement == "imp") tmp = new NodeImp();
+	if (currentElement == "if") tmp = new NodeIf();
+	if (currentElement == "iff") tmp = new NodeIff();
+
+	if (currentElement == "in") tmp = new NodeIn();
+	if (currentElement == "set") tmp = new NodeSet();
+
 	if (tmp == nullptr)
 		throw runtime_error("Intension constraint. Unknown operator: " + currentElement);
 	stack.push_back(tmp);
 	params.push_back(nullptr); // delemitor
 }
 
-void Tree::closeOperator(std::vector<NodeOperator*> &stack,std::vector<Node*> &params) {
+void Tree::closeOperator(std::vector<NodeOperator*> &stack, std::vector<Node*> &params) {
 	NodeOperator *tmp = stack.back();
 
 	int startParams = params.size() - 1;
@@ -128,11 +161,12 @@ void Tree::closeOperator(std::vector<NodeOperator*> &stack,std::vector<Node*> &p
 }
 
 // string currentElement, std::vector<NodeOperator*> &stack,std::vector<Node*> &params
-void Tree::createBasicParameter(string currentElement, std::vector<NodeOperator*> &,std::vector<Node*> &params) {
+void Tree::createBasicParameter(string currentElement, std::vector<NodeOperator*> &, std::vector<Node*> &params) {
 	try {
 		int nb = stoi(currentElement);
 		params.push_back(new NodeConstant(nb));
-	} catch (invalid_argument e) {
+	}
+	catch (invalid_argument e) {
 		int position = -1;
 		for (unsigned int i = 0; i < listOfVariables.size(); i++)
 			if (listOfVariables[i] == currentElement) {

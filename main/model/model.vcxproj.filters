@@ -39,9 +39,6 @@
     <ClCompile Include="HModel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="XCSP3TreeNode.cc">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\XMLParser.h">

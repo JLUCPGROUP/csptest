@@ -98,7 +98,7 @@ namespace XCSP3Core {
         int min, max;
         string var;
 
-        friend ostream &operator<<(ostream &f, const XCSP3Core::XCondition &ie);
+		API_DECLSPEC friend ostream &operator<<(ostream &f, const XCSP3Core::XCondition &ie);
     };
 
 
@@ -236,14 +236,14 @@ namespace XCSP3Core {
      *                  COMPARISON BASED CONSTRAINTS
      ****************************************************************************
      ***************************************************************************/
-    static vector<int> except_;
+    static vector<int> _except_;
 
     class XConstraintAllDiff : public XConstraint {
     public :
         vector<int> &except;
 
 
-        XConstraintAllDiff(std::string idd, std::string c) : XConstraint(idd, c), except(except_) {}
+        XConstraintAllDiff(std::string idd, std::string c) : XConstraint(idd, c), except(_except_) {}
     };
 
 
@@ -275,12 +275,12 @@ namespace XCSP3Core {
 
     static OrderType _op;
 
-    class XConstraintOrdered : public XConstraint, public XLengths {
+    class XConstraintOrdered : public XConstraint {
     public :
         OrderType &op;
 
+
         XConstraintOrdered(std::string idd, std::string c) : XConstraint(idd, c), op(_op) {}
-        void unfoldParameters(XConstraintGroup *group, vector<XVariable *> &arguments, XConstraint *original) override;
     };
 
 
@@ -337,7 +337,7 @@ namespace XCSP3Core {
         vector<int> &except;
 
 
-        XConstraintNValues(std::string idd, std::string c) : XConstraint(idd, c), except(except_) {}
+        XConstraintNValues(std::string idd, std::string c) : XConstraint(idd, c), except(_except_) {}
 
 
         void unfoldParameters(XConstraintGroup *group, vector<XVariable *> &arguments, XConstraint *original) override;
