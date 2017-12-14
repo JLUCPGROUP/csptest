@@ -233,8 +233,9 @@ public:
 	virtual void buildObjectiveMaximize(ExpressionObjective type, vector<XVariable *> &list) override;
 
 private:
-	int var_cnt = 0;
-	int con_cnt = 0;
+	//int vars_map_ = 0;
+	//int con_cnt = 0;
+	unordered_map<string, int> vars_map_;
 };
 
 API_DECLSPEC void GetHModel(string file_path, HModel* m) {
@@ -376,14 +377,14 @@ void XCSP3PrintCallbacks::endObjectives() {
 
 
 void XCSP3PrintCallbacks::buildVariableInteger(string id, int minValue, int maxValue) {
-	hm->AddVar(var_cnt, id, minValue, maxValue);
-	var_cnt++;
+	const int vid = hm->AddVar(id, minValue, maxValue);
+	vars_map_[id] = vid;
 }
 
 
 void XCSP3PrintCallbacks::buildVariableInteger(string id, vector<int> &values) {
-	hm->AddVar(var_cnt, id, values);
-	var_cnt++;
+	const int vid = hm->AddVar(id, values);
+	vars_map_[id] = vid;
 }
 
 
@@ -391,8 +392,7 @@ void XCSP3PrintCallbacks::buildConstraintExtension(string id, vector<XVariable *
 	vector<string> scope(list.size());
 	for (size_t i = 0; i < scope.size(); ++i)
 		scope[i] = list[i]->id;
-	hm->AddTab(con_cnt, support, tuples, scope);
-	con_cnt++;
+	hm->AddTab(support, tuples, scope);
 }
 
 
@@ -409,18 +409,18 @@ void XCSP3PrintCallbacks::buildConstraintExtensionAs(string id, vector<XVariable
 	vector<string> scope(list.size());
 	for (size_t i = 0; i < scope.size(); ++i)
 		scope[i] = list[i]->id;
-	hm->AddTabAsPrevious(hm->tabs[con_cnt - 1], scope);
-	con_cnt++;
+	hm->AddTabAsPrevious(hm->tabs.back(), scope);
 }
 
 
 void XCSP3PrintCallbacks::buildConstraintIntension(string id, string expr) {
-	cout << "\n    intension constraint : " << id << " : " << expr << endl;
+	//cout << "\n    intension constraint : " << id << " : " << expr << endl;
+	hm->AddTab(expr);
 }
 
 
 // string id, OrderType op, XVariable *x, int k, XVariable *y
-void XCSP3PrintCallbacks::buildConstraintPrimitive(string id, OrderType, XVariable *x, int k, XVariable *y) {
+void XCSP3PrintCallbacks::buildConstraintPrimitive(string id, OrderType ot, XVariable *x, int k, XVariable *y) {
 	cout << "\n   intension constraint " << id << ": " << x->id << (k >= 0 ? "+" : "") << k << " op " << y->id << endl;
 }
 

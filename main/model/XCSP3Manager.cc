@@ -128,29 +128,29 @@ void XCSP3Manager::newConstraintIntension(XConstraintIntension *constraint) {
     OrderType order;
     if(discardedClasses(constraint->classes))
         return;
-    if(callback->recognizeSpecialIntensionCases) {
-        if(recognizeXopY(constraint->function, op, &x, &y)) { // Recognize x op y
-            if(op == "eq") order = OrderType::EQ;
-            if(op == "ne") order = NE;
-            if(op == "le") order = LE;
-            if(op == "lt") order = LT;
-            if(op == "ge") order = GE;
-            if(op == "gt") order = GT;
-            callback->buildConstraintPrimitive(constraint->id, order, x, 0, y);
-            return;
-        }
-        if(recognizeXopKopY(constraint->function, op, &x, k, &y)) { // Recognize x +-k op y
-            if(op == "eq") order = OrderType::EQ;
-            if(op == "ne") order = NE;
-            if(op == "le") order = LE;
-            if(op == "lt") order = LT;
-            if(op == "ge") order = GE;
-            if(op == "gt") order = GT;
+    //if(callback->recognizeSpecialIntensionCases) {
+    //    if(recognizeXopY(constraint->function, op, &x, &y)) { // Recognize x op y
+    //        if(op == "eq") order = OrderType::EQ;
+    //        if(op == "ne") order = NE;
+    //        if(op == "le") order = LE;
+    //        if(op == "lt") order = LT;
+    //        if(op == "ge") order = GE;
+    //        if(op == "gt") order = GT;
+    //        callback->buildConstraintPrimitive(constraint->id, order, x, 0, y);
+    //        return;
+    //    }
+    //    if(recognizeXopKopY(constraint->function, op, &x, k, &y)) { // Recognize x +-k op y
+    //        if(op == "eq") order = OrderType::EQ;
+    //        if(op == "ne") order = NE;
+    //        if(op == "le") order = LE;
+    //        if(op == "lt") order = LT;
+    //        if(op == "ge") order = GE;
+    //        if(op == "gt") order = GT;
 
-            callback->buildConstraintPrimitive(constraint->id, order, x, k, y);
-            return;
-        }
-    }
+    //        callback->buildConstraintPrimitive(constraint->id, order, x, k, y);
+    //        return;
+    //    }
+    //}
     callback->buildConstraintIntension(constraint->id, constraint->function);
 }
 
