@@ -9,12 +9,6 @@
 
 namespace cudacp {
 
-PostfixExpr::PostfixExpr(const string exprs) {
-
-}
-
-//int PostfixExpr::get_operator(string s) {}
-
 ////////////////////////////////////////////////////////////////////
 HVar::HVar(const int id, const int uid, const string name, const int min_val, const int max_val) :
 	id(id), uid(uid), name(name), std_max(max_val - min_val) {
@@ -224,27 +218,6 @@ int HModel::AddVar(const string name, vector<int>& v) {
 	return id;
 }
 
-//int HModel::AddCon(const ConType type, const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp) {
-//	const int id = cons.size();
-//	switch (type) {
-//	case CT_EXT:
-//		AddTab(id, sem, type, ts, scp);
-//		break;
-//	case CT_INT:
-//		AddPre();
-//
-//	}
-//	return id;
-//}
-//
-//void HModel::AddCon(HCon* c, vector<string>& scp) {
-//	const int id = cons.size();
-//	switch (c->type) {
-//	case CT_EXT:
-//		AddTab
-//	}
-//}
-
 int HModel::AddTab(const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp) {
 	const int id = tabs.size();
 	HTab* t = new HTab(id, sem, ts, scp);
@@ -271,20 +244,13 @@ int HModel::AddTabAsPrevious(HTab* t, vector<string>& scp) {
 
 int HModel::AddTab(const string expr) {
 	cout << expr << endl;
-	vector<string> stack;
+	//表达式栈
 	vector<int> expr_stack;
 	vector<int> params;
-	vector<string> scp_str;
-	get_postfix(expr, stack, expr_stack, params, scp_str);
 	vector<HVar*> scp;
-	get_scope(scp_str, scp);
-	vector<int> t(scp.size());
-	cout << "-------------scp--------------" << endl;
-	for (const auto s : scp_str)
-		cout << s << endl;
-	cout << "-------------stack--------------" << endl;
-	for (const auto s : stack)
-		cout << s << endl;
+	get_postfix(expr, expr_stack, params, scp);
+	unordered_map<HVar*, int> t;
+
 	cout << "-------------expr_stack--------------" << endl;
 	for (const auto s : expr_stack)
 		cout << s << endl;
@@ -318,78 +284,179 @@ int HModel::regist(const string exp_name, function<int(std::vector<int>&)> exp) 
 	}
 }
 
-void HModel::get_postfix(const string expr, vector<string>& stack, vector<int>& data, vector<int>& params, vector<string>& scp) {
+//void HModel::get_postfix(const string expr, vector<string>& stack, vector<int>& data, vector<int>& params, vector<string>& scp) {
+//	//转换表达式
+//	string s = expr;
+//	string tmp;
+//	int op;
+//	unsigned i = 0;
+//	int j = -1;
+//	int startpos = 0;
+//	tuple<ExpType, int> t;
+//	for (i = 0; i < s.length(); ++i) {
+//		switch (s[i]) {
+//		case '(':
+//			tmp = s.substr(startpos, i - startpos);
+//			if (tmp != "") {
+//				t = get_type(tmp);
+//				data.push_back(get<1>(t));
+//				data.push_back(Funcs::str_expr_map["("]);
+//				stack.push_back(tmp);
+//				stack.push_back("(");
+//
+//				if (get<0>(t) == ET_VAR) {
+//					params.push_back(get<1>(t));
+//					if (find(scp.begin(), scp.end(), tmp) == scp.end())
+//						scp.push_back(tmp);
+//				}
+//
+//				if (get<0>(t) == ET_CONST)
+//					params.push_back(get<1>(t));
+//			}
+//			startpos = i + 1;
+//			break;
+//		case ')':
+//			tmp = s.substr(startpos, i - startpos);
+//			if (tmp != "") {
+//				t = get_type(tmp);
+//				data.push_back(get<1>(t));
+//				data.push_back(Funcs::str_expr_map[")"]);
+//				stack.push_back(tmp);
+//				stack.push_back(")");
+//
+//				if (get<0>(t) == ET_VAR) {
+//					params.push_back(get<1>(t));
+//					if (find(scp.begin(), scp.end(), tmp) == scp.end())
+//						scp.push_back(tmp);
+//				}
+//
+//				if (get<0>(t) == ET_CONST)
+//					params.push_back(get<1>(t));
+//			}
+//			startpos = i + 1;
+//			break;
+//		case ',':
+//			tmp = s.substr(startpos, i - startpos);
+//			if (tmp == "") {
+//				stack.push_back(",");
+//				data.push_back(Funcs::str_expr_map[","]);
+//			}
+//			if (tmp != "") {
+//				t = get_type(tmp);
+//				data.push_back(get<1>(t));
+//				data.push_back(Funcs::str_expr_map[","]);
+//				stack.push_back(tmp);
+//				stack.push_back(",");
+//
+//				if (get<0>(t) == ET_VAR) {
+//					params.push_back(get<1>(t));
+//					if (find(scp.begin(), scp.end(), tmp) == scp.end())
+//						scp.push_back(tmp);
+//				}
+//
+//				if (get<0>(t) == ET_CONST)
+//					params.push_back(get<1>(t));
+//			}
+//			startpos = i + 1;
+//			break;
+//		case ' ':
+//			startpos = i + 1;
+//			break;
+//		default:
+//			break;
+//		}
+//	}
+//
+//
+//	//生成后缀表达式
+//	//vector<string> postfix_stack;
+//	//int last_lpar_idx = 0;
+//	//postfix_stack.reserve(stack.size());
+//
+//	//while (i < stack.size()) {
+//	//	const string exp = stack[i];
+//	//	if (exp == "(") {
+//	//		last_lpar_idx = i;
+//	//	}
+//	//	else if (exp == ")") {
+//	//		for (j = last_lpar_idx; j < i; ++j) {
+//	//			if (get<0>(get_type(stack[j])) != ET_OP) {
+//	//				postfix_stack.push_back(stack[j]);
+//	//			}
+//	//		}
+//
+//
+//	//	}
+//	//}
+//
+//	//while (!stack.empty()) {
+//	//	string s = stack.pop_back();
+//	//}
+//
+//}
+
+void HModel::get_postfix(const string expr, vector<int>& data, vector<int>& params, vector<HVar*>& scp) {
+	//转换表达式
 	string s = expr;
 	string tmp;
-	int op;
-	unsigned i = 0;
-	int j = -1;
 	int startpos = 0;
 	tuple<ExpType, int> t;
-	for (i = 0; i < s.length(); ++i) {
+	for (int i = 0; i < s.length(); ++i) {
 		switch (s[i]) {
 		case '(':
 			tmp = s.substr(startpos, i - startpos);
-			if (tmp != "") {
-				t = get_type(tmp);
+			t = get_type(tmp);
+			if (get<0>(t) != ET_NONE) {
 				data.push_back(get<1>(t));
-				data.push_back(Funcs::str_expr_map["("]);
-				stack.push_back(tmp);
-				stack.push_back("(");
 
 				if (get<0>(t) == ET_VAR) {
 					params.push_back(get<1>(t));
-					if (find(scp.begin(), scp.end(), tmp) == scp.end())
-						scp.push_back(tmp);
+					if (find(scp.begin(), scp.end(), str_var_map_[tmp]) == scp.end())
+						scp.push_back(str_var_map_[tmp]);
 				}
 
 				if (get<0>(t) == ET_CONST)
 					params.push_back(get<1>(t));
 			}
+			data.push_back(Funcs::str_expr_map["("]);
 			startpos = i + 1;
 			break;
 		case ')':
 			tmp = s.substr(startpos, i - startpos);
-			if (tmp != "") {
-				t = get_type(tmp);
+			t = get_type(tmp);
+			if (get<0>(t) != ET_NONE) {
 				data.push_back(get<1>(t));
-				data.push_back(Funcs::str_expr_map[")"]);
-				stack.push_back(tmp);
-				stack.push_back(")");
 
 				if (get<0>(t) == ET_VAR) {
 					params.push_back(get<1>(t));
-					if (find(scp.begin(), scp.end(), tmp) == scp.end())
-						scp.push_back(tmp);
+					if (find(scp.begin(), scp.end(), str_var_map_[tmp]) == scp.end())
+						scp.push_back(str_var_map_[tmp]);
 				}
 
 				if (get<0>(t) == ET_CONST)
 					params.push_back(get<1>(t));
 			}
+			data.push_back(Funcs::str_expr_map[")"]);
 			startpos = i + 1;
 			break;
 		case ',':
+			//","不被推入栈
 			tmp = s.substr(startpos, i - startpos);
-			if (tmp == "") {
-				stack.push_back(",");
-				data.push_back(Funcs::str_expr_map[","]);
-			}
-			if (tmp != "") {
-				t = get_type(tmp);
+
+			t = get_type(tmp);
+			if (get<0>(t) != ET_NONE) {
 				data.push_back(get<1>(t));
-				data.push_back(Funcs::str_expr_map[","]);
-				stack.push_back(tmp);
-				stack.push_back(",");
 
 				if (get<0>(t) == ET_VAR) {
 					params.push_back(get<1>(t));
-					if (find(scp.begin(), scp.end(), tmp) == scp.end())
-						scp.push_back(tmp);
+					if (find(scp.begin(), scp.end(), str_var_map_[tmp]) == scp.end())
+						scp.push_back(str_var_map_[tmp]);
 				}
 
 				if (get<0>(t) == ET_CONST)
 					params.push_back(get<1>(t));
 			}
+			//data.push_back(Funcs::str_expr_map[","]);
 			startpos = i + 1;
 			break;
 		case ' ':
@@ -400,48 +467,71 @@ void HModel::get_postfix(const string expr, vector<string>& stack, vector<int>& 
 		}
 	}
 
-	//vector<string> postfix_stack;
-	//int last_lpar_idx = 0;
-	//postfix_stack.reserve(stack.size());
+	//生成后缀表达式
+	vector<int> postfix_stack;
+	int last_lpar_idx = 0;
+	postfix_stack.reserve(data.size());
 
-	//while (i < stack.size()) {
-	//	const string exp = stack[i];
-	//	if (exp == "(") {
-	//		last_lpar_idx = i;
-	//	}
-	//	else if (exp == ")") {
-	//		for (j = last_lpar_idx; j < i; ++j) {
-	//			if (get<0>(get_type(stack[j])) != ET_OP) {
-	//				postfix_stack.push_back(stack[j]);
-	//			}
-	//		}
+	for (int i = 0; i < data.size(); ++i) {
+		int op = data[i];
 
+		//找到左括号
+		if (op == ET_LPAR)
+			last_lpar_idx = i;
+		//找右括号，后寻找左括号
+		else if (op == ET_RPAR) {
+			for (int j = last_lpar_idx; j < i; ++j) {
+				if (data[j] > MAX_OPT) {
+					postfix_stack.push_back(data[j]);
+					data[j] = ET_NONE;
+				}
+			}
 
-	//	}
-	//}
+			data[last_lpar_idx] = ET_NONE;
+			const int idx = last_lpar_idx - 1;
+			op = data[idx];
+			postfix_stack.push_back(op);
 
-	//while (!stack.empty()) {
-	//	string s = stack.pop_back();
-	//}
+			//再找下一个左括号
+			while (op != ET_LPAR && last_lpar_idx > 0) {
+				--last_lpar_idx;
+				op = data[last_lpar_idx];
+			}
+		}
+	}
 
+	data = postfix_stack;
 }
 
 tuple<ExpType, int> HModel::get_type(std::string expr) {
-	tuple<ExpType, int> t;
+	if (expr == "")
+		return make_tuple(ET_NONE, Funcs::str_expr_map[expr]);
+	if (expr == "(")
+		return make_tuple(ET_LPAR, Funcs::str_expr_map[expr]);
+	if (expr == ")")
+		return make_tuple(ET_RPAR, Funcs::str_expr_map[expr]);
+	if (expr == ",")
+		return make_tuple(ET_COMMA, Funcs::str_expr_map[expr]);
 	if (Funcs::str_expr_map.find(expr) != Funcs::str_expr_map.end())
 		return make_tuple(ET_OP, Funcs::str_expr_map[expr]);
 	if (expr[0] >= '0'&& expr[0] <= '9')
 		return make_tuple(ET_CONST, atoi(expr.c_str()));
 	if (str_var_map_.find(expr) != str_var_map_.end())
 		return make_tuple(ET_VAR, str_var_map_[expr]->uid);
-	if (expr == "(")
-		return make_tuple(ET_MARK, Funcs::str_expr_map[expr]);
-	if (expr == ")")
-		return make_tuple(ET_MARK, Funcs::str_expr_map[expr]);
-	if (expr == ",")
-		return make_tuple(ET_MARK, Funcs::str_expr_map[expr]);
+
 	cout << "undefined" << endl;
 	return make_tuple(ET_NULL, INT_MIN);
+}
+ExpType HModel::get_type(const int expr) {
+	if (expr <= INT_MIN + 3)
+		return static_cast<ExpType>(expr);
+	if (expr<MAX_OPT&&expr>INT_MIN + 3)
+		return ET_OP;
+	if (expr > MAX_OPT&& expr < MAX_VALUE)
+		return ET_CONST;
+	if (expr > MAX_VALUE)
+		return ET_VAR;
+	return ET_NULL;
 }
 
 void HModel::subscript(HTab *t) {

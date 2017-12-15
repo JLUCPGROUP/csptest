@@ -33,35 +33,22 @@ const int MAX_VALUE = INT_MAX - 4096;
 const int MAX_OPT = INT_MIN + 4096;
 const int MIN_USER_OPT = MAX_OPT - 1024;
 
-enum PredicateOperator {
-	PO_NON = INT_MIN, 		///<空		-2147483648
-	PO_L_PAR = INT_MIN + 1,	///<左括号	-2147483647
-	PO_R_PAR = INT_MIN + 2,	///<右括号	-2147483646
-	PO_COMMA = INT_MIN + 3,	///<逗号		-2147483645
-	PO_ADD = INT_MIN + 10,	///<加法		-2147483638
-	PO_SUB = INT_MIN + 11,	///<减法		-2147483637
-	PO_MUL = INT_MIN + 12,	///<乘法		-2147483636
-	PO_DIV = INT_MIN + 13,	///<除法		-2147483635
-	PO_MOD = INT_MIN + 14,	///<取余		-2147483634
-	PO_EQ = INT_MIN + 30,	///<"="		-2147483618
-	PO_NE = INT_MIN + 31,	///<"!="	-2147483617
-	PO_LT = INT_MIN + 32,	///<"<"		-2147483616
-	PO_LE = INT_MIN + 33,	///<"<="	-2147483615
-	PO_GT = INT_MIN + 34,	///<">"		-2147483614
-	PO_GE = INT_MIN + 35,	///<">="	-2147483613
-	PO_ABS = INT_MIN + 60,	///<取模		-2147483588
-	PO_AND = INT_MIN + 101,	///<逻辑与	-2147483547
-	PO_OR = INT_MIN + 102,	///<逻辑或	-2147483546
-	PO_DIST = INT_MIN + 103	///<abs(x-y)
-};
-
 enum ExpType {
-	ET_OP, ET_CONST, ET_VAR, ET_MARK, ET_NULL
+	ET_OP, 
+	ET_CONST, 
+	ET_VAR, 
+	ET_NONE = INT_MIN, 
+	ET_LPAR = INT_MIN + 1, 
+	ET_RPAR = INT_MIN + 2, 
+	ET_COMMA = INT_MIN + 3, 
+	ET_MARK, 
+	ET_NULL
 };
 
 enum ConType {
 	CT_EXT, CT_INT
 };
+
 typedef std::unordered_map<int, std::function<int(std::vector<int>&)>> func_map;
 
 namespace Funcs {
@@ -158,28 +145,6 @@ func_map int_expr_map =
 }
 
 using namespace std;
-class API_DECLSPEC PostfixExpr {
-public:
-	vector<int> stack;
-	vector<string> data;
-	explicit PostfixExpr(const string exprs);
-	//int get_operator(string s);
-	//void push(int expr);
-	//void pop();
-	//int top();
-};
-
-//class expression {
-//public:
-//	expression(const string name) :name_(name){};
-//	virtual int calculate(vector<int>& a) = 0;
-//	virtual ~expression() = default;
-//	void set_id();
-//	int id();
-//private:
-//	string name_;
-//	int uid_;
-//};
 
 class API_DECLSPEC HVar {
 public:
@@ -197,19 +162,6 @@ public:
 	void Show();
 private:
 };
-
-//class API_DECLSPEC HCon {
-//public:
-//	int id;
-//	//string name;
-//	vector<HVar*> scope;
-//	bool isSTD = false;
-//	ConType type;
-//	HCon(const int id, const ConType ct) :
-//		id(id), type(ct) {};
-//	HCon(const int id, const ConType ct, vector<HVar*>& scp) :
-//		id(id), scope(scp), type(ct) {};
-//};
 
 class API_DECLSPEC HTab {
 public:
@@ -233,26 +185,6 @@ private:
 	API_DECLSPEC friend ostream& operator<<(ostream &os, const vector<HVar*>& a);
 };
 
-//class API_DECLSPEC HPre :public HCon {
-//public:
-//	bool isSTD = false;
-//	HPre(const int id, string expr);
-//	vector<string> data;
-//	//void get_postfix(string expr);
-//
-//	//int GetAllSize() const;
-//	//void GetSTDTuple(vector<int>& src_tuple, vector<int>& std_tuple);
-//	//void GetORITuple(vector<int>& std_tuple, vector<int>& ori_tuple);
-//	//bool SAT(vector<int>& t);
-//	//bool SAT_STD(vector<int>& t);
-//	//void Show();
-//	//void GetTuple(int idx, vector<int>& t, vector<int>& t_idx);
-//private:
-//	//临时变量
-//	//vector<int> tmp_t_;
-//	//API_DECLSPEC friend ostream& operator<<(ostream &os, const vector<HVar*>& a);
-//};
-
 class API_DECLSPEC HModel {
 public:
 	vector<HVar*> vars;
@@ -263,9 +195,6 @@ public:
 	virtual ~HModel();
 	int AddVar(const string name, const int min_val, const int max_val);
 	int AddVar(const string name, vector<int>& v);
-	//int AddCon(const ConType type, const string expr);
-	//int AddCon(const ConType type, const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp);
-	//void AddCon(HCon* c, vector<string>& scp);
 	int AddTab(const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp);
 	int AddTab(const bool sem, vector<vector<int>>& ts, vector<string>& scp);
 	int AddTab(const string expr);
@@ -273,10 +202,12 @@ public:
 	int max_domain_size() const { return mds_; }
 	int max_arity() const { return mas_; };
 	void show();
-	int regist(string exp_name, function<int(std::vector<int>&)>);
+	int regist(string exp_name, function<int(vector<int>&)>);
 private:
-	void get_postfix(const string expr, vector<string>& stack, vector<int>& data, vector<int>& params, vector<string>& scp);
-	tuple<ExpType, int> get_type(std::string expr);
+	//void get_postfix(const string expr, vector<string>& stack, vector<int>& data, vector<int>& params, vector<string>& scp);
+	void get_postfix(const string expr, vector<int>& data, vector<int>& params, vector<HVar*>& scp);
+	tuple<ExpType, int> get_type(string expr);
+	static ExpType get_type(const int expr);
 	void subscript(HTab *t);
 	void get_scope(vector<string>& scp_str, vector<HVar*>& scp);
 	int get_var_id(const int id) const;
