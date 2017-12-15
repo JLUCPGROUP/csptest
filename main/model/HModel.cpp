@@ -501,6 +501,7 @@ void HModel::get_postfix(const string expr, vector<int>& data, vector<int>& para
 	}
 
 	data = postfix_stack;
+	vector<int>().swap(postfix_stack);
 }
 
 tuple<ExpType, int> HModel::get_type(std::string expr) {
