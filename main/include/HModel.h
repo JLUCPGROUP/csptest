@@ -34,14 +34,15 @@ const int MAX_OPT = INT_MIN + 4096;
 const int MIN_USER_OPT = MAX_OPT - 1024;
 
 enum ExpType {
-	ET_OP, 
-	ET_CONST, 
-	ET_VAR, 
-	ET_NONE = INT_MIN, 
-	ET_LPAR = INT_MIN + 1, 
-	ET_RPAR = INT_MIN + 2, 
-	ET_COMMA = INT_MIN + 3, 
-	ET_MARK, 
+	ET_OP,
+	ET_CONST,
+	ET_VAR,
+	ET_NONE = INT_MIN,
+	ET_LPAR = INT_MIN + 1,
+	ET_RPAR = INT_MIN + 2,
+	ET_COMMA = INT_MIN + 3,
+	ET_PARAMS = MAX_OPT,
+	ET_MARK,
 	ET_NULL
 };
 

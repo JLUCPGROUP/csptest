@@ -471,7 +471,6 @@ void HModel::get_postfix(const string expr, vector<int>& data, vector<int>& para
 	vector<int> postfix_stack;
 	int last_lpar_idx = 0;
 	postfix_stack.reserve(data.size());
-
 	for (int i = 0; i < data.size(); ++i) {
 		int op = data[i];
 
@@ -480,10 +479,18 @@ void HModel::get_postfix(const string expr, vector<int>& data, vector<int>& para
 			last_lpar_idx = i;
 		//找右括号，后寻找左括号
 		else if (op == ET_RPAR) {
+			int num_params = 0;
 			for (int j = last_lpar_idx; j < i; ++j) {
 				if (data[j] > MAX_OPT) {
 					postfix_stack.push_back(data[j]);
 					data[j] = ET_NONE;
+					++num_params;
+				}
+				if (data[j] == ET_PARAMS) {
+					++num_params;
+				}
+				if (data[j] < MAX_OPT&&data[j] >ET_COMMA) {
+					data[j] = ET_PARAMS;
 				}
 			}
 
@@ -523,6 +530,7 @@ tuple<ExpType, int> HModel::get_type(std::string expr) {
 	cout << "undefined" << endl;
 	return make_tuple(ET_NULL, INT_MIN);
 }
+
 ExpType HModel::get_type(const int expr) {
 	if (expr <= INT_MIN + 3)
 		return static_cast<ExpType>(expr);
