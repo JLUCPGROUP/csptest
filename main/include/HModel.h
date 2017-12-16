@@ -206,7 +206,7 @@ public:
 	int regist(string exp_name, function<int(vector<int>&)>);
 private:
 	//void get_postfix(const string expr, vector<string>& stack, vector<int>& data, vector<int>& params, vector<string>& scp);
-	void get_postfix(const string expr, vector<int>& data, vector<int>& params, vector<HVar*>& scp);
+	void get_postfix(const string expr, vector<int>& data, vector<int>& params, vector<int>& num_op_params, vector<HVar*>& scp);
 	tuple<ExpType, int> get_type(string expr);
 	static ExpType get_type(const int expr);
 	void subscript(HTab *t);

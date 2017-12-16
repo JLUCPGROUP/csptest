@@ -248,7 +248,8 @@ int HModel::AddTab(const string expr) {
 	vector<int> expr_stack;
 	vector<int> params;
 	vector<HVar*> scp;
-	get_postfix(expr, expr_stack, params, scp);
+	vector<int> num_op_params;
+	get_postfix(expr, expr_stack, params, num_op_params, scp);
 	unordered_map<HVar*, int> t;
 
 	cout << "-------------expr_stack--------------" << endl;
@@ -256,6 +257,9 @@ int HModel::AddTab(const string expr) {
 		cout << s << endl;
 	cout << "-------------params--------------" << endl;
 	for (const auto s : params)
+		cout << s << endl;
+	cout << "-------------params_length--------------" << endl;
+	for (const auto s : num_op_params)
 		cout << s << endl;
 	return 0;
 }
@@ -284,118 +288,8 @@ int HModel::regist(const string exp_name, function<int(std::vector<int>&)> exp) 
 	}
 }
 
-//void HModel::get_postfix(const string expr, vector<string>& stack, vector<int>& data, vector<int>& params, vector<string>& scp) {
-//	//转换表达式
-//	string s = expr;
-//	string tmp;
-//	int op;
-//	unsigned i = 0;
-//	int j = -1;
-//	int startpos = 0;
-//	tuple<ExpType, int> t;
-//	for (i = 0; i < s.length(); ++i) {
-//		switch (s[i]) {
-//		case '(':
-//			tmp = s.substr(startpos, i - startpos);
-//			if (tmp != "") {
-//				t = get_type(tmp);
-//				data.push_back(get<1>(t));
-//				data.push_back(Funcs::str_expr_map["("]);
-//				stack.push_back(tmp);
-//				stack.push_back("(");
-//
-//				if (get<0>(t) == ET_VAR) {
-//					params.push_back(get<1>(t));
-//					if (find(scp.begin(), scp.end(), tmp) == scp.end())
-//						scp.push_back(tmp);
-//				}
-//
-//				if (get<0>(t) == ET_CONST)
-//					params.push_back(get<1>(t));
-//			}
-//			startpos = i + 1;
-//			break;
-//		case ')':
-//			tmp = s.substr(startpos, i - startpos);
-//			if (tmp != "") {
-//				t = get_type(tmp);
-//				data.push_back(get<1>(t));
-//				data.push_back(Funcs::str_expr_map[")"]);
-//				stack.push_back(tmp);
-//				stack.push_back(")");
-//
-//				if (get<0>(t) == ET_VAR) {
-//					params.push_back(get<1>(t));
-//					if (find(scp.begin(), scp.end(), tmp) == scp.end())
-//						scp.push_back(tmp);
-//				}
-//
-//				if (get<0>(t) == ET_CONST)
-//					params.push_back(get<1>(t));
-//			}
-//			startpos = i + 1;
-//			break;
-//		case ',':
-//			tmp = s.substr(startpos, i - startpos);
-//			if (tmp == "") {
-//				stack.push_back(",");
-//				data.push_back(Funcs::str_expr_map[","]);
-//			}
-//			if (tmp != "") {
-//				t = get_type(tmp);
-//				data.push_back(get<1>(t));
-//				data.push_back(Funcs::str_expr_map[","]);
-//				stack.push_back(tmp);
-//				stack.push_back(",");
-//
-//				if (get<0>(t) == ET_VAR) {
-//					params.push_back(get<1>(t));
-//					if (find(scp.begin(), scp.end(), tmp) == scp.end())
-//						scp.push_back(tmp);
-//				}
-//
-//				if (get<0>(t) == ET_CONST)
-//					params.push_back(get<1>(t));
-//			}
-//			startpos = i + 1;
-//			break;
-//		case ' ':
-//			startpos = i + 1;
-//			break;
-//		default:
-//			break;
-//		}
-//	}
-//
-//
-//	//生成后缀表达式
-//	//vector<string> postfix_stack;
-//	//int last_lpar_idx = 0;
-//	//postfix_stack.reserve(stack.size());
-//
-//	//while (i < stack.size()) {
-//	//	const string exp = stack[i];
-//	//	if (exp == "(") {
-//	//		last_lpar_idx = i;
-//	//	}
-//	//	else if (exp == ")") {
-//	//		for (j = last_lpar_idx; j < i; ++j) {
-//	//			if (get<0>(get_type(stack[j])) != ET_OP) {
-//	//				postfix_stack.push_back(stack[j]);
-//	//			}
-//	//		}
-//
-//
-//	//	}
-//	//}
-//
-//	//while (!stack.empty()) {
-//	//	string s = stack.pop_back();
-//	//}
-//
-//}
 
-void HModel::get_postfix(const string expr, vector<int>& data, vector<int>& params, vector<HVar*>& scp) {
+void HModel::get_postfix(const string expr, vector<int>& data, vector<int>& params, vector<int>& num_op_params, vector<HVar*>& scp) {
 	//转换表达式
 	string s = expr;
 	string tmp;
@@ -479,20 +373,23 @@ void HModel::get_postfix(const string expr, vector<int>& data, vector<int>& para
 			last_lpar_idx = i;
 		//找右括号，后寻找左括号
 		else if (op == ET_RPAR) {
-			int num_params = 0;
+			int num = 0;
 			for (int j = last_lpar_idx; j < i; ++j) {
 				if (data[j] > MAX_OPT) {
 					postfix_stack.push_back(data[j]);
 					data[j] = ET_NONE;
-					++num_params;
+					++num;
 				}
-				if (data[j] == ET_PARAMS) {
-					++num_params;
-				}
-				if (data[j] < MAX_OPT&&data[j] >ET_COMMA) {
-					data[j] = ET_PARAMS;
+				//if (data[j] == ET_PARAMS) {
+				//	data[j] = ET_NONE;
+				//	++num;
+				//}
+				if (data[j] < ET_PARAMS&&data[j] >ET_COMMA) {
+					data[j] = ET_NONE;
+					++num;
 				}
 			}
+			num_op_params.push_back(num);
 
 			data[last_lpar_idx] = ET_NONE;
 			const int idx = last_lpar_idx - 1;
