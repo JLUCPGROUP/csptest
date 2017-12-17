@@ -275,6 +275,9 @@ int HModel::AddTab(const string expr) {
 		}
 
 		const int result = calculate(expr_stack, num_op_params);
+
+		if (result) 
+			ts.push_back(std_t);
 	}
 
 
