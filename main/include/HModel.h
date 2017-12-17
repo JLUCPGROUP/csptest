@@ -204,6 +204,7 @@ public:
 	int max_arity() const { return mas_; };
 	void show();
 	int regist(string exp_name, function<int(vector<int>&)>);
+	int calculate(vector<int> &stack, vector<int>& params_len) const;
 private:
 	//void get_postfix(const string expr, vector<string>& stack, vector<int>& data, vector<int>& params, vector<string>& scp);
 	void get_postfix(const string expr, vector<int>& data, vector<int>& params, vector<int>& num_op_params, vector<HVar*>& scp);
@@ -214,6 +215,11 @@ private:
 	int get_var_id(const int id) const;
 	int generate_exp_uid();
 	int generate_var_uid();
+	int result(int op, vector<int>& result);
+	static void GetSTDTuple(vector<int>& src_tuple, vector<int>& std_tuple, vector<HVar*>& scp);
+	static void GetORITuple(vector<int>& std_tuple, vector<int>& ori_tuple, vector<HVar*>& scp);
+	static void get_ori_tuple_by_index(int idx, std::vector<int>& t, const vector<HVar*> scp);
+	static void result(int op, vector<int>& result, const int len);
 	unordered_map<string, HVar*> str_var_map_;
 	unordered_map<int, HVar*> int_var_map_;
 	size_t mds_ = 0;
