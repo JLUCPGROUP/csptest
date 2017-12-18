@@ -71,7 +71,7 @@ auto sqr = [](std::vector<int>& a) {return static_cast<int>(sqrt(a[0])); };
 auto pow = [](std::vector<int>& a) {return std::pow(a[0], a[1]); };
 auto min = [](std::vector<int>& a) {return *min_element(a.begin(), a.end()); };
 auto max = [](std::vector<int>& a) {return *max_element(a.begin(), a.end()); };
-auto dist = [](std::vector<int>& a) {return abs(std::vector<int>(sub(a))); };
+auto dist = [](std::vector<int>& a) {return std::abs(a[0] - a[1]); };
 
 auto le = [](std::vector<int>& a) {return a[0] <= a[1]; };
 auto lt = [](std::vector<int>& a) {return a[0] < a[1]; };
@@ -83,6 +83,7 @@ auto eq = [](std::vector<int>& a) {return std::all_of(a.begin(), a.end(), [&a](i
 auto not = [](std::vector<int>& a) {return !a[0]; };
 auto and = [](std::vector<int>& a) {return std::all_of(a.begin(), a.end(), [&a](int n) {return n && a[0]; }); };
 auto or = [](std::vector<int>& a) {return std::any_of(a.begin(), a.end(), [&a](int n) {return n || a[0]; }); };
+
 //auto xor =[](std::vector<int>& a){return std::for_each(a.begin(), a.end(),[](int b))}
 }
 
@@ -171,7 +172,7 @@ public:
 	bool isSTD = false;
 	bool semantics;
 	vector<vector<int>> tuples;
-	HTab(const int id, const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp);
+	HTab(const int id, const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp, const bool STD);
 	HTab(HTab* t, vector<HVar*>& scp);
 	int GetAllSize() const;
 	void GetSTDTuple(vector<int>& src_tuple, vector<int>& std_tuple);
@@ -196,7 +197,7 @@ public:
 	virtual ~HModel();
 	int AddVar(const string name, const int min_val, const int max_val);
 	int AddVar(const string name, vector<int>& v);
-	int AddTab(const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp);
+	int AddTab(const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp, const bool STD = false);
 	int AddTab(const bool sem, vector<vector<int>>& ts, vector<string>& scp);
 	int AddTab(const string expr);
 	int AddTabAsPrevious(HTab* t, vector<string>& scp);
@@ -204,7 +205,7 @@ public:
 	int max_arity() const { return mas_; };
 	void show();
 	int regist(string exp_name, function<int(vector<int>&)>);
-	int calculate(vector<int> &stack, vector<int>& params_len) const;
+	static int calculate(vector<int> &stack, vector<int>& params_len);
 private:
 	//void get_postfix(const string expr, vector<string>& stack, vector<int>& data, vector<int>& params, vector<string>& scp);
 	void get_postfix(const string expr, vector<int>& data, vector<int>& params, vector<int>& num_op_params, vector<HVar*>& scp);
@@ -215,7 +216,6 @@ private:
 	int get_var_id(const int id) const;
 	int generate_exp_uid();
 	int generate_var_uid();
-	int result(int op, vector<int>& result);
 	static void GetSTDTuple(vector<int>& src_tuple, vector<int>& std_tuple, vector<HVar*>& scp);
 	static void GetORITuple(vector<int>& std_tuple, vector<int>& ori_tuple, vector<HVar*>& scp);
 	static void get_ori_tuple_by_index(int idx, std::vector<int>& t, const vector<HVar*> scp);

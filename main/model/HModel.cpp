@@ -26,11 +26,11 @@ HVar::HVar(const int id, const int uid, const string name, const int min_val, co
 
 HVar::HVar(const int id, const int uid, const string name, vector<int>& v) :
 	id(id), uid(uid), name(name), std_max(v.size() - 1) {
-	vals.resize(vals.size());
+	vals.resize(v.size());
+	anti_map = v;
 	for (size_t i = 0; i < vals.size(); ++i) {
 		val_map[v[i]] = i;
 		vals[i] = i;
-		anti_map[i] = v[i];
 	}
 }
 
@@ -44,8 +44,8 @@ void HVar::Show() {
 
 HVar::~HVar() {}
 ////////////////////////////////////////////////////////////////////
-HTab::HTab(const int id, const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp) :
-	id(id), semantics(sem), scope(scp) {
+HTab::HTab(const int id, const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp, const bool STD) :
+	id(id), scope(scp), semantics(sem), isSTD(STD) {
 	unsigned long all_size = 1;
 	for (auto i : scp)
 		all_size *= i->vals.size();
@@ -56,24 +56,30 @@ HTab::HTab(const int id, const bool sem, vector<vector<int>>& ts, vector<HVar*>&
 	else
 		sup_size = ts.size();
 
-	vector<int> ori_t_(scope.size());
-	vector<int> std_t_(scope.size());
-	tmp_t_.resize(scope.size());
-	tuples.resize(sup_size, vector<int>(scope.size()));
+	//非标准表
+	if (!STD) {
+		vector<int> ori_t_(scope.size());
+		vector<int> std_t_(scope.size());
+		tmp_t_.resize(scope.size());
+		tuples.resize(sup_size, vector<int>(scope.size()));
 
-	if (sem) {
-		for (size_t i = 0; i < sup_size; i++) {
-			GetSTDTuple(ts[i], std_t_);
-			tuples[i] = std_t_;
+		if (sem) {
+			for (size_t i = 0; i < sup_size; i++) {
+				GetSTDTuple(ts[i], std_t_);
+				tuples[i] = std_t_;
+			}
+		}
+		else {
+			int j = 0;
+			for (int i = 0; (i < all_size) && (j <= sup_size); ++i) {
+				GetTuple(i, ori_t_, std_t_);
+				if (find(ts.begin(), ts.end(), ori_t_) == ts.end())
+					tuples[j++] = std_t_;
+			}
 		}
 	}
 	else {
-		int j = 0;
-		for (int i = 0; (i < all_size) && (j <= sup_size); ++i) {
-			GetTuple(i, ori_t_, std_t_);
-			if (find(ts.begin(), ts.end(), ori_t_) == ts.end())
-				tuples[j++] = std_t_;
-		}
+		tuples = ts;
 	}
 
 	semantics = true;
@@ -218,14 +224,23 @@ int HModel::AddVar(const string name, vector<int>& v) {
 	return id;
 }
 
-int HModel::AddTab(const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp) {
+int HModel::AddTab(const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp, const bool STD) {
 	const int id = tabs.size();
-	HTab* t = new HTab(id, sem, ts, scp);
+	HTab* t = new HTab(id, sem, ts, scp, STD);
 	tabs.push_back(t);
 	mas_ = max(mas_, t->scope.size());
 	subscript(t);
 	return id;
 }
+
+//int HModel::AddTab(const bool sem, vector<vector<int>>& ts, vector<HVar*>& scp) {
+//	const int id = tabs.size();
+//	HTab* t = new HTab(id, sem, ts, scp);
+//	tabs.push_back(t);
+//	mas_ = max(mas_, t->scope.size());
+//	subscript(t);
+//	return id;
+//}
 
 int HModel::AddTab(const bool sem, vector<vector<int>>& ts, vector<string>& scp) {
 	vector<HVar*> scope;
@@ -250,47 +265,40 @@ int HModel::AddTab(const string expr) {
 	vector<HVar*> scp;
 	vector<int> num_op_params;
 	get_postfix(expr, expr_stack, params, num_op_params, scp);
+	vector<int> expr_tmp(expr_stack);
 	vector<vector<int>> ts;
 	vector<int> ori_t(scp.size());
 	vector<int> std_t(scp.size());
+	unordered_map<HVar*, int> t;
 	int num_total_tuples = 1;
 
 	for (auto i : scp)
 		num_total_tuples *= i->vals.size();
 
 	for (int i = 0; i < num_total_tuples; ++i) {
-		unordered_map<HVar*, int> t;
 		get_ori_tuple_by_index(i, std_t, scp);
 		GetORITuple(std_t, ori_t, scp);
 
 		for (int j = 0; j < scp.size(); ++j)
 			t[scp[j]] = ori_t[j];
 
+		expr_tmp = expr_stack;
 
-		for (size_t j = 0; j < expr_stack.size(); j++) {
+		for (size_t j = 0; j < expr_tmp.size(); j++) {
 			//将变量替换为值
-			if (get_type(expr_stack[j]) == ET_VAR)
+			if (get_type(expr_tmp[j]) == ET_VAR)
 				//通过uid拿到HVar* 再通过HVar 拿到赋值
-				expr_stack[j] = t[int_var_map_[expr_stack[j]]];
+				expr_tmp[j] = t[int_var_map_[expr_tmp[j]]];
 		}
 
-		const int result = calculate(expr_stack, num_op_params);
+		t.clear();
+		const int result = calculate(expr_tmp, num_op_params);
 
-		if (result) 
+		if (result)
 			ts.push_back(std_t);
 	}
 
-
-	cout << "-------------expr_stack--------------" << endl;
-	for (const auto s : expr_stack)
-		cout << s << endl;
-	cout << "-------------params--------------" << endl;
-	for (const auto s : params)
-		cout << s << endl;
-	cout << "-------------params_length--------------" << endl;
-	for (const auto s : num_op_params)
-		cout << s << endl;
-	return 0;
+	return AddTab(true, ts, scp, true);
 }
 
 void HModel::show() {
@@ -317,9 +325,9 @@ int HModel::regist(const string exp_name, function<int(std::vector<int>&)> exp) 
 	}
 }
 
-int HModel::calculate(vector<int>& expr, vector<int>& params_len) const {
+int HModel::calculate(vector<int>& expr, vector<int>& params_len) {
 	vector<int> res_stack;
-	res_stack.reserve(10);
+	//res_stack.reserve(10);
 	int j = -1;
 
 	for (int i = 0; i < expr.size(); ++i) {
@@ -510,10 +518,6 @@ int HModel::generate_var_uid() {
 	return ++var_uid_;
 }
 
-int HModel::result(int op, vector<int>& params) {
-	return Funcs::int_expr_map[op](params);
-}
-
 void HModel::GetSTDTuple(vector<int>& src_tuple, vector<int>& std_tuple, vector<HVar*>& scp) {
 	for (size_t i = 0; i < src_tuple.size(); ++i)
 		std_tuple[i] = scp[i]->val_map[src_tuple[i]];
@@ -535,9 +539,10 @@ void HModel::get_ori_tuple_by_index(int idx, std::vector<int>& t, const vector<H
 
 void HModel::result(const int op, vector<int>& result, const int len) {
 	vector<int> a(len);
-	for (int i = 0; i < len; ++i) {
+	for (int i = len - 1; i >= 0; --i) {
 		a[i] = result.back();
 		result.pop_back();
+		//cout << result.size() << endl;
 	}
 	result.push_back(Funcs::int_expr_map[op](a));
 }
