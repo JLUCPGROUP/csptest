@@ -115,12 +115,13 @@ int HTab::GetAllSize() const {
 }
 
 bool HTab::SAT(vector<int>& t) {
-	return find(tuples.begin(), tuples.end(), t) == tuples.end();
+	//return find(tuples.begin(), tuples.end(), t) != tuples.end();
+	return binary_search(tuples.begin(), tuples.end(), t);
 }
 
 bool HTab::SAT_STD(vector<int>& t) {
 	GetORITuple(t, tmp_t_);
-	return find(tuples.begin(), tuples.end(), tmp_t_) == tuples.end();
+	return binary_search(tuples.begin(), tuples.end(), tmp_t_);
 }
 
 void HTab::GetTuple(int idx, vector<int>& src_t, vector<int>& std_t) {
@@ -201,11 +202,12 @@ int HModel::AddTabAsPrevious(HTab* t, vector<string>& scp) {
 	HTab* nt = new HTab(t, scope);
 	tabs.push_back(nt);
 	mas_ = max(mas_, nt->scope.size());
+	subscript(t);
 	return tabs.size() - 1;
 }
 
 int HModel::AddTab(const string expr) {
-	cout << expr << endl;
+	//cout << expr << endl;
 	//表达式栈
 	vector<int> expr_stack;
 	vector<int> params;
@@ -408,17 +410,11 @@ void HModel::get_postfix(const string expr, vector<int>& data, vector<int>& para
 	//	}
 	//}
 
-	//统计参数个数
+	//统计每个参数个数
 	vector<int> postfix_stack(data);
 	int last_lpar_idx = 0;
 	for (int i = 0; i < postfix_stack.size(); ++i) {
 		int op = postfix_stack[i];
-
-		////参数与常量压入栈
-		//if (op > MAX_OPT) {
-		//	postfix_stack.push_back(op);
-		//	postfix_stack[i] = ET_NONE;
-		//}
 
 		//找到左括号
 		if (op == ET_LPAR)
@@ -431,11 +427,7 @@ void HModel::get_postfix(const string expr, vector<int>& data, vector<int>& para
 					postfix_stack[j] = ET_NONE;
 					++num;
 				}
-				//if (postfix_stack[j] == ET_PARAMS) {
-				//	postfix_stack[j] = ET_NONE;
-				//	++num;
-				//}
-				if (postfix_stack[j] < ET_PARAMS&&postfix_stack[j] >ET_COMMA) {
+				else if (postfix_stack[j] < ET_PARAMS&&postfix_stack[j] >ET_COMMA) {
 					postfix_stack[j] = ET_NONE;
 					++num;
 				}
@@ -454,10 +446,8 @@ void HModel::get_postfix(const string expr, vector<int>& data, vector<int>& para
 		}
 	}
 
-
-	//postfix_stack = data;
+	postfix_stack.clear();
 	//生成后缀表达式
-	//vector<int> postfix_stack(data);
 	last_lpar_idx = 0;
 	for (int i = 0; i < data.size(); ++i) {
 		int op = data[i];
@@ -470,22 +460,22 @@ void HModel::get_postfix(const string expr, vector<int>& data, vector<int>& para
 		if (op == ET_LPAR)
 			last_lpar_idx = i;
 		//找右括号，后寻找左括号
-		else if (op == ET_RPAR)
+		else if (op == ET_RPAR) {
 			postfix_stack.push_back(data[last_lpar_idx - 1]);
 
-		data[last_lpar_idx] = ET_NONE;
-		const int idx = last_lpar_idx - 1;
-		op = data[idx];
+			data[last_lpar_idx] = ET_NONE;
+			const int idx = last_lpar_idx - 1;
+			op = data[idx];
 
-		//再找下一个左括号
-		while (op != ET_LPAR && last_lpar_idx > 0) {
-			--last_lpar_idx;
-			op = data[last_lpar_idx];
+			//再找下一个左括号
+			while (op != ET_LPAR && last_lpar_idx > 0) {
+				--last_lpar_idx;
+				op = data[last_lpar_idx];
+			}
 		}
-
 	}
 
-	postfix_stack = data;
+	data = postfix_stack;
 	vector<int>().swap(postfix_stack);
 }
 

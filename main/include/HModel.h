@@ -162,7 +162,6 @@ public:
 	HVar(const int id, const int uid, const string name, vector<int>& v);
 	~HVar();
 	void Show();
-private:
 };
 
 class API_DECLSPEC HTab {
@@ -207,7 +206,6 @@ public:
 	int regist(string exp_name, function<int(vector<int>&)>);
 	static int calculate(vector<int> &stack, vector<int>& params_len);
 private:
-	//void get_postfix(const string expr, vector<string>& stack, vector<int>& data, vector<int>& params, vector<string>& scp);
 	void get_postfix(const string expr, vector<int>& data, vector<int>& params, vector<int>& num_op_params, vector<HVar*>& scp);
 	tuple<ExpType, int> get_type(string expr);
 	static ExpType get_type(const int expr);

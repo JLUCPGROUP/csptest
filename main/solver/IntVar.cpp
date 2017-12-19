@@ -19,7 +19,6 @@
 //
 //void IntVar::remove_value(const int a, const int p) {
 //	tuple<int, bitset<BITSIZE>> t = bit_doms_[a / BITSIZE].back();
-//
 //}
 //
 //tuple<int, int> IntVar::get_bit_index(const int idx) const {
