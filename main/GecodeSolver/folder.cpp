@@ -29,6 +29,10 @@ int main(const int argc, char ** argv) {
 
 	vector<string> files;
 	getFilesAll(bmp_root + argv[1], files);
+	vector<int64_t> nodes;
+	vector<int64_t> solve_time;
+	nodes.reserve(files.size());
+	solve_time.reserve(files.size());
 
 	for (const auto f : files) {
 		cout << f << endl;
@@ -46,17 +50,23 @@ int main(const int argc, char ** argv) {
 
 		Timer t0;
 		if (GModel* ss = ee.next()) {
-			ss->print();
-			cout << "nodes = " << ee.statistics().node << endl;
+			//ss->print();
+			//cout << "nodes = " << ee.statistics().node << endl;
 			delete ss;
 		}
-
-		const int64_t gecode_solve_time = t0.elapsed();
-		cout << gecode_solve_time << endl;
+		nodes.push_back(ee.statistics().node);
+		solve_time.push_back(t0.elapsed());
 
 		delete hm;
 		delete gm;
 	}
+
+	cout << "---------------nodes---------------" << endl;
+	for (auto i : nodes)
+		cout << i << endl;
+	cout << "---------------Gecode_time---------------" << endl;
+	for (auto i : solve_time)
+		cout << i << endl;
 
 	return 0;
 }
