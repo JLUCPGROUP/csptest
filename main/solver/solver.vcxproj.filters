@@ -38,6 +38,12 @@
     <ClCompile Include="IntVar.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Solver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="IntVal.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IntVar2.h">
@@ -47,6 +53,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="IntVar.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Tabular.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Solver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IntVal.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

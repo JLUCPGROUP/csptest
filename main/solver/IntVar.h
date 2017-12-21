@@ -2,110 +2,124 @@
 #include <string>
 #include <vector>
 #include <bitset>
-#include <deque>
 #include <tuple>
 #include <string>
-using namespace std;
+#include <HModel.h>
 
+using namespace std;
+typedef unsigned long long u64;
 namespace  cudacp {
-//const string MARK(256, '1');
-template<int N>
+const u64 MASK1_64[64] = {
+	0x8000000000000000, 0x4000000000000000, 0x2000000000000000,	0x1000000000000000,
+	0x0800000000000000, 0x0400000000000000, 0x0200000000000000, 0x0100000000000000,
+	0x0080000000000000, 0x0040000000000000, 0x0020000000000000, 0x0010000000000000,
+	0x0008000000000000, 0x0004000000000000, 0x0002000000000000, 0x0001000000000000,
+	0x0000800000000000, 0x0000400000000000, 0x0000200000000000, 0x0000100000000000,
+	0x0000080000000000, 0x0000040000000000, 0x0000020000000000, 0x0000010000000000,
+	0x0000008000000000, 0x0000004000000000, 0x0000002000000000, 0x0000001000000000,
+	0x0000000800000000, 0x0000000400000000, 0x0000000200000000, 0x0000000100000000,
+	0x0000000080000000, 0x0000000040000000, 0x0000000020000000,	0x0000000010000000,
+	0x0000000008000000, 0x0000000004000000, 0x0000000002000000, 0x0000000001000000,
+	0x0000000000800000, 0x0000000000400000, 0x0000000000200000, 0x0000000000100000,
+	0x0000000000080000, 0x0000000000040000, 0x0000000000020000, 0x0000000000010000,
+	0x0000000000008000, 0x0000000000004000, 0x0000000000002000, 0x0000000000001000,
+	0x0000000000000800, 0x0000000000000400, 0x0000000000000200, 0x0000000000000100,
+	0x0000000000000080, 0x0000000000000040, 0x0000000000000020, 0x0000000000000010,
+	0x0000000000000008, 0x0000000000000004, 0x0000000000000002, 0x0000000000000001,
+};
+
+const u64 MASK0_64[64] = {
+	0x7FFFFFFFFFFFFFFF, 0xBFFFFFFFFFFFFFFF, 0xDFFFFFFFFFFFFFFF, 0xEFFFFFFFFFFFFFFF,
+	0xF7FFFFFFFFFFFFFF, 0xFBFFFFFFFFFFFFFF, 0xFDFFFFFFFFFFFFFF, 0xFEFFFFFFFFFFFFFF,
+	0xFF7FFFFFFFFFFFFF, 0xFFBFFFFFFFFFFFFF, 0xFFDFFFFFFFFFFFFF, 0xFFEFFFFFFFFFFFFF,
+	0xFFF7FFFFFFFFFFFF, 0xFFFBFFFFFFFFFFFF, 0xFFFDFFFFFFFFFFFF, 0xFFFEFFFFFFFFFFFF,
+	0xFFFF7FFFFFFFFFFF, 0xFFFFBFFFFFFFFFFF, 0xFFFFDFFFFFFFFFFF, 0xFFFFEFFFFFFFFFFF,
+	0xFFFFF7FFFFFFFFFF, 0xFFFFFBFFFFFFFFFF, 0xFFFFFDFFFFFFFFFF, 0xFFFFFEFFFFFFFFFF,
+	0xFFFFFF7FFFFFFFFF, 0xFFFFFFBFFFFFFFFF, 0xFFFFFFDFFFFFFFFF, 0xFFFFFFEFFFFFFFFF,
+	0xFFFFFFF7FFFFFFFF, 0xFFFFFFFBFFFFFFFF, 0xFFFFFFFDFFFFFFFF, 0xFFFFFFFEFFFFFFFF,
+	0xFFFFFFFF7FFFFFFF, 0xFFFFFFFFBFFFFFFF, 0xFFFFFFFFDFFFFFFF, 0xFFFFFFFFEFFFFFFF,
+	0xFFFFFFFFF7FFFFFF, 0xFFFFFFFFFBFFFFFF, 0xFFFFFFFFFDFFFFFF, 0xFFFFFFFFFEFFFFFF,
+	0xFFFFFFFFFF7FFFFF, 0xFFFFFFFFFFBFFFFF, 0xFFFFFFFFFFDFFFFF, 0xFFFFFFFFFFEFFFFF,
+	0xFFFFFFFFFFF7FFFF, 0xFFFFFFFFFFFBFFFF, 0xFFFFFFFFFFFDFFFF, 0xFFFFFFFFFFFEFFFF,
+	0xFFFFFFFFFFFF7FFF, 0xFFFFFFFFFFFFBFFF, 0xFFFFFFFFFFFFDFFF, 0xFFFFFFFFFFFFEFFF,
+	0xFFFFFFFFFFFFF7FF, 0xFFFFFFFFFFFFFBFF, 0xFFFFFFFFFFFFFDFF, 0xFFFFFFFFFFFFFEFF,
+	0xFFFFFFFFFFFFFF7F, 0xFFFFFFFFFFFFFFBF, 0xFFFFFFFFFFFFFFDF, 0xFFFFFFFFFFFFFFEF,
+	0xFFFFFFFFFFFFFFF7, 0xFFFFFFFFFFFFFFFB, 0xFFFFFFFFFFFFFFFD, 0xFFFFFFFFFFFFFFFE,
+};
+
+namespace Limits {
+/**
+* \brief 取值范围
+*/
+const int MIN_INTVAR_ID = 0x7fff7000;
+const int MAX_INTVAR_ID = INT_MAX - 1;
+const int MAX_OPT = INT_MIN & 0xffff7000 - 1;
+const int MIN_OPT = INT_MIN + 1;
+const int UNSIGNED_VAL = INT_MIN & 0xffff7000;
+const int MIN_VAL = UNSIGNED_VAL + 1;
+const int MAX_VAL = MIN_INTVAR_ID - 1;
+const int INDEX_OVERFLOW = -1;
+const int PRESENT = -1;
+const int ABSENT = 0;
+}
+const int BITSIZE = 64;
+
 class IntVar {
 public:
-	//explicit IntVar(const int id) :id_(id) {}
-	IntVar(const int id, vector<int>& values, const string name) :
-		id_(id),
-		name_(name),
-		init_size_(values.size()),
-		curr_size_(values.size()),
-		vals_(values) {
-		bit_doms_.reserve(init_size_);
-		bitset<N> a;
-		a.set();
-		a << N - init_size_;
-		bit_doms_.push_back(make_tuple(0, a));
-	};
+	IntVar(HVar* v, const int vs_size);
+	~IntVar() {};
 
-	~IntVar();
+	void RemoveValue(const int a, const int p = 0);
 
-	void RemoveValue(const int a, const int p = 0) {
-		auto t = bit_doms_.back();
+	void ReduceTo(const int a, const int p = 0);
 
-		if (get<0>(t) >= p) {
-			bit_doms_.pop_back();
-			t = bit_doms_.back();
-		}
+	void AddValue(const int a);
 
-		get<0>(t) = p;
-		get<1>(t)[a] = 0;
-		bit_doms_.push_back(t);
-		--curr_size_;
-	};
+	void RestoreUpTo(const int p);
 
-	void ReduceTo(const int a, const int p = 0) {
-		auto t = bit_doms_.back();
-
-		if (get<0>(t) >= p) {
-			bit_doms_.pop_back();
-			t = bit_doms_.back();
-		}
-
-		get<0>(t) = p;
-		get<1>(t).reset();
-		get<1>(t)[a] = 1;
-		bit_doms_.push_back(t);
-		curr_size_ = 1;
-	};
-
-	void AddValue(const int a) {
-		auto t = bit_doms_.back();
-		get<1>(t)[a] = 1;
-		bit_doms_.push_back(t);
-		++curr_size_;
-	}
-
-	void RestoreUpTo(const int p) {
-		auto t = bit_doms_.back();
-
-		if (get<0>(t) > p) {
-			bit_doms_.pop_back();
-			t = bit_doms_.back();
-		}
-	}
-
-	int value(const int idx) const {
-		vals_[idx];
-	}
-	int size() const { return curr_size_; };
-	int capacity() const { return init_size_; };
-	bool assigned() const { return assigned_; };
-	void assign(const bool a) { assigned_ = a; };
+	int value(const int idx) const { return vals_[idx]; }
+	int size() const { return curr_size_; }
+	int capacity() const { return init_size_; }
+	bool assigned() const { return assigned_; }
+	void assign(const bool a) { assigned_ = a; }
 	int next(const int a) const;
-	int prev(const int a) const;
-	bool have(const int a) const;
-	int head() const;
-	int tail() const;
-	bool faild() const { return cur_size_ == 0; };
 
-	//bool propagated(const int level) const { return (level == propagated_); }
+	int prev(const int a) const;
+
+	bool have(const int a) const;
+
+	int head() const;
+
+	int tail() const;
+	bool faild() const { return curr_size_ == 0; };
+
 	int stamp() const { return stamp_; }
 	void stamp(int val) { stamp_ = val; }
-	//void bpresent(cp::bitPre * val) { b_ = val; }
-	//int propagated() const { return propagated_; }
-	//void propagated(int val) { propagated_ = val; }
+	
+	vector<bitset<BITSIZE>>& bitDom() { return bit_doms_[top_]; }
+	
+	int id() const { return id_; }
+
 protected:
 	int id_;
 	string name_;
 	int init_size_;
 	int curr_size_;
-	int value_;
+	int value_ = -1;
 	int stamp_ = 0;
 	bool assigned_ = false;
-	//int last_limit_;
-	//int curr_level_ = 0;
+	int last_limit_;
+	int num_bit_;
+	int top_ = 0;
 	vector<int> vals_;
-	vector<tuple<int, bitset<N>>> bit_doms_;
-	//inline tuple<int, int> get_bit_index(const int idx) const;
+	vector<vector<bitset<BITSIZE>>> bit_doms_;
+	vector<int> level_;
+	HVar* hv_;
+	//int curr_level_ = 0;
+	inline tuple<int, int> get_bit_index(const int idx) const;
+	static int get_value(const int i, const int j);
+	vector<u64> tmp_;
 
 };
+
 }

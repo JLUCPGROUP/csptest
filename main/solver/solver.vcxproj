@@ -160,15 +160,20 @@
     </Xml>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="IntVal.cpp" />
     <ClCompile Include="IntVar4.cpp" />
     <ClCompile Include="IntVar.cpp" />
     <ClCompile Include="IntVar2.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Solver.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IntVal.h" />
     <ClInclude Include="IntVar4.h" />
     <ClInclude Include="IntVar.h" />
     <ClInclude Include="IntVar2.h" />
+    <ClInclude Include="Solver.h" />
+    <ClInclude Include="Tabular.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\model\model.vcxproj">
