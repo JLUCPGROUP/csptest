@@ -200,7 +200,7 @@ ostream & operator<<(ostream & os, IntVal & v_val) {
 ///////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////
-Solver::Solver(HModel* h) :
+Model::Model(HModel* h) :
 	hm_(h),
 	num_vars_(h->vars.size()),
 	num_tabs_(h->tabs.size()),
@@ -224,26 +224,26 @@ Solver::Solver(HModel* h) :
 			subscriptions[v].push_back(t);
 }
 
-void Solver::GetFirstValidTuple(IntConVal& c_val, vector<int>& t) {
+void Model::GetFirstValidTuple(IntConVal& c_val, vector<int>& t) {
 	IntVal v_a(c_val.v(), c_val.a());
 	c_val.c()->GetFirstValidTuple(v_a, t);
 }
 
-void Solver::GetNextValidTuple(IntConVal& c_val, vector<int>& t) {
+void Model::GetNextValidTuple(IntConVal& c_val, vector<int>& t) {
 	IntVal v_a(c_val.v(), c_val.a());
 	c_val.c()->GetNextValidTuple(v_a, t);
 }
 
-int Solver::GetIntConValIndex(IntConVal& c_val) const {
+int Model::GetIntConValIndex(IntConVal& c_val) const {
 	return  c_val.c()->id() * max_arity_ * max_dom_size_ + c_val.c()->index(c_val.v()) * max_dom_size_ + c_val.a();
 }
 
-int Solver::GetIntConValIndex(const int c_id, const int v_id, const int a) {
+int Model::GetIntConValIndex(const int c_id, const int v_id, const int a) {
 	IntConVal c_a(tabs[c_id], vars[v_id], a);
 	return GetIntConValIndex(c_a);
 }
 
-IntConVal Solver::GetIntConVal(const int index) {
+IntConVal Model::GetIntConVal(const int index) {
 	const int c_id = index / tabs.size();
 	const int v_id = index % tabs.size() / max_dom_size_;
 	const int a = index % tabs.size() % max_dom_size_;
@@ -251,14 +251,14 @@ IntConVal Solver::GetIntConVal(const int index) {
 	return c;
 }
 
-vector<IntVar*>& Solver::get_scope(HTab* t) {
+vector<IntVar*>& Model::get_scope(HTab* t) {
 	vector<IntVar*> tt(t->scope.size());
 	for (int i = 0; i < t->scope.size(); ++i)
 		tt[i] = vars[t->scope[i]->id];
 	return tt;
 }
 
-void Solver::get_scope(HTab* t, vector<IntVar*> scp) {
+void Model::get_scope(HTab* t, vector<IntVar*> scp) {
 	for (int i = 0; i < t->scope.size(); ++i)
 		scp[i] = vars[t->scope[i]->id];
 }

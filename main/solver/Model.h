@@ -228,12 +228,12 @@ private:
 	int a_;
 };
 
-class Solver {
+class Model {
 public:
 	vector<IntVar*> vars;
 	vector<Tabular*> tabs;
 	unordered_map<IntVar*, vector<Tabular*>> subscriptions;
-	Solver(HModel* h);
+	Model(HModel* h);
 	static void GetFirstValidTuple(IntConVal & c_val, vector<int>& t);
 	static void GetNextValidTuple(IntConVal & c_val, vector<int>& t);
 
@@ -241,7 +241,7 @@ public:
 	int GetIntConValIndex(IntConVal & c_val) const;
 	int GetIntConValIndex(const int c_id, const int v_id, const int a);
 	IntConVal GetIntConVal(int index);
-	~Solver() {};
+	~Model() {};
 private:
 	vector<IntVar*>& get_scope(HTab* t);
 	void get_scope(HTab* t, vector<IntVar*> scp);

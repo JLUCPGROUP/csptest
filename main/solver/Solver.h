@@ -4,12 +4,12 @@
 //#include "HModel.h"
 //namespace cudacp
 //{
-//class Solver {
+//class Model {
 //public:
 //	vector<IntVar*> vars;
 //	vector<Tabular*> tabs;
-//	Solver(HModel* h);
-//	~Solver();
+//	Model(HModel* h);
+//	~Model();
 //private:
 //	HModel *hm_;
 //	const int num_vars_;

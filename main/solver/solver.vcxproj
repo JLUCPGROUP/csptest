@@ -160,6 +160,7 @@
     </Xml>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AC.cpp" />
     <ClCompile Include="IntVar4.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="IntVar2.cpp" />
@@ -167,6 +168,7 @@
     <ClCompile Include="Solver.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AC.h" />
     <ClInclude Include="IntVar4.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="IntVar2.h" />
