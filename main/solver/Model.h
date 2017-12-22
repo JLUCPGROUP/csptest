@@ -9,6 +9,7 @@
 using namespace std;
 typedef unsigned long long u64;
 namespace  cudacp {
+
 const u64 MASK1_64[64] = {
 	0x8000000000000000, 0x4000000000000000, 0x2000000000000000,	0x1000000000000000,
 	0x0800000000000000, 0x0400000000000000, 0x0200000000000000, 0x0100000000000000,
@@ -95,9 +96,9 @@ public:
 
 	int stamp() const { return stamp_; }
 	void stamp(int val) { stamp_ = val; }
-	
+
 	vector<bitset<BITSIZE>>& bitDom() { return bit_doms_[top_]; }
-	
+
 	int id() const { return id_; }
 
 protected:
@@ -119,6 +120,54 @@ protected:
 	inline tuple<int, int> get_bit_index(const int idx) const;
 	static int get_value(const int i, const int j);
 	vector<u64> tmp_;
+
+};
+
+class IntVal {
+public:
+	IntVal(IntVar *v, const int a) :v_(v), a_(a) {}
+	~IntVal() {}
+	IntVar* v() const;
+	void v(IntVar* val);
+	const IntVal& operator=(const IntVal& rhs);
+	int a() const;
+	void a(const int val);
+	friend std::ostream& operator<< (std::ostream &os, IntVal &v_val);
+private:
+	IntVar* v_;
+	int a_;
+};
+
+class Tabular {
+public:
+	Tabular(HTab* t, const vector<IntVar*> scp);
+	//Tabular(const int id, const std::vector<IntVar *>& scope, vector<vector<int>>& ts, const int len);
+	bool sat(vector<int> &t);
+	~Tabular() {}
+	void GetFirstValidTuple(IntVal& v_a, vector<int>& t);
+	void GetNextValidTuple(IntVal& v_a, vector<int>& t);
+	bool IsValidTuple(vector<int>& t);
+
+	int id;
+	size_t arity;
+	vector<IntVar *>scope;
+	//const IntTupleArray& tuples() { return ts_; }
+private:
+	vector<vector<int>>& tuples_;
+};
+
+class Solver {
+public:
+	vector<IntVar*> vars;
+	vector<Tabular*> tabs;
+	unordered_map<IntVar*, vector<Tabular>> subscriptions;
+	Solver(HModel* h);
+	~Solver();
+private:
+	vector<IntVar*>& get_scope(HTab* t);
+	HModel *hm_;
+	const int num_vars_;
+	const int num_tabs_;
 
 };
 

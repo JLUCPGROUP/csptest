@@ -1,4 +1,4 @@
-﻿#include "IntVar.h"
+﻿#include "Model.h"
 
 namespace cudacp {
 
@@ -109,6 +109,63 @@ tuple<int, int> IntVar::get_bit_index(const int idx) const {
 
 int IntVar::get_value(const int i, const int j) {
 	return i*BITSIZE + j;
+}
+
+////////////////////////////////////////////////////////////////////////////
+IntVar* IntVal::v() const {
+	return v_;
+}
+
+void IntVal::v(IntVar* val) {
+	v_ = val;
+}
+
+const IntVal & IntVal::operator=(const IntVal & rhs) {
+	v_ = rhs.v_;
+	a_ = rhs.a_;
+
+	return *this;
+}
+
+int IntVal::a() const {
+	return a_;
+}
+
+void IntVal::a(const int val) {
+	a_ = val;
+}
+
+Tabular::Tabular(HTab* t, const vector<IntVar*> scp) :
+	id(t->id),
+	arity(scp.size()),
+	scope(scp),
+	tuples_(t->tuples) {
+
+}
+
+void Tabular::GetFirstValidTuple(IntVal& v_a, vector<int>& t) {}
+
+ostream & operator<<(ostream & os, IntVal & v_val) {
+	os << "(" << v_val.v_->id() << ", " << v_val.a_ << ")";
+	return os;
+}
+///////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+Solver::Solver(HModel* h) :
+	hm_(h),
+	num_vars_(hm_->vars.size()),
+	num_tabs_(hm_->tabs.size()) {
+	vars.reserve(num_vars_);
+	tabs.reserve(num_tabs_);
+
+	for (auto hv : hm_->vars) {
+		IntVar *v = new IntVar(hv, num_vars_);
+		vars.push_back(v);
+	}
+
+	for (auto ht : hm_->tabs)
+		Tabular *t = new Tabular(ht, get_scope(ht));
 }
 
 }
