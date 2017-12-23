@@ -90,6 +90,7 @@ AC3::AC3(Model* m) :
 }
 
 bool AC3::EnforceGAC_var(VarEvt* x_evt, const int level) {
+	level_ = level;
 	q_.clear();
 
 	for (int i = 0; i < x_evt->size(); ++i)
@@ -101,7 +102,20 @@ bool AC3::EnforceGAC_var(VarEvt* x_evt, const int level) {
 			if (stamp_var_[x->id()] > stamp_tab_[c->id()]) {
 				for (auto y : c->scope) {
 					if (!y->assigned()) {
-						
+						bool aa = false;
+						for (auto z : c->scope)
+							if ((z != x) && stamp_var_[z->id()] > stamp_tab_[c->id()])
+								aa = true;
+
+						if ((y != x) || aa) {
+							if (revise(arc(c, y))) {
+								if (y->size() == 0) {
+									return false;
+								}
+								insert(y);
+							}
+						}
+
 					}
 				}
 				++t_;
@@ -109,5 +123,34 @@ bool AC3::EnforceGAC_var(VarEvt* x_evt, const int level) {
 			}
 		}
 	}
+	return true;
+}
+
+bool AC3::revise(arc& c_x) {
+	const int num_elements = c_x.v()->size();
+	int a = c_x.v()->head();
+
+	while (a != Limits::INDEX_OVERFLOW) {
+		if (!seek_support(IntConVal(c_x, a))) {
+			c_x.v()->RemoveValue(a, level_);
+			//std::cout << "(" << c_x.v_id() << ", " << a << ")" << std::endl;
+			++se.num_delete;
+		}
+		a = c_x.v()->next(a);
+	}
+
+	return num_elements != c_x.v()->size();
+}
+
+bool AC3::seek_support(IntConVal & c_val) {
+	m_->GetFirstValidTuple(c_val, tmp_tuple_);
+
+	while (Existed(tmp_tuple_))
+		if (c_val.c()->sat(tmp_tuple_))
+			return true;
+		else
+			m_->GetNextValidTuple(c_val, tmp_tuple_);
+
+	return false;
 }
 }

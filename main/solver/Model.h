@@ -126,11 +126,12 @@ protected:
 class IntVal {
 public:
 	int v;
+	IntVar* v;
 	int a;
 	bool aop = true;
 	IntVal() : v(-2), a(-2) {};
 	IntVal(const int v, const int a, const bool aop = true) :v(v), a(a), aop(aop) {};
-
+	
 	const IntVal& operator=(const IntVal& rhs);
 	void flip();
 	IntVal next() const;

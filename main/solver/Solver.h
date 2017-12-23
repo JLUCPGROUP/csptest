@@ -1,6 +1,10 @@
 ﻿#pragma once
 #include "Model.h"
 namespace cudacp {
+inline bool Existed(vector<int>& tuple) {
+	return tuple[0] != INT_MAX;
+}
+
 struct SearchStatistics {
 	u64 num_sol = 0;
 	u64 num_positive = 0;
@@ -11,6 +15,16 @@ struct SearchStatistics {
 	bool time_out = false;
 	//int n_deep = 0;
 };
+
+struct SearchError {
+	bool seek_support_fail = true;
+	bool revise_fail = true;
+	int num_delete = 0;
+	Tabular * tab = nullptr;
+	IntVal v_a_fail;
+	int level = 0;
+};
+
 class VarEvt {
 public:
 	VarEvt(Model* m);
@@ -98,11 +112,12 @@ protected:
 class AC3 :public AC {
 public:
 	AC3(Model *m);
-	~AC3(){};
+	~AC3() {};
 	bool EnforceGAC_var(VarEvt* x_evt, const int level = 0) override;
-
+	SearchError se;
 protected:
 	//pro_que<T> q;
+	int level_;
 	virtual bool revise(arc& c_x);
 	virtual bool seek_support(IntConVal& c_val);
 	//private:

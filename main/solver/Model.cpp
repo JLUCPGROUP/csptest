@@ -2,7 +2,7 @@
 
 namespace cudacp {
 
-bool Existed(vector<int>& tuple) {
+inline bool Existed(vector<int>& tuple) {
 	return tuple[0] != INT_MAX;
 }
 
@@ -200,10 +200,10 @@ bool Tabular::IsValidTuple(vector<int>& t) {
 	return true;
 }
 
-ostream & operator<<(ostream & os, IntVal & v_val) {
-	os << "(" << v_val.v_->id() << ", " << v_val.a_ << ")";
-	return os;
-}
+//ostream & operator<<(ostream & os, IntVal & v_val) {
+//	os << "(" << v_val.v->id() << ", " << v_val.a << ")";
+//	return os;
+//}
 ///////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////
