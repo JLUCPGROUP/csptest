@@ -125,17 +125,19 @@ protected:
 
 class IntVal {
 public:
-	IntVal(IntVar *v, const int a) :v_(v), a_(a) {}
-	~IntVal() {}
-	IntVar* v() const;
-	void v(IntVar* val);
+	int v;
+	int a;
+	bool aop = true;
+	IntVal() : v(-2), a(-2) {};
+	IntVal(const int v, const int a, const bool aop = true) :v(v), a(a), aop(aop) {};
+
 	const IntVal& operator=(const IntVal& rhs);
-	int a() const;
-	void a(const int val);
+	void flip();
+	IntVal next() const;
+	bool operator==(const IntVal& rhs);
+	bool operator!=(const IntVal& rhs);
 	friend std::ostream& operator<< (std::ostream &os, IntVal &v_val);
-private:
-	IntVar* v_;
-	int a_;
+	~IntVal() {};
 };
 
 class Tabular {
@@ -148,13 +150,14 @@ public:
 	void GetNextValidTuple(IntVal& v_a, vector<int>& t);
 	int index(IntVar* v) const;
 	bool IsValidTuple(vector<int>& t);
-	int id() { return id_; }
+	int id() const { return id_; }
 	size_t arity;
 	vector<IntVar *>scope;
 	//const IntTupleArray& tuples() { return ts_; }
 private:
 	int id_;
 	vector<vector<int>>& tuples_;
+	int stamp_;
 };
 
 class arc {
@@ -232,7 +235,8 @@ class Model {
 public:
 	vector<IntVar*> vars;
 	vector<Tabular*> tabs;
-	unordered_map<IntVar*, vector<Tabular*>> subscriptions;
+	unordered_map<IntVar*, vector<Tabular*>> subscription;
+	//unordered_map<IntVar*, vector<IntVar*>> neighborhood;
 	Model(HModel* h);
 	static void GetFirstValidTuple(IntConVal & c_val, vector<int>& t);
 	static void GetNextValidTuple(IntConVal & c_val, vector<int>& t);
@@ -241,6 +245,8 @@ public:
 	int GetIntConValIndex(IntConVal & c_val) const;
 	int GetIntConValIndex(const int c_id, const int v_id, const int a);
 	IntConVal GetIntConVal(int index);
+	int max_arity() const { return max_arity_; };
+	int max_domain_size() const { return max_dom_size_; };
 	~Model() {};
 private:
 	vector<IntVar*>& get_scope(HTab* t);

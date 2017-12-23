@@ -120,28 +120,35 @@ int IntVar::get_value(const int i, const int j) {
 }
 
 ////////////////////////////////////////////////////////////////////////////
-IntVar* IntVal::v() const {
-	return v_;
-}
-
-void IntVal::v(IntVar* val) {
-	v_ = val;
-}
-
 const IntVal & IntVal::operator=(const IntVal & rhs) {
-	v_ = rhs.v_;
-	a_ = rhs.a_;
-
+	v = rhs.v;
+	a = rhs.a;
+	aop = rhs.aop;
 	return *this;
 }
 
-int IntVal::a() const {
-	return a_;
+void IntVal::flip() {
+	aop = !aop;
 }
 
-void IntVal::a(const int val) {
-	a_ = val;
+IntVal IntVal::next() const {
+	return IntVal(v, a + 1, true);
 }
+
+bool IntVal::operator==(const IntVal & rhs) {
+	return (this == &rhs) || (v == rhs.v && a == rhs.a && aop == rhs.aop);
+}
+
+bool IntVal::operator!=(const IntVal & rhs) {
+	return !((this == &rhs) || (v == rhs.v && a == rhs.a && aop == rhs.aop));
+}
+
+ostream & operator<<(ostream & os, IntVal & v_val) {
+	const string s = (v_val.aop) ? " = " : " != ";
+	os << "(" << v_val.v << s << v_val.a << ")";
+	return os;
+}
+////////////////////////////////////////////////////////////////////////////
 
 Tabular::Tabular(HTab* t, const vector<IntVar*> scp) :
 	id_(t->id),
@@ -221,7 +228,12 @@ Model::Model(HModel* h) :
 
 	for (auto t : tabs)
 		for (auto v : t->scope)
-			subscriptions[v].push_back(t);
+			subscription[v].push_back(t);
+
+	//for (auto t : tabs)
+	//{
+	//	
+	//}
 }
 
 void Model::GetFirstValidTuple(IntConVal& c_val, vector<int>& t) {
