@@ -69,7 +69,7 @@ private:
 
 class AssignedStack {
 public:
-	AssignedStack() {};
+	AssignedStack(Network* m);
 
 	void initial(Network* m);
 	~AssignedStack() {};
@@ -150,6 +150,27 @@ protected:
 	void inital_q_arc();
 	//private:
 	//	void inital_Q_arc();
+};
+
+class MAC {
+public:
+	MAC(Network *nt);
+	void enforce();
+	virtual ~MAC();
+	int sol_count() const { return sol_count_; }
+	void sol_count(int val) { sol_count_ = val; }
+
+private:
+	int sol_count_ = 0;
+	Network *nt_;
+	AC3* ac_;
+	vector<IntVar*> x_evt_;
+	//VarEvt* x_evt_;
+	//ACAlgorithm ac_algzm_;
+	AssignedStack* I;
+	IntVal select_v_value() const;
+	bool consistent_;
+	bool finished_ = false;
 };
 
 }

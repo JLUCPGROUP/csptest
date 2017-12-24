@@ -29,6 +29,12 @@ void VarEvt::clear() {
 }
 
 
+AssignedStack::AssignedStack(Network* m) :gm_(m) {
+	max_size_ = m->vars.size();
+	vals_.resize(m->vars.size());
+	asnd_.resize(m->vars.size(), false);
+}
+
 void AssignedStack::initial(Network* m) {
 	gm_ = m;
 	max_size_ = m->vars.size();
@@ -294,5 +300,61 @@ bool AC3::seek_support(IntConVal & c_val) {
 
 void AC3::inital_q_arc() {
 	Q.MakeQue(m_->tabs.size(), m_->max_arity());
+}
+
+MAC::MAC(Network * nt) :
+	nt_(nt) {
+	x_evt_.reserve(nt_->vars.size());
+	I = new AssignedStack(nt_);
+	ac_ = new AC3(nt_);
+}
+
+void MAC::enforce() {
+	consistent_ = ac_->EnforceGAC_var(nt_->vars, 0);
+	x_evt_.clear();
+	if (!consistent_)
+		return;
+
+	while (!finished_) {
+		IntVal v_a = select_v_value();
+		I->push(v_a);
+		v_a.v()->ReduceTo(v_a.a(), I->size());
+		x_evt_.push_back(v_a.v());
+		consistent_ = ac_->EnforceGAC_arc(x_evt_, I->size());
+		x_evt_.clear();
+
+		if (consistent_&&I->full()) {
+			//std::cout << I << std::endl;
+			++sol_count_;
+			consistent_ = false;
+		}
+
+		while (!consistent_ && !I->empty()) {
+			v_a = I->pop();
+
+			for (IntVar* v : nt_->vars)
+				if (!v->assigned())
+					v->RestoreUpTo(I->size() + 1);
+
+			v_a.v()->RemoveValue(v_a.a(), I->size());
+			x_evt_.push_back(v_a.v());
+			consistent_ = v_a.v()->size() && ac_->EnforceGAC_arc(x_evt_, I->size());
+			x_evt_.clear();
+		}
+
+		if (!consistent_)
+			finished_ = true;
+	}
+
+}
+
+MAC::~MAC() {
+	delete ac_;
+	delete I;
+}
+
+IntVal MAC::select_v_value() const {
+	IntVar* v = nt_->vars[I->size()];
+	return IntVal(v, v->head());
 }
 }
