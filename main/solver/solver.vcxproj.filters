@@ -38,10 +38,10 @@
     <ClCompile Include="Solver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
+    <ClCompile Include="AC.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AC.cpp">
+    <ClCompile Include="Network.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -58,10 +58,10 @@
     <ClInclude Include="Solver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
+    <ClInclude Include="AC.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AC.h">
+    <ClInclude Include="Network.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

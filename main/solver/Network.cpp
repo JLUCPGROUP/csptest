@@ -1,27 +1,20 @@
-﻿#include "Model.h"
+﻿#pragma once
+#include "Network.h"
 
 namespace cudacp {
-
-inline bool Existed(vector<int>& tuple) {
-	return tuple[0] != INT_MAX;
-}
-
-void Exclude(vector<int>& tuple) {
-	tuple[0] = INT_MAX;
-}
-
+///*extern*/ auto  nullexp = [](std::vector<int>& a) {return INT_MIN; };
 IntVar::IntVar(HVar* v, const int num_vars) :
 	id_(v->id),
 	name_(v->name),
 	init_size_(v->vals.size()),
 	curr_size_(v->vals.size()),
 	last_limit_(v->vals.size() % BITSIZE),
-	num_bit_(ceil(v->vals.size() / BITSIZE)),
+	num_bit_(ceil(static_cast<float>(v->vals.size()) / BITSIZE)),
 	vals_(v->vals),
 	hv_(v) {
 
 	vector<bitset<BITSIZE>> a(num_bit_, ULLONG_MAX);
-	a.back() << BITSIZE - last_limit_;
+	a.back() >>= BITSIZE - last_limit_;
 	bit_doms_.resize(init_size_, a);
 	level_.resize(init_size_, 0);
 }
@@ -68,7 +61,7 @@ void IntVar::RestoreUpTo(const int p) {
 
 int IntVar::next(const int a) const {
 	for (int i = (a + 1); i < init_size_; ++i) {
-		const auto index = get_bit_index(a);
+		const auto index = get_bit_index(i);
 		if (bit_doms_[top_][get<0>(index)].test(get<1>(index)))
 			return i;
 	}
@@ -77,7 +70,7 @@ int IntVar::next(const int a) const {
 
 int IntVar::prev(const int a) const {
 	for (int i = (a - 1); i >= 0; --i) {
-		const auto index = get_bit_index(a);
+		const auto index = get_bit_index(i);
 		if (bit_doms_[top_][get<0>(index)].test(get<1>(index)))
 			return i;
 	}
@@ -151,9 +144,9 @@ ostream & operator<<(ostream & os, IntVal & v_val) {
 ////////////////////////////////////////////////////////////////////////////
 
 Tabular::Tabular(HTab* t, const vector<IntVar*> scp) :
-	id_(t->id),
 	arity(scp.size()),
 	scope(scp),
+	id_(t->id),
 	tuples_(t->tuples) {
 
 }
@@ -164,23 +157,26 @@ bool Tabular::sat(vector<int>& t) const {
 
 void Tabular::GetFirstValidTuple(IntVal& v_a, vector<int>& t) {
 	for (int i = 0; i < arity; ++i)
-		if (scope[i] != v_a.v_())
+		if (scope[i] != v_a.v())
 			t[i] = scope[i]->head();
 		else
-			t[i] = v_a.a_();
+			t[i] = v_a.a();
 }
 
 void Tabular::GetNextValidTuple(IntVal& v_a, vector<int>& t) {
-	for (int i = arity - 1; i >= 0; --i)
-		if (scope[i] != v_a.v_())
-			if (scope[i]->next(t[i]) == Limits::INDEX_OVERFLOW)
+	for (int i = arity - 1; i >= 0; --i) {
+		if (scope[i] != v_a.v()) {
+			if (scope[i]->next(t[i]) == Limits::INDEX_OVERFLOW) {
 				t[i] = scope[i]->head();
+			}
+
 			else {
 				t[i] = scope[i]->next(t[i]);
 				return;
 			}
-
-			Exclude(t);
+		}
+	}
+	Exclude(t);
 }
 
 int Tabular::index(IntVar* v) const {
@@ -207,12 +203,12 @@ bool Tabular::IsValidTuple(vector<int>& t) {
 ///////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////
-Model::Model(HModel* h) :
+Network::Network(HModel* h) :
 	hm_(h),
-	num_vars_(h->vars.size()),
-	num_tabs_(h->tabs.size()),
 	max_arity_(h->max_arity()),
-	max_dom_size_(h->max_domain_size()) {
+	max_dom_size_(h->max_domain_size()),
+	num_vars_(h->vars.size()),
+	num_tabs_(h->tabs.size()) {
 	vars.reserve(num_vars_);
 	tabs.reserve(num_tabs_);
 
@@ -230,32 +226,28 @@ Model::Model(HModel* h) :
 		for (auto v : t->scope)
 			subscription[v].push_back(t);
 
-	//for (auto t : tabs)
-	//{
-	//	
-	//}
 }
 
-void Model::GetFirstValidTuple(IntConVal& c_val, vector<int>& t) {
+void Network::GetFirstValidTuple(IntConVal& c_val, vector<int>& t) {
 	IntVal v_a(c_val.v(), c_val.a());
 	c_val.c()->GetFirstValidTuple(v_a, t);
 }
 
-void Model::GetNextValidTuple(IntConVal& c_val, vector<int>& t) {
+void Network::GetNextValidTuple(IntConVal& c_val, vector<int>& t) {
 	IntVal v_a(c_val.v(), c_val.a());
 	c_val.c()->GetNextValidTuple(v_a, t);
 }
 
-int Model::GetIntConValIndex(IntConVal& c_val) const {
+int Network::GetIntConValIndex(IntConVal& c_val) const {
 	return  c_val.c()->id() * max_arity_ * max_dom_size_ + c_val.c()->index(c_val.v()) * max_dom_size_ + c_val.a();
 }
 
-int Model::GetIntConValIndex(const int c_id, const int v_id, const int a) {
+int Network::GetIntConValIndex(const int c_id, const int v_id, const int a) {
 	IntConVal c_a(tabs[c_id], vars[v_id], a);
 	return GetIntConValIndex(c_a);
 }
 
-IntConVal Model::GetIntConVal(const int index) {
+IntConVal Network::GetIntConVal(const int index) {
 	const int c_id = index / tabs.size();
 	const int v_id = index % tabs.size() / max_dom_size_;
 	const int a = index % tabs.size() % max_dom_size_;
@@ -263,14 +255,23 @@ IntConVal Model::GetIntConVal(const int index) {
 	return c;
 }
 
-vector<IntVar*>& Model::get_scope(HTab* t) {
+Network::~Network() {
+	for (auto v : vars)
+		delete v;
+	for (auto t : tabs)
+		delete t;
+	vars.clear();
+	tabs.clear();
+}
+
+vector<IntVar*> Network::get_scope(HTab* t) {
 	vector<IntVar*> tt(t->scope.size());
 	for (int i = 0; i < t->scope.size(); ++i)
 		tt[i] = vars[t->scope[i]->id];
 	return tt;
 }
 
-void Model::get_scope(HTab* t, vector<IntVar*> scp) {
+void Network::get_scope(HTab* t, vector<IntVar*> scp) {
 	for (int i = 0; i < t->scope.size(); ++i)
 		scp[i] = vars[t->scope[i]->id];
 }

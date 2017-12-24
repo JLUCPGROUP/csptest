@@ -10,8 +10,16 @@ using namespace std;
 typedef unsigned long long u64;
 namespace  cudacp {
 
+static bool Existed(vector<int>& tuple) {
+	return tuple[0] != INT_MAX;
+}
+
+static void Exclude(vector<int>& tuple) {
+	tuple[0] = INT_MAX;
+}
+
 const u64 MASK1_64[64] = {
-	0x8000000000000000, 0x4000000000000000, 0x2000000000000000,	0x1000000000000000,
+	0x8000000000000000, 0x4000000000000000, 0x2000000000000000, 0x1000000000000000,
 	0x0800000000000000, 0x0400000000000000, 0x0200000000000000, 0x0100000000000000,
 	0x0080000000000000, 0x0040000000000000, 0x0020000000000000, 0x0010000000000000,
 	0x0008000000000000, 0x0004000000000000, 0x0002000000000000, 0x0001000000000000,
@@ -19,7 +27,7 @@ const u64 MASK1_64[64] = {
 	0x0000080000000000, 0x0000040000000000, 0x0000020000000000, 0x0000010000000000,
 	0x0000008000000000, 0x0000004000000000, 0x0000002000000000, 0x0000001000000000,
 	0x0000000800000000, 0x0000000400000000, 0x0000000200000000, 0x0000000100000000,
-	0x0000000080000000, 0x0000000040000000, 0x0000000020000000,	0x0000000010000000,
+	0x0000000080000000, 0x0000000040000000, 0x0000000020000000, 0x0000000010000000,
 	0x0000000008000000, 0x0000000004000000, 0x0000000002000000, 0x0000000001000000,
 	0x0000000000800000, 0x0000000000400000, 0x0000000000200000, 0x0000000000100000,
 	0x0000000000080000, 0x0000000000040000, 0x0000000000020000, 0x0000000000010000,
@@ -131,7 +139,9 @@ public:
 
 	const IntVal& operator=(const IntVal& rhs);
 	IntVar* v() const { return v_; }
+	int vid() const { return v_->id(); }
 	int a() const { return a_; }
+	bool op() const { return aop_; }
 	void flip();
 	IntVal next() const;
 	bool operator==(const IntVal& rhs);
@@ -235,13 +245,13 @@ private:
 	int a_;
 };
 
-class Model {
+class Network {
 public:
 	vector<IntVar*> vars;
 	vector<Tabular*> tabs;
 	unordered_map<IntVar*, vector<Tabular*>> subscription;
 	//unordered_map<IntVar*, vector<IntVar*>> neighborhood;
-	Model(HModel* h);
+	Network(HModel* h);
 	static void GetFirstValidTuple(IntConVal & c_val, vector<int>& t);
 	static void GetNextValidTuple(IntConVal & c_val, vector<int>& t);
 
@@ -251,15 +261,14 @@ public:
 	IntConVal GetIntConVal(int index);
 	int max_arity() const { return max_arity_; };
 	int max_domain_size() const { return max_dom_size_; };
-	~Model() {};
+	~Network();
 private:
-	vector<IntVar*>& get_scope(HTab* t);
+	vector<IntVar*> get_scope(HTab* t);
 	void get_scope(HTab* t, vector<IntVar*> scp);
 	HModel *hm_;
 	const int max_arity_;
 	const int max_dom_size_;
 	const int num_vars_;
 	const int num_tabs_;
-
 };
 }

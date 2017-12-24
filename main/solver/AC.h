@@ -1,10 +1,10 @@
 //#pragma once
-//#include "Model.h"
+//#include "Network.h"
 //namespace cudacp {
 //
 //class VarEvt {
 //public:
-//	VarEvt(Model* m);
+//	VarEvt(Network* m);
 //	virtual ~VarEvt(){};
 //
 //	IntVar* operator[](const int i) const;
@@ -22,7 +22,7 @@
 //
 //class AC {
 //public:
-//	AC(Model *m);
+//	AC(Network *m);
 //	~AC();
 //	virtual bool EnforceGAC_var(VarEvt* x_evt, const int level = 0) = 0;
 //

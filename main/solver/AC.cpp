@@ -1,7 +1,7 @@
 //#include "AC.h"
 //
 //namespace cudacp {
-//VarEvt::VarEvt(Model* m) :
+//VarEvt::VarEvt(Network* m) :
 //	size_(m->vars.size()),
 //	cur_size_(0) {
 //	vars = m->vars;
@@ -27,7 +27,7 @@
 //void VarEvt::clear() {
 //	cur_size_ = 0;
 //}
-//AC::AC(Model* m) {}
+//AC::AC(Network* m) {}
 //AC::~AC() {}
 //}
 //

@@ -59,35 +59,35 @@ namespace Funcs {
 //};
 //auto mod = [](int i, int j) {return i%j; };
 namespace ops {
-auto nullexp = [](std::vector<int>& a) {return INT_MIN; };
-auto neg = [](std::vector<int>& a) {return 0 - a[0]; };
-auto abs = [](std::vector<int>& a) {return std::abs(a[0]); };
-auto add = [](std::vector<int>& a) {return accumulate(a.begin(), a.end(), 0); };
-auto sub = [](std::vector<int>& a) {return a[0] - a[1]; };
-auto mul = [](std::vector<int>& a) {return accumulate(a.begin(), a.end(), 1, std::multiplies<int>()); };
-auto div = [](std::vector<int>& a) {return a[0] / a[1]; };
-auto mod = [](std::vector<int>& a) {return a[0] % a[1]; };
-auto sqr = [](std::vector<int>& a) {return static_cast<int>(sqrt(a[0])); };
-auto pow = [](std::vector<int>& a) {return std::pow(a[0], a[1]); };
-auto min = [](std::vector<int>& a) {return *min_element(a.begin(), a.end()); };
-auto max = [](std::vector<int>& a) {return *max_element(a.begin(), a.end()); };
-auto dist = [](std::vector<int>& a) {return std::abs(a[0] - a[1]); };
+static auto nullexp = [](std::vector<int>& a) {return INT_MIN; };
+static auto neg = [](std::vector<int>& a) {return 0 - a[0]; };
+static auto abs = [](std::vector<int>& a) {return std::abs(a[0]); };
+static auto add = [](std::vector<int>& a) {return accumulate(a.begin(), a.end(), 0); };
+static auto sub = [](std::vector<int>& a) {return a[0] - a[1]; };
+static auto mul = [](std::vector<int>& a) {return accumulate(a.begin(), a.end(), 1, std::multiplies<int>()); };
+static auto div = [](std::vector<int>& a) {return a[0] / a[1]; };
+static auto mod = [](std::vector<int>& a) {return a[0] % a[1]; };
+static auto sqr = [](std::vector<int>& a) {return static_cast<int>(sqrt(a[0])); };
+static auto pow = [](std::vector<int>& a) {return std::pow(a[0], a[1]); };
+static auto min = [](std::vector<int>& a) {return *min_element(a.begin(), a.end()); };
+static auto max = [](std::vector<int>& a) {return *max_element(a.begin(), a.end()); };
+static auto dist = [](std::vector<int>& a) {return std::abs(a[0] - a[1]); };
 
-auto le = [](std::vector<int>& a) {return a[0] <= a[1]; };
-auto lt = [](std::vector<int>& a) {return a[0] < a[1]; };
-auto ge = [](std::vector<int>& a) {return a[0] >= a[1]; };
-auto gt = [](std::vector<int>& a) {return a[0] > a[1]; };
-auto ne = [](std::vector<int>& a) {return a[0] != a[1]; };
-auto eq = [](std::vector<int>& a) {return std::all_of(a.begin(), a.end(), [&a](int n) {return n == a[0]; }); };
+static auto le = [](std::vector<int>& a) {return a[0] <= a[1]; };
+static auto lt = [](std::vector<int>& a) {return a[0] < a[1]; };
+static auto ge = [](std::vector<int>& a) {return a[0] >= a[1]; };
+static auto gt = [](std::vector<int>& a) {return a[0] > a[1]; };
+static auto ne = [](std::vector<int>& a) {return a[0] != a[1]; };
+static auto eq = [](std::vector<int>& a) {return std::all_of(a.begin(), a.end(), [&a](int n) {return n == a[0]; }); };
 
-auto not = [](std::vector<int>& a) {return !a[0]; };
-auto and = [](std::vector<int>& a) {return std::all_of(a.begin(), a.end(), [&a](int n) {return n && a[0]; }); };
-auto or = [](std::vector<int>& a) {return std::any_of(a.begin(), a.end(), [&a](int n) {return n || a[0]; }); };
+static auto not = [](std::vector<int>& a) {return !a[0]; };
+static auto and = [](std::vector<int>& a) {return std::all_of(a.begin(), a.end(), [&a](int n) {return n && a[0]; }); };
+static auto or = [](std::vector<int>& a) {return std::any_of(a.begin(), a.end(), [&a](int n) {return n || a[0]; }); };
 
 //auto xor =[](std::vector<int>& a){return std::for_each(a.begin(), a.end(),[](int b))}
 }
 
-std::unordered_map<std::string, int> str_expr_map = {
+static std::unordered_map<std::string, int> str_expr_map = {
 	{ "", INT_MIN },
 	{ "(", INT_MIN + 1 },
 	{ ")", INT_MIN + 2 },
@@ -100,7 +100,7 @@ std::unordered_map<std::string, int> str_expr_map = {
 	{ "pow", INT_MIN + 9 },
 	{ "min", INT_MIN + 10 },
 	{ "max", INT_MIN + 11 },
-	{ "dist",INT_MIN + 12 },
+	{ "dist", INT_MIN + 12 },
 	{ "le", INT_MIN + 13 },
 	{ "lt", INT_MIN + 14 },
 	{ "ge", INT_MIN + 15 },
@@ -115,12 +115,11 @@ std::unordered_map<std::string, int> str_expr_map = {
 	{ "neg", INT_MIN + 24 },
 };
 
-func_map int_expr_map =
-{
+static func_map int_expr_map = {
 	{ INT_MIN, ops::nullexp },
-	{ INT_MIN + 1,ops::nullexp },
+	{ INT_MIN + 1, ops::nullexp },
 	{ INT_MIN + 2, ops::nullexp },
-	{ INT_MIN + 3 , ops::nullexp },
+	{ INT_MIN + 3, ops::nullexp },
 	{ INT_MIN + 4, ops::sub },
 	{ INT_MIN + 5, ops::mul },
 	{ INT_MIN + 6, ops::div },
@@ -129,7 +128,7 @@ func_map int_expr_map =
 	{ INT_MIN + 9, ops::pow },
 	{ INT_MIN + 10, ops::min },
 	{ INT_MIN + 11, ops::max },
-	{ INT_MIN + 12,ops::dist },
+	{ INT_MIN + 12, ops::dist },
 	{ INT_MIN + 13, ops::le },
 	{ INT_MIN + 14, ops::lt },
 	{ INT_MIN + 15, ops::ge },
@@ -140,7 +139,7 @@ func_map int_expr_map =
 	{ INT_MIN + 20, ops::and },
 	{ INT_MIN + 21, ops:: or },
 	{ INT_MIN + 22, ops::abs },
-	{ INT_MIN + 23 , ops::add },
+	{ INT_MIN + 23, ops::add },
 	{ INT_MIN + 24, ops::neg },
 };
 

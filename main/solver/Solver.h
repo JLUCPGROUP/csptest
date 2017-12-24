@@ -1,9 +1,10 @@
 ﻿#pragma once
-#include "Model.h"
+#include "Network.h"
 namespace cudacp {
-inline bool Existed(vector<int>& tuple) {
-	return tuple[0] != INT_MAX;
-}
+
+//inline bool Existed(vector<int>& tuple) {
+//	return tuple[0] != INT_MAX;
+//}
 
 struct SearchStatistics {
 	u64 num_sol = 0;
@@ -27,7 +28,7 @@ struct SearchError {
 
 class VarEvt {
 public:
-	VarEvt(Model* m);
+	VarEvt(Network* m);
 	virtual ~VarEvt() {};
 
 	IntVar* operator[](const int i) const;
@@ -43,11 +44,34 @@ private:
 	int cur_size_;
 };
 
+class arc_que {
+public:
+#define  have(a) vid_set_[a.c_id() * arity_ + a.c()->index(a.v())]
+	arc_que() {}
+	arc_que(const int cons_size, const int max_arity);
+	virtual ~arc_que(){};
+
+	void MakeQue(const size_t cons_size, const size_t max_arity);
+	//void DeleteQue();
+	bool empty() const;
+	bool full() const;
+	bool push(arc& ele) throw(std::bad_exception);
+	arc pop() throw(std::bad_exception);
+
+private:
+	vector<arc> m_data_;
+	vector<int> vid_set_;
+	size_t arity_;
+	size_t m_size_;
+	int m_front_;
+	int m_rear_;
+};
+
 class AssignedStack {
 public:
 	AssignedStack() {};
 
-	void initial(Model* m);
+	void initial(Network* m);
 	~AssignedStack() {};
 	void push(IntVal& v_a);
 	IntVal pop();
@@ -64,7 +88,7 @@ public:
 	friend ostream& operator<< (ostream &os, AssignedStack* I);
 
 protected:
-	Model* gm_;
+	Network* gm_;
 	vector<IntVal> vals_;
 	vector<bool> asnd_;
 	int top_ = 0;
@@ -97,13 +121,13 @@ protected:
 
 class AC {
 public:
-	AC(Model *m);
+	AC(Network *m);
 	~AC() {};
 	virtual bool EnforceGAC_var(VarEvt* x_evt, const int level = 0) = 0;
 	void insert(IntVar* v);
 protected:
 	vector<IntVar*> q_;
-	Model *m_;
+	Network *m_;
 	vector<unsigned> stamp_var_;
 	vector<unsigned> stamp_tab_;
 	unsigned t_ = 0;
@@ -111,15 +135,19 @@ protected:
 };
 class AC3 :public AC {
 public:
-	AC3(Model *m);
+	AC3(Network *m);
 	~AC3() {};
 	bool EnforceGAC_var(VarEvt* x_evt, const int level = 0) override;
+	bool EnforceGAC_var(vector<IntVar*>& x_evt, const int level = 0);
+	bool AC3::EnforceGAC_arc(vector<IntVar*>& x_evt, const int level);
 	SearchError se;
 protected:
 	//pro_que<T> q;
+	arc_que Q;
 	int level_;
 	virtual bool revise(arc& c_x);
 	virtual bool seek_support(IntConVal& c_val);
+	void inital_q_arc();
 	//private:
 	//	void inital_Q_arc();
 };
