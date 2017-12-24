@@ -121,31 +121,31 @@ int IntVar::get_value(const int i, const int j) {
 
 ////////////////////////////////////////////////////////////////////////////
 const IntVal & IntVal::operator=(const IntVal & rhs) {
-	v = rhs.v;
-	a = rhs.a;
-	aop = rhs.aop;
+	v_ = rhs.v_;
+	a_ = rhs.a_;
+	aop_ = rhs.aop_;
 	return *this;
 }
 
 void IntVal::flip() {
-	aop = !aop;
+	aop_ = !aop_;
 }
 
 IntVal IntVal::next() const {
-	return IntVal(v, a + 1, true);
+	return IntVal(v_, a_ + 1, true);
 }
 
 bool IntVal::operator==(const IntVal & rhs) {
-	return (this == &rhs) || (v == rhs.v && a == rhs.a && aop == rhs.aop);
+	return (this == &rhs) || (v_ == rhs.v_ && a_ == rhs.a_ && aop_ == rhs.aop_);
 }
 
 bool IntVal::operator!=(const IntVal & rhs) {
-	return !((this == &rhs) || (v == rhs.v && a == rhs.a && aop == rhs.aop));
+	return !((this == &rhs) || (v_ == rhs.v_ && a_ == rhs.a_ && aop_ == rhs.aop_));
 }
 
 ostream & operator<<(ostream & os, IntVal & v_val) {
-	const string s = (v_val.aop) ? " = " : " != ";
-	os << "(" << v_val.v << s << v_val.a << ")";
+	const string s = (v_val.aop_) ? " = " : " != ";
+	os << "(" << v_val.v_ << s << v_val.a_ << ")";
 	return os;
 }
 ////////////////////////////////////////////////////////////////////////////
@@ -164,15 +164,15 @@ bool Tabular::sat(vector<int>& t) const {
 
 void Tabular::GetFirstValidTuple(IntVal& v_a, vector<int>& t) {
 	for (int i = 0; i < arity; ++i)
-		if (scope[i] != v_a.v())
+		if (scope[i] != v_a.v_())
 			t[i] = scope[i]->head();
 		else
-			t[i] = v_a.a();
+			t[i] = v_a.a_();
 }
 
 void Tabular::GetNextValidTuple(IntVal& v_a, vector<int>& t) {
 	for (int i = arity - 1; i >= 0; --i)
-		if (scope[i] != v_a.v())
+		if (scope[i] != v_a.v_())
 			if (scope[i]->next(t[i]) == Limits::INDEX_OVERFLOW)
 				t[i] = scope[i]->head();
 			else {

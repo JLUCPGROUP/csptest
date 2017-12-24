@@ -125,20 +125,23 @@ protected:
 
 class IntVal {
 public:
-	int v;
-	IntVar* v;
-	int a;
-	bool aop = true;
-	IntVal() : v(-2), a(-2) {};
-	IntVal(const int v, const int a, const bool aop = true) :v(v), a(a), aop(aop) {};
-	
+	//int v;
+	IntVal() : v_(nullptr), a_(-2) {};
+	IntVal(IntVar* v, const int a, const bool aop = true) :v_(v), a_(a), aop_(aop) {};
+
 	const IntVal& operator=(const IntVal& rhs);
+	IntVar* v() const { return v_; }
+	int a() const { return a_; }
 	void flip();
 	IntVal next() const;
 	bool operator==(const IntVal& rhs);
 	bool operator!=(const IntVal& rhs);
 	friend std::ostream& operator<< (std::ostream &os, IntVal &v_val);
 	~IntVal() {};
+protected:
+	IntVar* v_;
+	int a_;
+	bool aop_ = true;
 };
 
 class Tabular {

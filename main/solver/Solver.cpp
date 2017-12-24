@@ -37,13 +37,13 @@ void AssignedStack::initial(Model* m) {
 
 void AssignedStack::push(IntVal& v_a) {
 	vals_[top_] = v_a;
-	asnd_[v_a.v] = v_a.aop ? true : false;
+	asnd_[v_a.v_] = v_a.aop_ ? true : false;
 	++top_;
 };
 
 IntVal AssignedStack::pop() {
 	--top_;
-	asnd_[vals_[top_].v] = false;
+	asnd_[vals_[top_].v_] = false;
 	return vals_[top_];
 }
 
