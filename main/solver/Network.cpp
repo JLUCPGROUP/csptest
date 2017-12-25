@@ -12,11 +12,10 @@ IntVar::IntVar(HVar* v, const int num_vars) :
 	num_bit_(ceil(static_cast<float>(v->vals.size()) / BITSIZE)),
 	vals_(v->vals),
 	hv_(v) {
-
 	vector<bitset<BITSIZE>> a(num_bit_, ULLONG_MAX);
 	a.back() >>= BITSIZE - last_limit_;
-	bit_doms_.resize(init_size_, a);
-	level_.resize(init_size_, 0);
+	bit_doms_.resize(num_vars + 1, a);
+	level_.resize(num_vars + 1, 0);
 }
 
 void IntVar::RemoveValue(const int a, const int p) {
