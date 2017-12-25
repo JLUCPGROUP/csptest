@@ -1,10 +1,12 @@
 ﻿#pragma once
 #include "Network.h"
+#include "Timer.h"
+
 namespace cudacp {
 
-//inline bool Existed(vector<int>& tuple) {
-//	return tuple[0] != INT_MAX;
-//}
+enum ACAlgorithm {
+	AC_1, AC_2, AC_3, AC_4, AC_6, AC_7, AC_2001, AC_3bit, AC_3rm, STR_1, STR_2, STR_3
+};
 
 struct SearchStatistics {
 	u64 num_sol = 0;
@@ -69,6 +71,7 @@ private:
 
 class AssignedStack {
 public:
+	AssignedStack(){};
 	AssignedStack(Network* m);
 
 	void initial(Network* m);
@@ -122,7 +125,7 @@ protected:
 class AC {
 public:
 	AC(Network *m);
-	~AC() {};
+	virtual ~AC() {};
 	virtual bool EnforceGAC_var(VarEvt* x_evt, const int level = 0) = 0;
 	void insert(IntVar* v);
 protected:
@@ -136,7 +139,7 @@ protected:
 class AC3 :public AC {
 public:
 	AC3(Network *m);
-	~AC3() {};
+	virtual ~AC3() {};
 	bool EnforceGAC_var(VarEvt* x_evt, const int level = 0) override;
 	bool EnforceGAC_var(vector<IntVar*>& x_evt, const int level = 0);
 	bool AC3::EnforceGAC_arc(vector<IntVar*>& x_evt, const int level);
@@ -152,13 +155,24 @@ protected:
 	//	void inital_Q_arc();
 };
 
+class AC3bit :
+	public AC3 {
+public:
+	AC3bit(Network *m);
+	virtual ~AC3bit(){};
+protected:
+	virtual bool seek_support(IntConVal& c_val) override;
+	int max_bitDom_size_;
+	vector<vector<bitset<BITSIZE>>> bitSup_;
+};
+
 class MAC {
 public:
-	MAC(Network *n);
-	void enforce();
+	MAC(Network *n, ACAlgorithm ac_algzm);
+	SearchStatistics enforce(const int time_limits);
 	virtual ~MAC();
 	int sol_count() const { return sol_count_; }
-	void sol_count(int val) { sol_count_ = val; }
+	void sol_count(const int val) { sol_count_ = val; }
 
 private:
 	int sol_count_ = 0;
@@ -166,11 +180,12 @@ private:
 	AC3* ac_;
 	vector<IntVar*> x_evt_;
 	//VarEvt* x_evt_;
-	//ACAlgorithm ac_algzm_;
-	AssignedStack* I;
+	ACAlgorithm ac_algzm_;
+	AssignedStack I;
 	IntVal select_v_value() const;
 	bool consistent_;
 	bool finished_ = false;
+	SearchStatistics statistics_;
 };
 
 }

@@ -170,7 +170,7 @@ public:
 	int stamp() const { return stamp_; }
 	size_t arity;
 	vector<IntVar *>scope;
-	//const IntTupleArray& tuples() { return ts_; }
+	const vector<vector<int>>& tuples() const { return tuples_; }
 private:
 	int id_;
 	vector<vector<int>>& tuples_;
@@ -262,8 +262,9 @@ public:
 	int GetIntConValIndex(IntConVal & c_val) const;
 	int GetIntConValIndex(const int c_id, const int v_id, const int a);
 	IntConVal GetIntConVal(int index);
-	int max_arity() const { return max_arity_; };
-	int max_domain_size() const { return max_dom_size_; };
+	int max_arity() const { return max_arity_; }
+	int max_domain_size() const { return max_dom_size_; }
+	int max_bitDom_size() const { return max_bitDom_size_; }
 	~Network();
 private:
 	vector<IntVar*> get_scope(HTab* t);
@@ -271,6 +272,7 @@ private:
 	HModel *hm_;
 	const int max_arity_;
 	const int max_dom_size_;
+	const int max_bitDom_size_;
 	const int num_vars_;
 	const int num_tabs_;
 };

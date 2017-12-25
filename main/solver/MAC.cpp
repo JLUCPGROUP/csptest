@@ -1,44 +1,68 @@
 #include "Solver.h"
 using namespace std;
 namespace cudacp {
-MAC::MAC(Network * n) :
-	n_(n) {
+MAC::MAC(Network * n, const ACAlgorithm ac_algzm) :
+	n_(n),
+	ac_algzm_(ac_algzm) {
 	x_evt_.reserve(n_->vars.size());
-	I = new AssignedStack(n_);
-	ac_ = new AC3(n_);
+	I.initial(n_);
+	//= new AssignedStack(n_);
+	switch (ac_algzm) {
+	case AC_3:
+		ac_ = new AC3(n_);
+		break;
+	case AC_3bit:
+		ac_ = new AC3bit(n_);
+		break;
+		//case AC_3rm:
+		//	ac_ = new AC3rm(nt_);
+	default:
+		break;
+	}
 }
 
-void MAC::enforce() {
+SearchStatistics MAC::enforce(const int time_limits) {
+	Timer t;
 	consistent_ = ac_->EnforceGAC_var(n_->vars, 0);
 	x_evt_.clear();
-	if (!consistent_)
-		return;
+	if (!consistent_) {
+		statistics_.solve_time = t.elapsed();
+		return statistics_;
+	}
 
 	while (!finished_) {
+		if (t.elapsed() > time_limits) {
+			statistics_.solve_time = t.elapsed();
+			statistics_.time_out = true;
+			return statistics_;
+		}
+
 		IntVal v_a = select_v_value();
-		I->push(v_a);
-		v_a.v()->ReduceTo(v_a.a(), I->size());
+		I.push(v_a);
+		++statistics_.num_positive;
+		v_a.v()->ReduceTo(v_a.a(), I.size());
 		x_evt_.push_back(v_a.v());
-		consistent_ = ac_->EnforceGAC_var(x_evt_, I->size());
+		consistent_ = ac_->EnforceGAC_var(x_evt_, I.size());
 		x_evt_.clear();
 
-		if (consistent_&&I->full()) {
+		if (consistent_&&I.full()) {
 			cout << I << endl;
 			finished_ = true;
 			//++sol_count_;
 			//consistent_ = false;
 		}
 
-		while (!consistent_ && !I->empty()) {
-			v_a = I->pop();
+		while (!consistent_ && !I.empty()) {
+			v_a = I.pop();
 
 			for (IntVar* v : n_->vars)
 				if (!v->assigned())
-					v->RestoreUpTo(I->size() + 1);
+					v->RestoreUpTo(I.size() + 1);
 
-			v_a.v()->RemoveValue(v_a.a(), I->size());
+			v_a.v()->RemoveValue(v_a.a(), I.size());
+			++statistics_.num_negative;
 			x_evt_.push_back(v_a.v());
-			consistent_ = v_a.v()->size() && ac_->EnforceGAC_var(x_evt_, I->size());
+			consistent_ = v_a.v()->size() && ac_->EnforceGAC_var(x_evt_, I.size());
 			x_evt_.clear();
 		}
 
@@ -46,11 +70,13 @@ void MAC::enforce() {
 			finished_ = true;
 	}
 
+	statistics_.solve_time = t.elapsed();
+	return statistics_;
 }
 
 MAC::~MAC() {
 	delete ac_;
-	delete I;
+	//delete I;
 }
 
 IntVal MAC::select_v_value() const {
@@ -58,16 +84,13 @@ IntVal MAC::select_v_value() const {
 	//return IntVal(v, v->head());
 	IntVar* x = nullptr;
 	int min_size = INT_MAX;
-	for (auto v : n_->vars) {
-		if (!v->assigned()) {
+	for (auto v : n_->vars)
+		if (!v->assigned())
 			if (v->size() < min_size) {
 				min_size = v->size();
 				x = v;
 			}
-		}
-	}
 
 	return IntVal(x, x->head());
-
 }
 }

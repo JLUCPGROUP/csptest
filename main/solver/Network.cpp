@@ -213,7 +213,8 @@ Network::Network(HModel* h) :
 	max_arity_(h->max_arity()),
 	max_dom_size_(h->max_domain_size()),
 	num_vars_(h->vars.size()),
-	num_tabs_(h->tabs.size()) {
+	num_tabs_(h->tabs.size()),
+	max_bitDom_size_(ceil(float(h->max_domain_size()) / BITSIZE)) {
 	vars.reserve(num_vars_);
 	tabs.reserve(num_tabs_);
 
