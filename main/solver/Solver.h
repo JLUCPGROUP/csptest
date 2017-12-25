@@ -154,7 +154,7 @@ protected:
 
 class MAC {
 public:
-	MAC(Network *nt);
+	MAC(Network *n);
 	void enforce();
 	virtual ~MAC();
 	int sol_count() const { return sol_count_; }
@@ -162,7 +162,7 @@ public:
 
 private:
 	int sol_count_ = 0;
-	Network *nt_;
+	Network *n_;
 	AC3* ac_;
 	vector<IntVar*> x_evt_;
 	//VarEvt* x_evt_;

@@ -71,6 +71,7 @@ const int INDEX_OVERFLOW = -1;
 const int PRESENT = -1;
 const int ABSENT = 0;
 }
+
 const int BITSIZE = 64;
 
 class IntVar {
@@ -103,7 +104,7 @@ public:
 	bool faild() const { return curr_size_ == 0; };
 
 	int stamp() const { return stamp_; }
-	void stamp(int val) { stamp_ = val; }
+	void stamp(const int s) { stamp_ = s; }
 
 	vector<bitset<BITSIZE>>& bitDom() { return bit_doms_[top_]; }
 
@@ -165,6 +166,8 @@ public:
 	int index(IntVar* v) const;
 	bool IsValidTuple(vector<int>& t);
 	int id() const { return id_; }
+	void stamp(const int s) { stamp_ = s; }
+	int stamp() const { return stamp_; }
 	size_t arity;
 	vector<IntVar *>scope;
 	//const IntTupleArray& tuples() { return ts_; }

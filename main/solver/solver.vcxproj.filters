@@ -47,6 +47,9 @@
     <ClCompile Include="MAC.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="AC3.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IntVar2.h">

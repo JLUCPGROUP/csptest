@@ -161,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AC.cpp" />
+    <ClCompile Include="AC3.cpp" />
     <ClCompile Include="IntVar4.cpp" />
     <ClCompile Include="MAC.cpp" />
     <ClCompile Include="Network.cpp" />

@@ -1,35 +1,17 @@
-//#include "AC.h"
-//
-//namespace cudacp {
-//VarEvt::VarEvt(Network* m) :
-//	size_(m->vars.size()),
-//	cur_size_(0) {
-//	vars = m->vars;
-//}
-//
-//IntVar* VarEvt::operator[](const int i) const {
-//	return vars[i];
-//}
-//
-//int VarEvt::size() const {
-//	return cur_size_;
-//}
-//
-//IntVar* VarEvt::at(const int i) const {
-//	return vars[i];
-//}
-//
-//void VarEvt::push_back(IntVar* v) {
-//	vars[cur_size_] = v;
-//	++cur_size_;
-//}
-//
-//void VarEvt::clear() {
-//	cur_size_ = 0;
-//}
-//AC::AC(Network* m) {}
-//AC::~AC() {}
-//}
-//
-//
-//
+#include "Solver.h"
+namespace cudacp
+{
+AC::AC(Network* m) :m_(m) {
+	q_.reserve(m_->vars.size());
+	stamp_var_.resize(m_->vars.size(), 0);
+	stamp_tab_.resize(m_->tabs.size(), 0);
+	tmp_tuple_.resize(m_->max_arity());
+	Exclude(tmp_tuple_);
+}
+
+void AC::insert(IntVar* v) {
+	q_.push_back(v);
+	++t_;
+	stamp_var_[v->id()] = t_;
+}
+}

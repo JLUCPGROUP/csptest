@@ -5,6 +5,7 @@
 #include "BMFileParser.h"
 #include "XCSP3PrintCallbacks.h"
 #include "Solver.h"
+#include "Timer.h"
 //#include "Timer.h"
 //#include "BMFileParser.h"
 //#include "XCSP3PrintCallbacks.h"
@@ -25,14 +26,21 @@ int main() {
 	GetHModel(bm_path, hm);
 	//hm->show();
 	Network* n = new Network(hm);
+
+	MAC* mac = new MAC(n);
+
+	Timer t0;
+	mac->enforce();
+	cout << t0.elapsed() << endl;
 	//VarEvt* ve = new VarEvt(n);
 
-	AC3 ac(n);
-	long t = clock_t();
-	ac.EnforceGAC_var(n->vars, 0);
-	long t2 = clock_t();
-	cout << t2 - t << endl;
+	//AC3 ac(n);
+	//long t = clock_t();
+	//ac.EnforceGAC_var(n->vars, 0);
+	//long t2 = clock_t();
+	//cout << t2 - t << endl;
 	//delete ve;
+	delete mac;
 	delete n;
 	delete hm;
 	return 0;

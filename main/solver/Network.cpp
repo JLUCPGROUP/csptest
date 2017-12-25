@@ -40,8 +40,10 @@ void IntVar::ReduceTo(const int a, const int p) {
 
 	if (level_[top_] < p)
 		++top_;
-	for (auto v : bit_doms_[top_])
+
+	for (auto& v : bit_doms_[top_])
 		v.reset();
+
 	bit_doms_[top_][get<0>(index)].set(get<1>(index));
 	level_[top_] = p;
 
@@ -55,8 +57,11 @@ void IntVar::AddValue(const int a) {
 }
 
 void IntVar::RestoreUpTo(const int p) {
-	while (level_[top_] > p)
+	while (level_[top_] >= p)
 		--top_;
+	curr_size_ = 0;
+	for (auto v : bit_doms_[top_])
+		curr_size_ += v.count();
 }
 
 int IntVar::next(const int a) const {
@@ -138,7 +143,7 @@ bool IntVal::operator!=(const IntVal & rhs) {
 
 ostream & operator<<(ostream & os, IntVal & v_val) {
 	const string s = (v_val.aop_) ? " = " : " != ";
-	os << "(" << v_val.v_ << s << v_val.a_ << ")";
+	os << "(" << v_val.vid() << s << v_val.a_ << ")";
 	return os;
 }
 ////////////////////////////////////////////////////////////////////////////
