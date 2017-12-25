@@ -46,7 +46,7 @@ SearchStatistics MAC::enforce(const int time_limits) {
 		x_evt_.clear();
 
 		if (consistent_&&I.full()) {
-			cout << I << endl;
+			//cout << I << endl;
 			finished_ = true;
 			//++sol_count_;
 			//consistent_ = false;
