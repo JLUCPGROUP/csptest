@@ -110,6 +110,9 @@ public:
 
 	int id() const { return id_; }
 
+	void show();
+	inline tuple<int, int> get_bit_index(const int idx) const;
+
 protected:
 	int id_;
 	string name_;
@@ -126,7 +129,6 @@ protected:
 	vector<int> level_;
 	HVar* hv_;
 	//int curr_level_ = 0;
-	inline tuple<int, int> get_bit_index(const int idx) const;
 	static int get_value(const int i, const int j);
 	vector<u64> tmp_;
 
@@ -265,6 +267,7 @@ public:
 	int max_arity() const { return max_arity_; }
 	int max_domain_size() const { return max_dom_size_; }
 	int max_bitDom_size() const { return max_bitDom_size_; }
+	void show();
 	~Network();
 private:
 	vector<IntVar*> get_scope(HTab* t);

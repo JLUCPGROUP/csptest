@@ -47,6 +47,7 @@ bool AC3::EnforceGAC_var(VarEvt* x_evt, const int level) {
 bool AC3::EnforceGAC_var(vector<IntVar*>& x_evt, const int level) {
 	level_ = level;
 	q_.clear();
+	delete_ = 0;
 
 	for (auto v : x_evt)
 		insert(v);
@@ -80,7 +81,7 @@ bool AC3::EnforceGAC_var(vector<IntVar*>& x_evt, const int level) {
 
 bool AC3::EnforceGAC_arc(vector<IntVar*>& x_evt, const int level) {
 	level_ = level;
-
+	delete_ = 0;
 	for (int i = 0; i < x_evt.size(); ++i)
 		for (Tabular* c : m_->subscription[x_evt[i]])
 			for (IntVar* x : c->scope)
@@ -114,6 +115,7 @@ bool AC3::revise(arc& c_x) {
 			c_x.v()->RemoveValue(a, level_);
 			//std::cout << "(" << c_x.v_id() << ", " << a << ")" << std::endl;
 			++se.num_delete;
+			++delete_;
 		}
 		a = c_x.v()->next(a);
 	}

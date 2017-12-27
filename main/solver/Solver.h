@@ -51,7 +51,7 @@ public:
 #define  have(a) vid_set_[a.c_id() * arity_ + a.c()->index(a.v())]
 	arc_que() {}
 	arc_que(const int cons_size, const int max_arity);
-	virtual ~arc_que(){};
+	virtual ~arc_que() {};
 
 	void MakeQue(const size_t cons_size, const size_t max_arity);
 	//void DeleteQue();
@@ -71,7 +71,7 @@ private:
 
 class AssignedStack {
 public:
-	AssignedStack(){};
+	AssignedStack() {};
 	AssignedStack(Network* m);
 
 	void initial(Network* m);
@@ -98,36 +98,15 @@ protected:
 	int max_size_;
 };
 
-//class var_que {
-//public:
-//#define  have(a) vid_set_[a.c_id() * arity_ + a.c()->index(a.v())]
-//	var_que() {}
-//	var_que(const int cons_size, const int max_arity);
-//	virtual ~var_que();
-//
-//	void MakeQue(const size_t cons_size, const size_t max_arity);
-//	void DeleteQue();
-//	bool empty() const;
-//	bool full() const;
-//	bool push(arc& ele) throw(std::bad_exception);
-//	arc pop() throw(std::bad_exception);
-//
-//private:
-//	vector<IntVar *> vars_;
-//	arc* m_data_;
-//	int* vid_set_;
-//	size_t arity_;
-//	size_t m_size_;
-//	int m_front_;
-//	int m_rear_;
-//};
-
 class AC {
 public:
 	AC(Network *m);
 	virtual ~AC() {};
 	virtual bool EnforceGAC_var(VarEvt* x_evt, const int level = 0) = 0;
+	virtual bool EnforceGAC_var(vector<IntVar*>& x_evt, const int level = 0) = 0;
+	virtual bool EnforceGAC_arc(vector<IntVar*>& x_evt, const int level) = 0;
 	void insert(IntVar* v);
+	int del() const { return delete_; }
 protected:
 	vector<IntVar*> q_;
 	Network *m_;
@@ -135,14 +114,15 @@ protected:
 	vector<unsigned> stamp_tab_;
 	unsigned t_ = 0;
 	vector<int> tmp_tuple_;
+	int delete_ = 0;
 };
 class AC3 :public AC {
 public:
 	AC3(Network *m);
 	virtual ~AC3() {};
 	bool EnforceGAC_var(VarEvt* x_evt, const int level = 0) override;
-	bool EnforceGAC_var(vector<IntVar*>& x_evt, const int level = 0);
-	bool AC3::EnforceGAC_arc(vector<IntVar*>& x_evt, const int level);
+	bool EnforceGAC_var(vector<IntVar*>& x_evt, const int level = 0) override;
+	bool EnforceGAC_arc(vector<IntVar*>& x_evt, const int level = 0) override;
 	SearchError se;
 protected:
 	//pro_que<T> q;
@@ -159,7 +139,7 @@ class AC3bit :
 	public AC3 {
 public:
 	AC3bit(Network *m);
-	virtual ~AC3bit(){};
+	virtual ~AC3bit() {};
 protected:
 	virtual bool seek_support(IntConVal& c_val) override;
 	int max_bitDom_size_;
@@ -177,7 +157,7 @@ public:
 private:
 	int sol_count_ = 0;
 	Network *n_;
-	AC3* ac_;
+	AC* ac_;
 	vector<IntVar*> x_evt_;
 	//VarEvt* x_evt_;
 	ACAlgorithm ac_algzm_;

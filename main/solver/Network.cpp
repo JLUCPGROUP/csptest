@@ -104,6 +104,14 @@ int IntVar::tail() const {
 	return Limits::INDEX_OVERFLOW;
 }
 
+void IntVar::show() {
+	cout << name_ << " id = " << id_ << ": ";
+	for (auto a : vals_)
+		if (have(a))
+			cout << a << " ";
+	cout << endl;
+}
+
 
 tuple<int, int> IntVar::get_bit_index(const int idx) const {
 	tuple<int, int> a;
@@ -211,9 +219,9 @@ Network::Network(HModel* h) :
 	hm_(h),
 	max_arity_(h->max_arity()),
 	max_dom_size_(h->max_domain_size()),
+	max_bitDom_size_(ceil(float(h->max_domain_size()) / BITSIZE)),
 	num_vars_(h->vars.size()),
-	num_tabs_(h->tabs.size()),
-	max_bitDom_size_(ceil(float(h->max_domain_size()) / BITSIZE)) {
+	num_tabs_(h->tabs.size()) {
 	vars.reserve(num_vars_);
 	tabs.reserve(num_tabs_);
 
@@ -258,6 +266,11 @@ IntConVal Network::GetIntConVal(const int index) {
 	const int a = index % tabs.size() % max_dom_size_;
 	IntConVal c(tabs[c_id], tabs[c_id]->scope[v_id], a);
 	return c;
+}
+
+void Network::show() {
+	for (auto v : vars)
+		v->show();
 }
 
 Network::~Network() {
