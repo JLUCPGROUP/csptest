@@ -76,8 +76,5 @@
     <ClInclude Include="Network.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MAC.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
