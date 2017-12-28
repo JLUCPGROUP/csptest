@@ -137,7 +137,7 @@ void IntVal::flip() {
 }
 
 IntVal IntVal::next() const {
-	return IntVal(v_, a_ + 1, true);
+	return IntVal(v_, v_->next(a_), true);
 }
 
 bool IntVal::operator==(const IntVal & rhs) {

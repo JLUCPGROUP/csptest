@@ -30,7 +30,7 @@ bool AC3bit::seek_support(IntConVal& c_val) {
 	for (IntVar *y : c_val.c()->scope)
 		if (y->id() != c_val.v()->id())
 			for (int i = 0; i < max_bitDom_size_; ++i)
-				if ((bitSup_[idx][i] & y->bitDom()[i]) != 0)
+				if ((bitSup_[idx][i] & y->bitDom()[i]).any())
 					return true;
 
 	return false;

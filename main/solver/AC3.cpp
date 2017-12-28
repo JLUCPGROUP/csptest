@@ -1,7 +1,5 @@
 #include "Solver.h"
 namespace cudacp {
-
-
 AC3::AC3(Network* m) :
 	AC(m) {
 	inital_q_arc();
@@ -44,10 +42,11 @@ bool AC3::EnforceGAC_var(VarEvt* x_evt, const int level) {
 	return true;
 }
 
-bool AC3::EnforceGAC_var(vector<IntVar*>& x_evt, const int level) {
+ConsistencyState AC3::EnforceGAC_var(vector<IntVar*>& x_evt, const int level) {
 	level_ = level;
 	q_.clear();
-	delete_ = 0;
+	cs.level = level;
+	cs.num_delete = 0;
 
 	for (auto v : x_evt)
 		insert(v);
@@ -65,8 +64,12 @@ bool AC3::EnforceGAC_var(vector<IntVar*>& x_evt, const int level) {
 
 						if ((y != x) || aa)
 							if (revise(arc(c, y))) {
-								if (y->size() == 0)
-									return false;
+								if (y->faild()) {
+									cs.tab = c;
+									cs.var = y;
+									cs.state = false;
+									return cs;
+								}
 								insert(y);
 							}
 					}
@@ -76,12 +79,15 @@ bool AC3::EnforceGAC_var(vector<IntVar*>& x_evt, const int level) {
 			}
 		}
 	}
-	return true;
+	cs.state = true;
+	return cs;
 }
 
-bool AC3::EnforceGAC_arc(vector<IntVar*>& x_evt, const int level) {
+ConsistencyState AC3::EnforceGAC_arc(vector<IntVar*>& x_evt, const int level) {
 	level_ = level;
 	delete_ = 0;
+	cs.level = level;
+	cs.num_delete = 0;
 	for (int i = 0; i < x_evt.size(); ++i)
 		for (Tabular* c : m_->subscription[x_evt[i]])
 			for (IntVar* x : c->scope)
@@ -93,8 +99,12 @@ bool AC3::EnforceGAC_arc(vector<IntVar*>& x_evt, const int level) {
 		//cout << "--" << c_x << endl;
 
 		if (revise(c_x)) {
-			if (c_x.v()->faild())
-				return false;
+			if (c_x.v()->faild()) {
+				cs.tab = c_x.c();
+				cs.var = c_x.v();
+				cs.state = false;
+				return cs;
+			}
 
 			for (Tabular* c : m_->subscription[c_x.v()])
 				if (c != c_x.c())
@@ -103,7 +113,8 @@ bool AC3::EnforceGAC_arc(vector<IntVar*>& x_evt, const int level) {
 							Q.push(arc(c, v));
 		}
 	}
-	return true;
+	cs.state = true;
+	return cs;
 }
 
 bool AC3::revise(arc& c_x) {
@@ -114,7 +125,7 @@ bool AC3::revise(arc& c_x) {
 		if (!seek_support(IntConVal(c_x, a))) {
 			c_x.v()->RemoveValue(a, level_);
 			//std::cout << "(" << c_x.v_id() << ", " << a << ")" << std::endl;
-			++se.num_delete;
+			++cs.num_delete;
 			++delete_;
 		}
 		a = c_x.v()->next(a);

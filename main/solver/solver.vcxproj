@@ -169,6 +169,7 @@
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="IntVar2.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Search.cpp" />
     <ClCompile Include="Solver.cpp" />
   </ItemGroup>
   <ItemGroup>

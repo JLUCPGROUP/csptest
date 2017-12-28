@@ -78,38 +78,25 @@ class IntVar {
 public:
 	IntVar(HVar* v, const int vs_size);
 	~IntVar() {};
-
 	void RemoveValue(const int a, const int p = 0);
-
 	void ReduceTo(const int a, const int p = 0);
-
 	void AddValue(const int a);
-
 	void RestoreUpTo(const int p);
-
 	int value(const int idx) const { return vals_[idx]; }
 	int size() const { return curr_size_; }
 	int capacity() const { return init_size_; }
 	bool assigned() const { return assigned_; }
 	void assign(const bool a) { assigned_ = a; }
 	int next(const int a) const;
-
 	int prev(const int a) const;
-
 	bool have(const int a) const;
-
 	int head() const;
-
 	int tail() const;
 	bool faild() const { return curr_size_ == 0; };
-
 	int stamp() const { return stamp_; }
 	void stamp(const int s) { stamp_ = s; }
-
 	vector<bitset<BITSIZE>>& bitDom() { return bit_doms_[top_]; }
-
 	int id() const { return id_; }
-
 	void show();
 	inline tuple<int, int> get_bit_index(const int idx) const;
 
@@ -279,4 +266,7 @@ private:
 	const int num_vars_;
 	const int num_tabs_;
 };
+
+static const IntVal nill = IntVal(nullptr, -2);
+static const IntVal null = IntVal(nullptr, -1);
 }
