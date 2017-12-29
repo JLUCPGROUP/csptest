@@ -99,6 +99,7 @@ public:
 	int id() const { return id_; }
 	void show();
 	inline tuple<int, int> get_bit_index(const int idx) const;
+	vector<int>& values() { return vals_; }
 
 protected:
 	int id_;

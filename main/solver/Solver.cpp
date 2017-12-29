@@ -106,6 +106,11 @@ DeleteExplanation::DeleteExplanation(Network* m) :
 	val_array_.resize(m_->vars.size(), vector<vector<IntVal>>(m_->max_domain_size()));
 }
 
+void DeleteExplanation::initial(Network* m) {
+	m_ = m;
+	val_array_.resize(m_->vars.size(), vector<vector<IntVal>>(m_->max_domain_size()));
+}
+
 vector<IntVal>& DeleteExplanation::operator[](const IntVal val) {
 	return val_array_[val.vid()][val.a()];
 }

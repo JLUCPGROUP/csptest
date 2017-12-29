@@ -24,4 +24,6 @@ void AC::insert(IntVar* v) {
 	++t_;
 	stamp_var_[v->id()] = t_;
 }
+
+
 }

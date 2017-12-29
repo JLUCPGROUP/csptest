@@ -12,11 +12,12 @@ enum Consistency {
 };
 
 enum LookBack {
-	LB_BC, LB_FC, LB_MAC
+	LB_SBT, LB_IBT, LB_DBT
+
 };
 
 enum LookAhead {
-	LA_SBT, LA_IBT, LA_DBT
+	LA_BC, LA_FC, LA_MAC
 };
 
 struct SearchStatistics {
@@ -130,6 +131,7 @@ class DeleteExplanation {
 public:
 	DeleteExplanation(Network *m);
 	~DeleteExplanation() {}
+	void initial(Network* m);
 	vector<IntVal>& operator[](const IntVal val);
 protected:
 	vector<vector<vector<IntVal>>> val_array_;
@@ -145,7 +147,7 @@ public:
 	virtual ConsistencyState EnforceGAC_var(vector<IntVar*>& x_evt, const int level = 0) = 0;
 	virtual ConsistencyState EnforceGAC_arc(vector<IntVar*>& x_evt, const int level) = 0;
 	void insert(IntVar* v);
-	virtual vector<IntVal> HandleEmptyDomain(IntVar* v) { return {}; };
+
 	int del() const { return delete_; }
 protected:
 	vector<IntVar*> q_;
@@ -218,6 +220,10 @@ public:
 	virtual ~Search();
 	int sol_count() const { return sol_count_; }
 	void sol_count(const int val) { sol_count_ = val; }
+	virtual vector<IntVal> HandleEmptyDomain(IntVar* v);
+	virtual vector<IntVal> CheckConsistencyAfterAssignment(IntVar *v);
+	virtual vector<IntVal> CheckConsistencyAfterRefutati(IntVar *v);
+	virtual void UndoAssignment(IntVal v_a);
 
 private:
 	int sol_count_ = 0;
@@ -225,7 +231,8 @@ private:
 	AC* ac_;
 	vector<IntVar*> x_evt_;
 	//VarEvt* x_evt_;
-	Consistency consistency_;
+	Consistency c_type_;
+	vector<IntVal> nogood;
 	AssignedStack I;
 	IntVal select_v_value() const;
 	bool consistent_;
@@ -233,6 +240,7 @@ private:
 	SearchStatistics statistics_;
 	LookAhead la_;
 	LookBack lb_;
+	DeleteExplanation expl;
 };
 
 }
