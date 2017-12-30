@@ -84,6 +84,12 @@ bool AssignedStack::empty() const { return vals_.empty(); }
 IntVal AssignedStack::operator[](const int i) const { return vals_[i]; }
 IntVal AssignedStack::at(const int i) const { return vals_[i]; }
 void AssignedStack::clear() { vals_.clear(); }
+
+void AssignedStack::del(const IntVal val) {
+	remove(vals_.begin(), vals_.end(), val);
+	asnd_[val.vid()] = false;
+}
+
 bool AssignedStack::assiged(const int v) const { return asnd_[v]; }
 bool AssignedStack::assiged(const IntVar* v) const { return assiged(v->id()); }
 vector<IntVal> AssignedStack::vals() const { return vals_; }

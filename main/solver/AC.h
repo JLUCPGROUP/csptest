@@ -24,7 +24,7 @@
 //public:
 //	AC(Network *m);
 //	~AC();
-//	virtual bool EnforceGAC_var(VarEvt* x_evt, const int level = 0) = 0;
+//	virtual bool enforce(VarEvt* x_evt, const int level = 0) = 0;
 //
 //};
 //}

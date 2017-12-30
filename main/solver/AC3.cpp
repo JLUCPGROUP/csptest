@@ -5,7 +5,7 @@ AC3::AC3(Network* m) :
 	inital_q_arc();
 }
 
-bool AC3::EnforceGAC_var(VarEvt* x_evt, const int level) {
+bool AC3::enforce(VarEvt* x_evt, const int level) {
 	level_ = level;
 	q_.clear();
 
@@ -42,7 +42,7 @@ bool AC3::EnforceGAC_var(VarEvt* x_evt, const int level) {
 	return true;
 }
 
-ConsistencyState AC3::EnforceGAC_var(vector<IntVar*>& x_evt, const int level) {
+ConsistencyState AC3::enforce(vector<IntVar*>& x_evt, const int level) {
 	level_ = level;
 	q_.clear();
 	cs.level = level;
@@ -150,5 +150,4 @@ bool AC3::seek_support(IntConVal & c_val) {
 void AC3::inital_q_arc() {
 	Q.MakeQue(m_->tabs.size(), m_->max_arity());
 }
-
 }

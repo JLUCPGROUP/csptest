@@ -5,7 +5,7 @@
 namespace cudacp {
 
 enum ACAlgorithm {
-	AC_1, AC_2, AC_3, AC_4, AC_6, AC_7, AC_2001, AC_3bit, AC_3rm, STR_1, STR_2, STR_3
+	AC_1, AC_2, AC_3, AC_4, AC_6, AC_7, AC_2001, AC_3bit, AC_3rm, STR_1, STR_2, STR_3, A_FC, A_FC_bit
 };
 enum Consistency {
 	C_AC3, C_AC4, C_AC2001, C_AC3bit, C_AC3rm, C_STR1, C_STRC2, C_STR3, C_FC
@@ -113,6 +113,7 @@ public:
 	IntVal operator[](const int i) const;
 	IntVal at(const int i) const;
 	void clear();
+	void del(const IntVal val);
 	bool assiged(const int v) const;
 	bool assiged(const IntVar* v) const;
 	vector<IntVal> vals() const;
@@ -123,12 +124,13 @@ protected:
 	Network* gm_;
 	vector<IntVal> vals_;
 	vector<bool> asnd_;
-	int top_ = 0;
+	//int top_ = 0;
 	int max_size_;
 };
 
 class DeleteExplanation {
 public:
+	DeleteExplanation() {};
 	DeleteExplanation(Network *m);
 	~DeleteExplanation() {}
 	void initial(Network* m);
@@ -143,8 +145,8 @@ public:
 	AC(Network *m);
 	AC(Network *m, const LookAhead look_ahead, const LookBack look_back);
 	virtual ~AC() {};
-	virtual bool EnforceGAC_var(VarEvt* x_evt, const int level = 0) = 0;
-	virtual ConsistencyState EnforceGAC_var(vector<IntVar*>& x_evt, const int level = 0) = 0;
+	virtual bool enforce(VarEvt* x_evt, const int level = 0) = 0;
+	virtual ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0) = 0;
 	virtual ConsistencyState EnforceGAC_arc(vector<IntVar*>& x_evt, const int level) = 0;
 	void insert(IntVar* v);
 
@@ -164,8 +166,8 @@ class AC3 :public AC {
 public:
 	AC3(Network *m);
 	virtual ~AC3() {};
-	bool EnforceGAC_var(VarEvt* x_evt, const int level = 0) override;
-	ConsistencyState EnforceGAC_var(vector<IntVar*>& x_evt, const int level = 0) override;
+	bool enforce(VarEvt* x_evt, const int level = 0) override;
+	ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0) override;
 	ConsistencyState EnforceGAC_arc(vector<IntVar*>& x_evt, const int level = 0) override;
 	//SearchError se;
 	ConsistencyState cs;
@@ -180,6 +182,15 @@ protected:
 	//	void inital_Q_arc();
 };
 
+class FC :public AC3 {
+public:
+	FC(Network* n);
+	ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0);
+private:
+	//int max_bitDom_size_;
+	//vector<vector<bitset<BITSIZE>>> bitSup_;
+};
+
 class AC3bit :
 	public AC3 {
 public:
@@ -189,6 +200,15 @@ protected:
 	virtual bool seek_support(IntConVal& c_val) override;
 	int max_bitDom_size_;
 	vector<vector<bitset<BITSIZE>>> bitSup_;
+};
+
+class FCbit :public AC3bit {
+public:
+	FCbit(Network* n);
+	ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0);
+private:
+	//int max_bitDom_size_;
+	//vector<vector<bitset<BITSIZE>>> bitSup_;
 };
 
 class MAC {
@@ -221,8 +241,8 @@ public:
 	int sol_count() const { return sol_count_; }
 	void sol_count(const int val) { sol_count_ = val; }
 	virtual vector<IntVal> HandleEmptyDomain(IntVar* v);
-	virtual vector<IntVal> CheckConsistencyAfterAssignment(IntVar *v);
-	virtual vector<IntVal> CheckConsistencyAfterRefutati(IntVar *v);
+	//virtual vector<IntVal> CheckConsistencyAfterAssignment(IntVar *v);
+	//virtual vector<IntVal> CheckConsistencyAfterRefutati(IntVar *v);
 	virtual void UndoAssignment(IntVal v_a);
 
 private:

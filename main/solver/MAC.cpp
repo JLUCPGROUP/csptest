@@ -14,6 +14,10 @@ MAC::MAC(Network * n, const ACAlgorithm ac_algzm) :
 	case AC_3bit:
 		ac_ = new AC3bit(n_);
 		break;
+	case A_FC:
+		ac_ = new FC(n_);
+	case A_FC_bit:
+		ac_ = new FCbit(n_);
 		//case AC_3rm:
 		//	ac_ = new AC3rm(nt_);
 	default:

@@ -18,6 +18,7 @@ Search::Search(Network *n, const LookAhead la, const LookBack lb, const Consiste
 	default:
 		break;
 	}
+	expl.initial(n_);
 }
 
 SearchStatistics Search::enforce(const int time_limits) {}
@@ -27,14 +28,20 @@ Search::~Search() {
 }
 
 vector<IntVal> Search::HandleEmptyDomain(IntVar* v) {
-	if (lb_ == LB_SBT) {
+	if (lb_ == LB_SBT)
 		return I.vals();
-	}
+
 	nogood.clear();
 	for (auto a : v->values())
 		nogood.insert(nogood.end(), expl[IntVal(v, a)].begin(), expl[IntVal(v, a)].end());
 
 	return nogood;
+}
+
+void Search::UndoAssignment(IntVal v_a) {
+	//for (size_t i = 0; i < length; i++) {
+
+	//}
 }
 
 IntVal Search::select_v_value() const {
