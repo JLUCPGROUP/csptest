@@ -21,7 +21,7 @@ Search::Search(Network *n, const LookAhead la, const LookBack lb, const Consiste
 	expl.initial(n_);
 }
 
-SearchStatistics Search::enforce(const int time_limits) {}
+//SearchStatistics Search::enforce(const int time_limits) {}
 
 Search::~Search() {
 	delete ac_;

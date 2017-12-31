@@ -185,7 +185,7 @@ protected:
 class FC :public AC3 {
 public:
 	FC(Network* n);
-	ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0);
+	ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0) override;
 private:
 	//int max_bitDom_size_;
 	//vector<vector<bitset<BITSIZE>>> bitSup_;
@@ -205,7 +205,7 @@ protected:
 class FCbit :public AC3bit {
 public:
 	FCbit(Network* n);
-	ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0);
+	ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0) override;
 private:
 	//int max_bitDom_size_;
 	//vector<vector<bitset<BITSIZE>>> bitSup_;
@@ -215,6 +215,7 @@ class MAC {
 public:
 	MAC(Network *n, ACAlgorithm ac_algzm);
 	SearchStatistics enforce(const int time_limits);
+	SearchStatistics enforce_fc(const int time_limits);
 	virtual ~MAC();
 	int sol_count() const { return sol_count_; }
 	void sol_count(const int val) { sol_count_ = val; }
@@ -236,7 +237,7 @@ private:
 class Search {
 public:
 	Search(Network *n, const LookAhead look_ahead, const LookBack look_back, const Consistency consistency);
-	SearchStatistics enforce(const int time_limits);
+	//SearchStatistics enforce(const int time_limits);
 	virtual ~Search();
 	int sol_count() const { return sol_count_; }
 	void sol_count(const int val) { sol_count_ = val; }
