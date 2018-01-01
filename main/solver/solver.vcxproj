@@ -170,6 +170,7 @@
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="IntVar2.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SAC1.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="Solver.cpp" />
   </ItemGroup>
@@ -178,6 +179,7 @@
     <ClInclude Include="IntVar4.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="IntVar2.h" />
+    <ClInclude Include="SAC1.h" />
     <ClInclude Include="Solver.h" />
     <ClInclude Include="Tabular.h" />
   </ItemGroup>
