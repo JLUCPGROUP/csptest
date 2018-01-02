@@ -29,7 +29,7 @@ int main() {
 	//AC3bit ac(n);
 	//ac.EnforceGAC_arc(n->vars, 0);
 
-	MAC mac(n, AC_3bit, DOM);
+	MAC mac(n, AC_3bit, DOM_WDEG);
 	const SearchStatistics statistics = mac.enforce(TimeLimit);
 	cout << "time = " << statistics.solve_time << endl;
 	cout << "positive = " << statistics.num_positive << endl;

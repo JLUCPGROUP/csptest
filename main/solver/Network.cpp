@@ -12,10 +12,11 @@ IntVar::IntVar(HVar* v, const int num_vars) :
 	num_bit_(ceil(static_cast<float>(v->vals.size()) / BITSIZE)),
 	vals_(v->vals),
 	hv_(v) {
-	bit_tmp_.resize(num_bit_);
-	for_each(bit_tmp_.begin(), bit_tmp_.end(), [&](auto& a) {a.set(); });
-
-	bit_tmp_.back() >>= BITSIZE - last_limit_;
+	bit_tmp_.resize(num_bit_, 0);
+	for (int i = 0; i < init_size_; ++i) {
+		auto idx = get_bit_index(i);
+		bit_tmp_[get<0>(idx)].set(get<1>(idx));
+	}
 	bit_doms_.resize(num_vars + 1, bit_tmp_);
 	level_.resize(num_vars + 1, 0);
 }
@@ -25,17 +26,17 @@ void IntVar::RemoveValue(const int a, const int p) {
 
 	//}
 	//else {
-		const auto index = get_bit_index(a);
-		while (level_[top_] > p)
-			--top_;
+	const auto index = get_bit_index(a);
+	while (level_[top_] > p)
+		--top_;
 
-		if (level_[top_] < p) {
-			++top_;
-			bit_doms_[top_].assign(bit_doms_[(top_ - 1)].begin(), bit_doms_[(top_ - 1)].end());
-		}
-		bit_doms_[top_][get<0>(index)].reset(get<1>(index));
-		level_[top_] = p;
-		--curr_size_;
+	if (level_[top_] < p) {
+		++top_;
+		bit_doms_[top_].assign(bit_doms_[(top_ - 1)].begin(), bit_doms_[(top_ - 1)].end());
+	}
+	bit_doms_[top_][get<0>(index)].reset(get<1>(index));
+	level_[top_] = p;
+	--curr_size_;
 	//}
 }
 
