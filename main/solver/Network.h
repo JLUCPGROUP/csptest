@@ -114,6 +114,7 @@ protected:
 	int top_ = 0;
 	vector<int> vals_;
 	vector<vector<bitset<BITSIZE>>> bit_doms_;
+	vector<bitset<BITSIZE>> bit_tmp_;
 	vector<int> level_;
 	HVar* hv_;
 	//int curr_level_ = 0;
@@ -252,6 +253,7 @@ public:
 	int GetIntConValIndex(IntConVal & c_val) const;
 	int GetIntConValIndex(const int c_id, const int v_id, const int a);
 	IntConVal GetIntConVal(int index);
+	void RestoreUpto(const int level);
 	int max_arity() const { return max_arity_; }
 	int max_domain_size() const { return max_dom_size_; }
 	int max_bitDom_size() const { return max_bitDom_size_; }

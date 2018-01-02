@@ -119,8 +119,8 @@ SearchStatistics MAC::enforce(const int time_limits) {
 			v_a = I.pop();
 
 			for (IntVar* v : n_->vars)
-				if (!v->assigned())
-					v->RestoreUpTo(I.size() + 1);
+				//if (!v->assigned())
+				v->RestoreUpTo(I.size());
 
 			v_a.v()->RemoveValue(v_a.a(), I.size());
 			++statistics_.num_negative;

@@ -76,7 +76,7 @@ private:
 
 class arc_que {
 public:
-#define  have(a) vid_set_[a.c_id() * arity_ + a.c()->index(a.v())]
+	int& have(const arc a) { return vid_set_[a.c_id() * arity_ + a.c()->index(a.v())]; };
 	arc_que() {}
 	arc_que(const int cons_size, const int max_arity);
 	virtual ~arc_que() {};
@@ -149,6 +149,7 @@ public:
 	virtual ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0) = 0;
 	virtual ConsistencyState EnforceGAC_arc(vector<IntVar*>& x_evt, const int level) = 0;
 	void insert(IntVar* v);
+	ConsistencyState cs;
 
 	int del() const { return delete_; }
 protected:
@@ -170,7 +171,7 @@ public:
 	ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0) override;
 	ConsistencyState EnforceGAC_arc(vector<IntVar*>& x_evt, const int level = 0) override;
 	//SearchError se;
-	ConsistencyState cs;
+
 protected:
 	//pro_que<T> q;
 	arc_que Q;
@@ -209,6 +210,20 @@ public:
 private:
 	//int max_bitDom_size_;
 	//vector<vector<bitset<BITSIZE>>> bitSup_;
+};
+
+class SAC1 {
+public:
+	SAC1(Network* n, ACAlgorithm a);
+	bool enforce(vector<IntVar*> x_evt, int level);
+	virtual ~SAC1();
+protected:
+	int del_ = 0;
+	int level_;
+	Network* n_;
+	AC* ac_;
+	ACAlgorithm ac_algzm_;
+	vector<IntVar*> x_evt_;
 };
 
 class MAC {

@@ -6,9 +6,9 @@
     <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/LatinSquare-xcsp2-qcp10/qcp-10-67-00_X2.xml</BMFile>-->
     <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/Queens-m1-s1/Queens-0012-m1.xml</BMFile>-->
     <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/QueensKnights-m1-s1/QueensKnights-008-05-add.xml</BMFile>-->
-    <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/QueenAttacking-xcsp2-s1/QueenAttacking-03_X2.xml</BMFile>-->
+    <BMFile id ="0">E:/Projects/benchmarks/xcsp/QueenAttacking-xcsp2-s1/QueenAttacking-06_X2.xml</BMFile>
     <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/Haystacks/Haystacks-04.xml</BMFile>-->
-    <BMFile id ="0">E:/Projects/benchmarks/xcsp/Random-D-t080/rand-2-40-80-103-080-55.xml</BMFile>
+    <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/Random-D-t080/rand-2-40-80-103-080-55.xml</BMFile>-->
     <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/Random-D-t080/rand-2-40-80-103-080-11.xml</BMFile>-->
     <!--<BMFile id ="0">E:/Projects/benchmarks/ModelRB/frb30-15/frb30-15/frb30-15-1_ext.xml</BMFile>-->
   </BMFiles>

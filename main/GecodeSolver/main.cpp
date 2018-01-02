@@ -24,7 +24,7 @@ int main() {
 	GetHModel(bm_path, hm);
 	GModel* gm = new GModel();
 	BuildGModel(hm, gm);
-	gm->status();
+	//gm->status();
 	gm->print();
 
 	//int s[2] = { 0, 0 };
@@ -39,24 +39,23 @@ int main() {
 
 	//cout << s[0] - s[1] << endl;
 
-	Search::TimeStop ts(TimeLimit);
-	Search::Options options;
-	options.stop = &ts;
-	//branch(*gm, gm->vs, INT_VAR_AFC_SIZE_MAX(), INT_VALUES_MIN());
-	branch(*gm, gm->vs, INT_VAR_SIZE_MIN(), INT_VALUES_MIN());
-	DFS<GModel> ee(gm, options);
+	//Search::TimeStop ts(TimeLimit);
+	//Search::Options options;
+	//options.stop = &ts;
+	////branch(*gm, gm->vs, INT_VAR_AFC_SIZE_MAX(), INT_VALUES_MIN());
+	//branch(*gm, gm->vs, INT_VAR_SIZE_MIN(), INT_VALUES_MIN());
+	//DFS<GModel> ee(gm, options);
 
-	Timer t0;
-	if (GModel* ss = ee.next()) {
-		ss->print();
-		//cout << "nodes = " << ee.statistics().node << endl;
-		delete ss;
-	}
-	cout << ee.statistics().node << endl;
-	cout << t0.elapsed() << endl;
+	//Timer t0;
+	//if (GModel* ss = ee.next()) {
+	//	ss->print();
+	//	//cout << "nodes = " << ee.statistics().node << endl;
+	//	delete ss;
+	//}
+	//cout << ee.statistics().node << endl;
+	//cout << t0.elapsed() << endl;
 
-	delete hm;
-	delete gm;
+
 
 	//GModel* dgm = static_cast<GModel*>(gm->clone());
 	//Search::TimeStop ts(200000);
@@ -81,9 +80,12 @@ int main() {
 	//cout << "---------------gecode solving---------------" << endl;
 	//cout << "Gecode solve time = " << gecode_solve_time << endl;
 
-	//SAC1 sac1(gm);
-	//Timer t;
-	//const bool result = sac1.enforce();
-	//const int64_t sac_time = t.elapsed();
+	SAC1 sac1(gm);
+	Timer t;
+	const bool result = sac1.enforce();
+	const int64_t sac_time = t.elapsed();
+	gm->print();
+	delete hm;
+	delete gm;
 	return 0;
 }

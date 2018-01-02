@@ -12,24 +12,31 @@ IntVar::IntVar(HVar* v, const int num_vars) :
 	num_bit_(ceil(static_cast<float>(v->vals.size()) / BITSIZE)),
 	vals_(v->vals),
 	hv_(v) {
-	vector<bitset<BITSIZE>> a(num_bit_, ULLONG_MAX);
-	a.back() >>= BITSIZE - last_limit_;
-	bit_doms_.resize(num_vars + 1, a);
+	bit_tmp_.resize(num_bit_);
+	for_each(bit_tmp_.begin(), bit_tmp_.end(), [&](auto& a) {a.set(); });
+
+	bit_tmp_.back() >>= BITSIZE - last_limit_;
+	bit_doms_.resize(num_vars + 1, bit_tmp_);
 	level_.resize(num_vars + 1, 0);
 }
 
 void IntVar::RemoveValue(const int a, const int p) {
-	const auto index = get_bit_index(a);
-	while (level_[top_] > p)
-		--top_;
+	//if (p == -1) {
 
-	if (level_[top_] < p) {
-		++top_;
-		bit_doms_[top_].assign(bit_doms_[(top_ - 1)].begin(), bit_doms_[(top_ - 1)].end());
-	}
-	bit_doms_[top_][get<0>(index)].reset(get<1>(index));
-	level_[top_] = p;
-	--curr_size_;
+	//}
+	//else {
+		const auto index = get_bit_index(a);
+		while (level_[top_] > p)
+			--top_;
+
+		if (level_[top_] < p) {
+			++top_;
+			bit_doms_[top_].assign(bit_doms_[(top_ - 1)].begin(), bit_doms_[(top_ - 1)].end());
+		}
+		bit_doms_[top_][get<0>(index)].reset(get<1>(index));
+		level_[top_] = p;
+		--curr_size_;
+	//}
 }
 
 void IntVar::ReduceTo(const int a, const int p) {
@@ -56,7 +63,7 @@ void IntVar::AddValue(const int a) {
 }
 
 void IntVar::RestoreUpTo(const int p) {
-	while (level_[top_] >= p)
+	while (level_[top_] > p)
 		--top_;
 	curr_size_ = 0;
 	for (auto v : bit_doms_[top_])
@@ -266,6 +273,12 @@ IntConVal Network::GetIntConVal(const int index) {
 	const int a = index % tabs.size() % max_dom_size_;
 	IntConVal c(tabs[c_id], tabs[c_id]->scope[v_id], a);
 	return c;
+}
+
+void Network::RestoreUpto(const int level) {
+	for (IntVar* v : vars)
+		//if (!v->assigned())
+		v->RestoreUpTo(level);
 }
 
 void Network::show() {
