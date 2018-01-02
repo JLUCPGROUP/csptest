@@ -4,8 +4,8 @@
     <!--<BMFile id ="0">queens-4_ext.xml</BMFile>-->
     <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/Random-m1-5-12-12/rand-5-12-12-200-12442-01.xml</BMFile>-->
     <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/LatinSquare-xcsp2-qcp10/qcp-10-67-00_X2.xml</BMFile>-->
-    <BMFile id ="0">E:/Projects/benchmarks/xcsp/QueenAttacking-xcsp2-s1/QueenAttacking-06_X2.xml</BMFile>
-    <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/Haystacks/Haystacks-04.xml</BMFile>-->
+    <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/QueenAttacking-xcsp2-s1/QueenAttacking-06_X2.xml</BMFile>-->
+    <BMFile id ="0">E:/Projects/benchmarks/xcsp/Random-RB-2-30-15f/rand-2-30-15-306-230f-01.xml</BMFile>
     <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/QueensKnights-m1-s1/QueensKnights-008-05-add.xml</BMFile>-->
     <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/Random-RB-2-30-15f/rand-2-30-15-306-230f-01.xml</BMFile>-->
     <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/Random-D-t080/rand-2-40-80-103-080-55.xml</BMFile>-->

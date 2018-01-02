@@ -203,53 +203,69 @@ MAC::~MAC() {
 IntVal MAC::select_v_value() const {
 	//IntVar* v = n_->vars[I->size()];
 	//return IntVal(v, v->head());
-	IntVal val(nullptr, -1);
-	switch (h_) {
-	case DOM: {
-		int min_size = INT_MAX;
-		for (auto v : n_->vars)
-			if (!v->assigned())
-				if (v->size() < min_size) {
-					min_size = v->size();
-					val.v(v);
-				}
-		val.a(val.v()->head());
-	}
-			  break;
-	case DOM_WDEG: {
-		int min_size = INT_MAX;
-		for (auto x : n_->vars) {
-			if (!x->assigned()) {
-				int x_dw = 0;
-				for (auto c : n_->subscription[x]) {
-					bool res = false;
-					for (auto y : c->scope) {
-						if (x != y && (!y->assigned())) {
-							res = true;
-						}
-					}
-					if (res) {
-						x_dw += c->weight;
-					}
-				}
-				x_dw = x->size() / x_dw;
-				if (x_dw < min_size) {
-					min_size = x_dw;
-					val.v(x);
-				}
-			}
-		}
+	//IntVal val(nullptr, -1);
+	//switch (h_) {
+	//case DOM: {
+	//	int min_size = INT_MAX;
+	//	for (auto v : n_->vars)
+	//		if (!v->assigned())
+	//			if (v->size() < min_size) {
+	//				min_size = v->size();
+	//				val.v(v);
+	//			}
+	//	val.a(val.v()->head());
+	//}
+	//		  break;
+	//case DOM_WDEG: {
+	//	int min_size = INT_MAX;
+	//	for (auto x : n_->vars) {
+	//		if (!x->assigned()) {
+	//			int x_w = 1;
+	//			for (auto c : n_->subscription[x]) {
+	//				//bool res = false;
+	//				int cnt = 0;
+	//				for (auto y : c->scope) {
+	//					//if (x != y && (!y->assigned())) {
+	//					//	res = true;
+	//					//}
+	//					if (!y->assigned()) {
+	//						++cnt;
+	//					}
+	//				}
+	//				if (cnt > 1) {
+	//					x_w += c->weight;
+	//				}
+	//			}
 
-		/*if (v->size() < min_size) {
-			min_size = v->size();
-			val.v(v);
-		}*/
-		val.a(val.v()->head());
-	}
-				   break;
-	default:;
-	}
-	return val;
+	//			const int x_dw = x->size() / 1;
+	//			if (x_dw < min_size) {
+	//				min_size = x_dw;
+	//				val.v(x);
+
+	//			}
+	//		}
+	//	}
+
+	//	/*if (v->size() < min_size) {
+	//		min_size = v->size();
+	//		val.v(v);
+	//	}*/
+	//	val.a(val.v()->head());
+	//}
+	//			   break;
+	//default:;
+	//}
+	//return val;
+	IntVar* x = nullptr;
+	int min_size = INT_MAX;
+	for (auto v : n_->vars)
+		if (!v->assigned())
+			if (v->size() < min_size) {
+				min_size = v->size();
+				x = v;
+			}
+
+	return IntVal(x, x->head());
 }
 
 
