@@ -1,9 +1,10 @@
 #include "Solver.h"
 using namespace std;
 namespace cudacp {
-MAC::MAC(Network * n, const ACAlgorithm ac_algzm) :
+MAC::MAC(Network * n, const ACAlgorithm ac_algzm, VarHeu h) :
 	n_(n),
-	ac_algzm_(ac_algzm) {
+	ac_algzm_(ac_algzm),
+	h_(h) {
 	x_evt_.reserve(n_->vars.size());
 	I.initial(n_);
 	//= new AssignedStack(n_);
@@ -202,16 +203,53 @@ MAC::~MAC() {
 IntVal MAC::select_v_value() const {
 	//IntVar* v = n_->vars[I->size()];
 	//return IntVal(v, v->head());
-	IntVar* x = nullptr;
-	int min_size = INT_MAX;
-	for (auto v : n_->vars)
-		if (!v->assigned())
-			if (v->size() < min_size) {
-				min_size = v->size();
-				x = v;
+	IntVal val(nullptr, -1);
+	switch (h_) {
+	case DOM: {
+		int min_size = INT_MAX;
+		for (auto v : n_->vars)
+			if (!v->assigned())
+				if (v->size() < min_size) {
+					min_size = v->size();
+					val.v(v);
+				}
+		val.a(val.v()->head());
+	}
+			  break;
+	case DOM_WDEG: {
+		int min_size = INT_MAX;
+		for (auto x : n_->vars) {
+			if (!x->assigned()) {
+				int x_dw = 0;
+				for (auto c : n_->subscription[x]) {
+					bool res = false;
+					for (auto y : c->scope) {
+						if (x != y && (!y->assigned())) {
+							res = true;
+						}
+					}
+					if (res) {
+						x_dw += c->weight;
+					}
+				}
+				x_dw = x->size() / x_dw;
+				if (x_dw < min_size) {
+					min_size = x_dw;
+					val.v(x);
+				}
 			}
+		}
 
-	return IntVal(x, x->head());
+		/*if (v->size() < min_size) {
+			min_size = v->size();
+			val.v(v);
+		}*/
+		val.a(val.v()->head());
+	}
+				   break;
+	default:;
+	}
+	return val;
 }
 
 

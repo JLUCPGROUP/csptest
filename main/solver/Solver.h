@@ -20,6 +20,10 @@ enum LookAhead {
 	LA_BC, LA_FC, LA_MAC
 };
 
+enum VarHeu {
+	DOM, DOM_WDEG
+};
+
 struct SearchStatistics {
 	u64 num_sol = 0;
 	u64 num_positive = 0;
@@ -228,7 +232,7 @@ protected:
 
 class MAC {
 public:
-	MAC(Network *n, ACAlgorithm ac_algzm);
+	MAC(Network *n, ACAlgorithm ac_algzm, VarHeu h);
 	SearchStatistics enforce(const int time_limits);
 	SearchStatistics enforce_fc(const int time_limits);
 	virtual ~MAC();
@@ -247,6 +251,7 @@ private:
 	bool consistent_;
 	bool finished_ = false;
 	SearchStatistics statistics_;
+	VarHeu h_;
 };
 
 class Search {

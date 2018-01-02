@@ -29,14 +29,14 @@ int main() {
 	//AC3bit ac(n);
 	//ac.EnforceGAC_arc(n->vars, 0);
 
-	//MAC mac(n, AC_3bit);
-	//const SearchStatistics statistics = mac.enforce(TimeLimit);
-	//cout << "time = " << statistics.solve_time << endl;
-	//cout << "positive = " << statistics.num_positive << endl;
-	//cout << "negative = " << statistics.num_negative << endl;
+	MAC mac(n, AC_3bit, DOM_WDEG);
+	const SearchStatistics statistics = mac.enforce(TimeLimit);
+	cout << "time = " << statistics.solve_time << endl;
+	cout << "positive = " << statistics.num_positive << endl;
+	cout << "negative = " << statistics.num_negative << endl;
 	//n->show();
-	SAC1 sac(n, AC_3bit);
-	sac.enforce(n->vars, 0);
+	//SAC1 sac(n, AC_3bit);
+	//sac.enforce(n->vars, 0);
 	//n->show();
 	delete n;
 	delete hm;

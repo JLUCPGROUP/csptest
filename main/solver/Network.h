@@ -131,6 +131,8 @@ public:
 
 	const IntVal& operator=(const IntVal& rhs);
 	IntVar* v() const { return v_; }
+	void v(IntVar* v) { v_ = v; }
+	void a(const int a) { a_ = a; }
 	int vid() const { return v_->id(); }
 	int a() const { return a_; }
 	bool op() const { return aop_; }
@@ -162,6 +164,7 @@ public:
 	size_t arity;
 	vector<IntVar *>scope;
 	const vector<vector<int>>& tuples() const { return tuples_; }
+	int weight = 1;
 private:
 	int id_;
 	vector<vector<int>>& tuples_;
