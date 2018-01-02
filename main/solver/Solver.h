@@ -215,7 +215,7 @@ private:
 class SAC1 {
 public:
 	SAC1(Network* n, ACAlgorithm a);
-	bool enforce(vector<IntVar*> x_evt, int level);
+	bool enforce(vector<IntVar*> x_evt, const int level);
 	virtual ~SAC1();
 protected:
 	int del_ = 0;

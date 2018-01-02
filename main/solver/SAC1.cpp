@@ -30,7 +30,7 @@ SAC1::~SAC1() {
 	delete ac_;
 }
 
-bool SAC1::enforce(vector<IntVar*> x_evt, int level) {
+bool SAC1::enforce(vector<IntVar*> x_evt, const int level) {
 	ConsistencyState cs = ac_->enforce(n_->vars, level);
 	bool result = cs.state;
 	cout << cs.num_delete << endl;
