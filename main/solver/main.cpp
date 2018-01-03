@@ -27,7 +27,7 @@ int main() {
 	//hm->show();
 	Network* n = new Network(hm);
 	//AC3bit ac(n);
-	//ac.EnforceGAC_arc(n->vars, 0);
+	//ac.enforce_arc(n->vars, 0);
 
 	MAC mac(n, AC_3bit, DOM_WDEG);
 	const SearchStatistics statistics = mac.enforce(TimeLimit);

@@ -168,7 +168,7 @@ Tabular::Tabular(HTab* t, const vector<IntVar*> scp) :
 	scope(scp),
 	id_(t->id),
 	tuples_(t->tuples) {
-
+	weight = 1;
 }
 
 bool Tabular::sat(vector<int>& t) const {
