@@ -67,7 +67,8 @@ ConsistencyState AC3::enforce(vector<IntVar*>& x_evt, const int level) {
 								if (y->faild()) {
 									cs.tab = c;
 									cs.var = y;
-									++c->weight;
+									++(c->weight);
+									//cout << c->id()<<": weight = "<<c->weight << endl;
 									cs.state = false;
 									return cs;
 								}
@@ -84,7 +85,7 @@ ConsistencyState AC3::enforce(vector<IntVar*>& x_evt, const int level) {
 	return cs;
 }
 
-ConsistencyState AC3::EnforceGAC_arc(vector<IntVar*>& x_evt, const int level) {
+ConsistencyState AC3::enforce_arc(vector<IntVar*>& x_evt, const int level) {
 	level_ = level;
 	delete_ = 0;
 	cs.level = level;
@@ -104,7 +105,8 @@ ConsistencyState AC3::EnforceGAC_arc(vector<IntVar*>& x_evt, const int level) {
 				cs.tab = c_x.c();
 				cs.var = c_x.v();
 				cs.state = false;
-				++c_x.c()->weight;
+				++(c_x.c()->weight);
+				//cout << c_x.c()->id() << ": weight = " << c_x.c()->weight << endl;
 				return cs;
 			}
 

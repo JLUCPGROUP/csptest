@@ -30,7 +30,7 @@ MAC::MAC(Network * n, const ACAlgorithm ac_algzm, VarHeu h) :
 
 //SearchStatistics MAC::enforce(const int time_limits) {
 //	Timer t;
-//	consistent_ = ac_->EnforceGAC_arc(n_->vars, 0);
+//	consistent_ = ac_->enforce_arc(n_->vars, 0);
 //	x_evt_.clear();
 //	if (!consistent_) {
 //		statistics_.solve_time = t.elapsed();
@@ -50,7 +50,7 @@ MAC::MAC(Network * n, const ACAlgorithm ac_algzm, VarHeu h) :
 //		++statistics_.num_positive;
 //		v_a.v()->ReduceTo(v_a.a(), I.size());
 //		x_evt_.push_back(v_a.v());
-//		consistent_ = ac_->EnforceGAC_arc(x_evt_, I.size());
+//		consistent_ = ac_->enforce_arc(x_evt_, I.size());
 //		cout << ac_->del() << endl;
 //		x_evt_.clear();
 //
@@ -72,7 +72,7 @@ MAC::MAC(Network * n, const ACAlgorithm ac_algzm, VarHeu h) :
 //			cout << "!=" << v_a << endl;
 //			++statistics_.num_negative;
 //			x_evt_.push_back(v_a.v());
-//			consistent_ = v_a.v()->size() && ac_->EnforceGAC_arc(x_evt_, I.size());
+//			consistent_ = v_a.v()->size() && ac_->enforce_arc(x_evt_, I.size());
 //			cout << ac_->del() << endl;
 //			x_evt_.clear();
 //		}
@@ -119,9 +119,8 @@ SearchStatistics MAC::enforce(const int time_limits) {
 
 		while (!consistent_ && !I.empty()) {
 			v_a = I.pop();
-
+			//cout << " != " << v_a << endl;
 			for (IntVar* v : n_->vars)
-				//if (!v->assigned())
 				v->RestoreUpTo(I.size());
 
 			v_a.v()->RemoveValue(v_a.a(), I.size());
@@ -207,7 +206,7 @@ IntVal MAC::select_v_value() const {
 	IntVal val(nullptr, -1);
 	switch (h_) {
 	case DOM: {
-		int min_size = INT_MAX;
+		float min_size = INT_MAX;
 		for (auto v : n_->vars)
 			if (!v->assigned())
 				if (v->size() < min_size) {
@@ -218,10 +217,11 @@ IntVal MAC::select_v_value() const {
 	}
 			  break;
 	case DOM_WDEG: {
-		int min_size = INT_MAX;
+		float min_size = INT_MAX;
 		for (auto x : n_->vars) {
 			if (!x->assigned()) {
-				int x_w = 1;
+				float x_w = 0.0;
+				float x_dw = 0.0;
 				for (auto c : n_->subscription[x]) {
 					//bool res = false;
 					int cnt = 0;
@@ -237,13 +237,27 @@ IntVal MAC::select_v_value() const {
 						x_w += c->weight;
 					}
 				}
-				const int x_dw = x_w;
-				//const int x_dw = x->size() / x_w;
+
+				//if (x_w == 0) {
+				//	x_dw = -1;
+				//}
+				//else {
+				//	x_dw = x->size() / x_w;
+
+				//}
+				//const int x_dw = x_w;
 				//const int x_dw = x_w / x->size();
+				if (x->size() == 1 || x_w == 0) {
+					x_dw = -1;
+				}
+				else {
+					x_dw = x->size() / x_w;
+				}
+
+				//cout << x->id() << ": dom = " << x->size() << ", wdeg = " << x_w << ", dom/wdeg = " << x_dw << endl;
 				if (x_dw < min_size) {
 					min_size = x_dw;
 					val.v(x);
-
 				}
 			}
 		}

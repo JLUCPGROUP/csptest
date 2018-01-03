@@ -151,7 +151,7 @@ public:
 	virtual ~AC() {};
 	virtual bool enforce(VarEvt* x_evt, const int level = 0) = 0;
 	virtual ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0) = 0;
-	virtual ConsistencyState EnforceGAC_arc(vector<IntVar*>& x_evt, const int level) = 0;
+	virtual ConsistencyState enforce_arc(vector<IntVar*>& x_evt, const int level) = 0;
 	void insert(IntVar* v);
 	ConsistencyState cs;
 
@@ -173,7 +173,7 @@ public:
 	virtual ~AC3() {};
 	bool enforce(VarEvt* x_evt, const int level = 0) override;
 	ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0) override;
-	ConsistencyState EnforceGAC_arc(vector<IntVar*>& x_evt, const int level = 0) override;
+	ConsistencyState enforce_arc(vector<IntVar*>& x_evt, const int level = 0) override;
 	//SearchError se;
 
 protected:

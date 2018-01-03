@@ -164,7 +164,7 @@ public:
 	size_t arity;
 	vector<IntVar *>scope;
 	const vector<vector<int>>& tuples() const { return tuples_; }
-	int weight = 1;
+	float weight;
 private:
 	int id_;
 	vector<vector<int>>& tuples_;
