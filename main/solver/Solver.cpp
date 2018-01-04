@@ -28,7 +28,6 @@ void VarEvt::clear() {
 	cur_size_ = 0;
 }
 
-
 AssignedStack::AssignedStack(Network* m) :gm_(m) {
 	max_size_ = m->vars.size();
 	//vals_.resize(m->vars.size());

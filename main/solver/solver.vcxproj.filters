@@ -65,6 +65,9 @@
     <ClCompile Include="SAC1.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="SAC3.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IntVar2.h">
@@ -83,9 +86,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Network.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="SAC1.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

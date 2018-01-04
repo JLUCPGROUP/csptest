@@ -1,6 +1,7 @@
 #include "Solver.h"
 using namespace std;
 namespace cudacp {
+
 MAC::MAC(Network * n, const ACAlgorithm ac_algzm, VarHeu h) :
 	n_(n),
 	ac_algzm_(ac_algzm),
@@ -217,71 +218,36 @@ IntVal MAC::select_v_value() const {
 	}
 			  break;
 	case DOM_WDEG: {
-		float min_size = INT_MAX;
+		float min_size = FLT_MAX;
 		for (auto x : n_->vars) {
 			if (!x->assigned()) {
 				float x_w = 0.0;
 				float x_dw = 0.0;
 				for (auto c : n_->subscription[x]) {
-					//bool res = false;
 					int cnt = 0;
-					for (auto y : c->scope) {
-						//if (x != y && (!y->assigned())) {
-						//	res = true;
-						//}
-						if (!y->assigned()) {
+					for (auto y : c->scope)
+						if (!y->assigned())
 							++cnt;
-						}
-					}
-					if (cnt > 1) {
+					if (cnt > 1)
 						x_w += c->weight;
-					}
 				}
 
-				//if (x_w == 0) {
-				//	x_dw = -1;
-				//}
-				//else {
-				//	x_dw = x->size() / x_w;
-
-				//}
-				//const int x_dw = x_w;
-				//const int x_dw = x_w / x->size();
-				if (x->size() == 1 || x_w == 0) {
+				if (x->size() == 1 || x_w == 0)
 					x_dw = -1;
-				}
-				else {
+				else
 					x_dw = x->size() / x_w;
-				}
-
-				//cout << x->id() << ": dom = " << x->size() << ", wdeg = " << x_w << ", dom/wdeg = " << x_dw << endl;
 				if (x_dw < min_size) {
 					min_size = x_dw;
 					val.v(x);
 				}
 			}
 		}
-
-		/*if (v->size() < min_size) {
-			min_size = v->size();
-			val.v(v);
-		}*/
 		val.a(val.v()->head());
 	}
 				   break;
 	default:;
 	}
 	return val;
-	//IntVar* x = nullptr;
-	//int min_size = INT_MAX;
-	//for (auto v : n_->vars)
-	//	if (!v->assigned())
-	//		if (v->size() < min_size) {
-	//			min_size = v->size();
-	//			x = v;
-	//		}
-
-	//return IntVal(x, x->head());
 }
 
 

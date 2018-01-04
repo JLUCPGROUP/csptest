@@ -73,7 +73,7 @@ const int ABSENT = 0;
 }
 
 const int BITSIZE = 64;
-
+typedef vector<bitset<BITSIZE>> bitSetDom;
 class IntVar {
 public:
 	IntVar(HVar* v, const int vs_size);
@@ -100,7 +100,7 @@ public:
 	void show();
 	inline tuple<int, int> get_bit_index(const int idx) const;
 	vector<int>& values() { return vals_; }
-
+	void GetDelete(const int top, const int dest, bitSetDom& del_vals);
 protected:
 	int id_;
 	string name_;
@@ -113,8 +113,8 @@ protected:
 	int num_bit_;
 	int top_ = 0;
 	vector<int> vals_;
-	vector<vector<bitset<BITSIZE>>> bit_doms_;
-	vector<bitset<BITSIZE>> bit_tmp_;
+	vector<bitSetDom> bit_doms_;
+	bitSetDom bit_tmp_;
 	vector<int> level_;
 	HVar* hv_;
 	//int curr_level_ = 0;
@@ -147,6 +147,8 @@ protected:
 	int a_;
 	bool aop_ = true;
 };
+
+static const IntVal Nil_Val(nullptr, -1);
 
 class Tabular {
 public:

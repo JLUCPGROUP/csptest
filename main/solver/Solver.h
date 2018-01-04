@@ -219,7 +219,7 @@ private:
 class SAC1 {
 public:
 	SAC1(Network* n, ACAlgorithm a);
-	bool enforce(vector<IntVar*> x_evt, const int level);
+	virtual bool enforce(vector<IntVar*> x_evt, const int level);
 	virtual ~SAC1();
 protected:
 	int del_ = 0;
@@ -228,6 +228,21 @@ protected:
 	AC* ac_;
 	ACAlgorithm ac_algzm_;
 	vector<IntVar*> x_evt_;
+};
+
+class Qsac {
+	Qsac(Network* n, const VarHeu h);
+	~Qsac() {};
+	int size(IntVar* v);
+protected:
+	IntVal select_v_value() const;
+	vector<bitSetDom> bitDoms_;
+	Network* n_;
+	VarHeu h_;
+};
+
+class SAC3 :public SAC1 {
+public:
 };
 
 class MAC {

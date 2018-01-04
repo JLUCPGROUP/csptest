@@ -128,6 +128,23 @@ tuple<int, int> IntVar::get_bit_index(const int idx) const {
 	return a;
 }
 
+void IntVar::GetDelete(const int top, const int dest, bitSetDom& del_vals) {
+	int level0 = 1, level1 = 1;
+	for (int i = top_; i >= 0; ++i) {
+		if (level_[i] > top)
+			level0 = i;
+		if (level_[i] > dest)
+			level1 = i;
+		else
+			break;
+	}
+	level0 = level_[level0 - 1];
+	level1 = level_[level1 - 1];
+
+	for (int i = 0; i < num_bit_; ++i)
+		del_vals[i] = bit_doms_[level0][i] ^ bit_doms_[level1][i];
+}
+
 int IntVar::get_value(const int i, const int j) {
 	return i*BITSIZE + j;
 }
@@ -167,9 +184,9 @@ Tabular::Tabular(HTab* t, const vector<IntVar*> scp) :
 	arity(scp.size()),
 	scope(scp),
 	id_(t->id),
-	tuples_(t->tuples) {
-	weight = 1;
-}
+	tuples_(t->tuples),
+	stamp_(0),
+	weight(1) {}
 
 bool Tabular::sat(vector<int>& t) const {
 	return binary_search(tuples_.begin(), tuples_.end(), t);

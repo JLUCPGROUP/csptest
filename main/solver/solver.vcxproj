@@ -109,7 +109,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib;$(GECODEDIR)lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>iconv.lib;libxml2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>model.lib;iconv.lib;libxml2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -146,8 +146,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libxml2.lib;iconv.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>model.lib;libxml2.lib;iconv.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;$(SolutionDir)lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -171,6 +171,7 @@
     <ClCompile Include="IntVar2.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SAC1.cpp" />
+    <ClCompile Include="SAC3.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="Solver.cpp" />
   </ItemGroup>
@@ -179,14 +180,8 @@
     <ClInclude Include="IntVar4.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="IntVar2.h" />
-    <ClInclude Include="SAC1.h" />
     <ClInclude Include="Solver.h" />
     <ClInclude Include="Tabular.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\model\model.vcxproj">
-      <Project>{4f77c693-21b3-486a-8ab8-b8494eab532f}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -37,7 +37,7 @@ static void BuildGModel(const HModel* h_model, GModel* gm) {
 		IntVarArgs scope;
 		for (int j = 0; j < arity; ++j)
 			scope << gm->vs[tab->scope[j]->id];
-		extensional(*gm, scope, ts);
+		extensional(*gm, scope, ts, IPL_DOM);
 	}
 };
 
