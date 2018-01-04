@@ -74,6 +74,11 @@ const int ABSENT = 0;
 
 const int BITSIZE = 64;
 typedef vector<bitset<BITSIZE>> bitSetDom;
+
+static int GetValue(const int i, const int j) {
+	return  i*BITSIZE + j;
+}
+
 class IntVar {
 public:
 	IntVar(HVar* v, const int vs_size);
@@ -141,6 +146,7 @@ public:
 	bool operator==(const IntVal& rhs);
 	bool operator!=(const IntVal& rhs);
 	friend std::ostream& operator<< (std::ostream &os, IntVal &v_val);
+	inline tuple<int, int> get_bit_index() const;
 	~IntVal() {};
 protected:
 	IntVar* v_;

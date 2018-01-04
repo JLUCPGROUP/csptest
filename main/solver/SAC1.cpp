@@ -57,8 +57,8 @@ bool SAC1::enforce(vector<IntVar*> x_evt, const int level) {
 						//cout << "delete: (" << x->id() << "," << a << ")" << endl;
 						++del_;
 						n_->RestoreUpto(level);
-						x->RemoveValue(a, level);
 						x->assign(false);
+						x->RemoveValue(a, level);
 						x_evt_.push_back(x);
 						cs = ac_->enforce(x_evt_, level);
 						result = cs.state;

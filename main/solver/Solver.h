@@ -233,8 +233,13 @@ protected:
 class Qsac {
 	Qsac(Network* n, const VarHeu h);
 	~Qsac() {};
-	int size(IntVar* v);
+	void push(IntVal* val);
+	IntVal pop();
+	int size(IntVar* v) const;
+	void update();
+	//void delete_vals();
 protected:
+	int head(IntVar* v) const;
 	IntVal select_v_value() const;
 	vector<bitSetDom> bitDoms_;
 	Network* n_;

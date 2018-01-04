@@ -173,12 +173,21 @@ bool IntVal::operator!=(const IntVal & rhs) {
 	return !((this == &rhs) || (v_ == rhs.v_ && a_ == rhs.a_ && aop_ == rhs.aop_));
 }
 
+tuple<int, int> IntVal::get_bit_index() const {
+	tuple<int, int> a;
+	get<0>(a) = a_ / BITSIZE;
+	get<1>(a) = a_ % BITSIZE;
+	return a;
+}
+
 ostream & operator<<(ostream & os, IntVal & v_val) {
 	const string s = (v_val.aop_) ? " = " : " != ";
 	os << "(" << v_val.vid() << s << v_val.a_ << ")";
 	return os;
 }
 ////////////////////////////////////////////////////////////////////////////
+
+
 
 Tabular::Tabular(HTab* t, const vector<IntVar*> scp) :
 	arity(scp.size()),
