@@ -79,6 +79,13 @@ static int GetValue(const int i, const int j) {
 	return  i*BITSIZE + j;
 }
 
+static tuple<int, int> GetBitIdx(const int idx) {
+	tuple<int, int> a;
+	get<0>(a) = idx / BITSIZE;
+	get<1>(a) = idx % BITSIZE;
+	return a;
+}
+
 class IntVar {
 public:
 	IntVar(HVar* v, const int vs_size);
@@ -106,6 +113,7 @@ public:
 	inline tuple<int, int> get_bit_index(const int idx) const;
 	vector<int>& values() { return vals_; }
 	void GetDelete(const int top, const int dest, bitSetDom& del_vals);
+	void NewLevel();
 protected:
 	int id_;
 	string name_;
@@ -146,7 +154,7 @@ public:
 	bool operator==(const IntVal& rhs);
 	bool operator!=(const IntVal& rhs);
 	friend std::ostream& operator<< (std::ostream &os, IntVal &v_val);
-	inline tuple<int, int> get_bit_index() const;
+	tuple<int, int> get_bit_index();
 	~IntVal() {};
 protected:
 	IntVar* v_;

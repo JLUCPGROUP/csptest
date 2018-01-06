@@ -145,6 +145,11 @@ void IntVar::GetDelete(const int top, const int dest, bitSetDom& del_vals) {
 		del_vals[i] = bit_doms_[level0][i] ^ bit_doms_[level1][i];
 }
 
+void IntVar::NewLevel() {
+	top_++;
+	bit_doms_[top_].assign(bit_doms_[top_ - 1].begin(), bit_doms_[top_ - 1].end());
+}
+
 int IntVar::get_value(const int i, const int j) {
 	return i*BITSIZE + j;
 }
@@ -173,7 +178,7 @@ bool IntVal::operator!=(const IntVal & rhs) {
 	return !((this == &rhs) || (v_ == rhs.v_ && a_ == rhs.a_ && aop_ == rhs.aop_));
 }
 
-tuple<int, int> IntVal::get_bit_index() const {
+tuple<int, int> IntVal::get_bit_index() {
 	tuple<int, int> a;
 	get<0>(a) = a_ / BITSIZE;
 	get<1>(a) = a_ % BITSIZE;

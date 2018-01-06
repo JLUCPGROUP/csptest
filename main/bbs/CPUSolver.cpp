@@ -17,9 +17,9 @@ void AssignedStack::push(IntVal& v_a) {
 	//	asnd_[v_a.v] = true;
 	//}
 	//else {
-		vals_[top_] = v_a;
-		asnd_[v_a.v] = v_a.aop ? true : false;
-		++top_;
+	vals_[top_] = v_a;
+	asnd_[v_a.v] = v_a.aop ? true : false;
+	++top_;
 	//}
 };
 
@@ -36,7 +36,7 @@ bool AssignedStack::full() const { return top_ == max_size_; }
 bool AssignedStack::empty() const { return top_ == 0; }
 IntVal AssignedStack::operator[](const int i) const { return vals_[i]; };
 IntVal AssignedStack::at(const int i) const { return vals_[i]; };
-void AssignedStack::clear() { top_ = 0; };
+void AssignedStack::clear() { top_ = 0; asnd_.assign(asnd_.size(), false); };
 bool AssignedStack::assiged(const int v) const { return asnd_[v]; };
 
 ostream & operator<<(ostream & os, AssignedStack & I) {

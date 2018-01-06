@@ -231,12 +231,20 @@ protected:
 };
 
 class Qsac {
+public:
+	Qsac() {};
 	Qsac(Network* n, const VarHeu h);
 	~Qsac() {};
-	void push(IntVal* val);
+	void initial(Network* n, const VarHeu h);
+	void push(IntVal val);
 	IntVal pop();
+	bool empty() const;
 	int size(IntVar* v) const;
 	void update();
+	bool vars_assigned();
+	void reset();
+	bool vars_assigned(AssignedStack& I) const;
+	bool in(IntVal v);
 	//void delete_vals();
 protected:
 	int head(IntVar* v) const;
@@ -244,10 +252,21 @@ protected:
 	vector<bitSetDom> bitDoms_;
 	Network* n_;
 	VarHeu h_;
+	int num_bit_vars_;
+	vector<bitset<BITSIZE>> vars_assigned_;
+	vector<bitset<BITSIZE>> vars_assigned_old_;
+	vector<bitset<BITSIZE>> tmp_empty_;
 };
 
 class SAC3 :public SAC1 {
 public:
+	SAC3(Network* n, ACAlgorithm a, const VarHeu h);
+	bool enforce(vector<IntVar*> x_evt, const int level) override;
+protected:
+	IntVal BuildBranch();
+	Qsac q_;
+	VarHeu h_;
+	AssignedStack I_;
 };
 
 class MAC {
