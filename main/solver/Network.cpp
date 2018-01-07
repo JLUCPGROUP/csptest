@@ -128,7 +128,7 @@ tuple<int, int> IntVar::get_bit_index(const int idx) const {
 	return a;
 }
 
-void IntVar::GetDelete(const int top, const int dest, bitSetDom& del_vals) {
+void IntVar::GetDelete(const int top, const int dest, bitSetVector& del_vals) {
 	int level0 = 1, level1 = 1;
 	for (int i = top_; i >= 0; ++i) {
 		if (level_[i] > top)
@@ -197,10 +197,10 @@ ostream & operator<<(ostream & os, IntVal & v_val) {
 Tabular::Tabular(HTab* t, const vector<IntVar*> scp) :
 	arity(scp.size()),
 	scope(scp),
+	weight(1),
 	id_(t->id),
 	tuples_(t->tuples),
-	stamp_(0),
-	weight(1) {}
+	stamp_(0) {}
 
 bool Tabular::sat(vector<int>& t) const {
 	return binary_search(tuples_.begin(), tuples_.end(), t);
@@ -261,6 +261,7 @@ Network::Network(HModel* h) :
 	max_bitDom_size_(ceil(float(h->max_domain_size()) / BITSIZE)),
 	num_vars_(h->vars.size()),
 	num_tabs_(h->tabs.size()) {
+
 	vars.reserve(num_vars_);
 	tabs.reserve(num_tabs_);
 
@@ -278,6 +279,8 @@ Network::Network(HModel* h) :
 		for (auto v : t->scope)
 			subscription[v].push_back(t);
 
+	for (auto v : vars)
+		neighborhood[v] = get_neighbor(v);
 }
 
 void Network::GetFirstValidTuple(IntConVal& c_val, vector<int>& t) {
@@ -311,6 +314,16 @@ void Network::RestoreUpto(const int level) {
 	for (IntVar* v : vars)
 		//if (!v->assigned())
 		v->RestoreUpTo(level);
+}
+
+vector<IntVar*> Network::get_neighbor(IntVar* v) {
+	unordered_set<IntVar*> vs;
+	for (auto c : subscription[v]) 
+		for (auto x : c->scope) 
+			if (x != v) 
+				vs.insert(x);
+
+	return vector<IntVar*>(vs.begin(), vs.end());
 }
 
 void Network::show() {

@@ -3,11 +3,10 @@ namespace cudacp {
 Qsac::Qsac(Network* n, const VarHeu h) :
 	n_(n),
 	h_(h) {
-	bitDoms_.resize(n_->vars.size(), bitSetDom(n_->max_bitDom_size()));
+	bitDoms_.resize(n_->vars.size(), bitSetVector(n_->max_bitDom_size()));
 	for (int i = 0; i < n_->max_bitDom_size(); ++i)
 		bitDoms_[i].assign(n_->vars[i]->bitDom().begin(), n_->vars[i]->bitDom().end());
 }
-
 
 void Qsac::initial(Network* n, const VarHeu h) {
 	n_ = n;
@@ -21,7 +20,7 @@ void Qsac::initial(Network* n, const VarHeu h) {
 	}
 	vars_assigned_old_ = vars_assigned_;
 	tmp_empty_ = vars_assigned_;
-	bitDoms_.resize(n_->vars.size(), bitSetDom(n_->max_bitDom_size()));
+	bitDoms_.resize(n_->vars.size(), bitSetVector(n_->max_bitDom_size()));
 	for (int i = 0; i < n_->max_bitDom_size(); ++i)
 		bitDoms_[i].assign(n_->vars[i]->bitDom().begin(), n_->vars[i]->bitDom().end());
 }

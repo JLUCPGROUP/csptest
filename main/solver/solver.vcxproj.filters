@@ -68,6 +68,9 @@
     <ClCompile Include="SAC3.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="RNSQ.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IntVar2.h">

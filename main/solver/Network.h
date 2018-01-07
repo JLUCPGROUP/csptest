@@ -4,6 +4,7 @@
 #include <bitset>
 #include <tuple>
 #include <string>
+#include <unordered_set>
 #include <HModel.h>
 
 using namespace std;
@@ -73,7 +74,7 @@ const int ABSENT = 0;
 }
 
 const int BITSIZE = 64;
-typedef vector<bitset<BITSIZE>> bitSetDom;
+typedef vector<bitset<BITSIZE>> bitSetVector;
 
 static int GetValue(const int i, const int j) {
 	return  i*BITSIZE + j;
@@ -112,7 +113,7 @@ public:
 	void show();
 	inline tuple<int, int> get_bit_index(const int idx) const;
 	vector<int>& values() { return vals_; }
-	void GetDelete(const int top, const int dest, bitSetDom& del_vals);
+	void GetDelete(const int top, const int dest, bitSetVector& del_vals);
 	void NewLevel();
 protected:
 	int id_;
@@ -126,8 +127,8 @@ protected:
 	int num_bit_;
 	int top_ = 0;
 	vector<int> vals_;
-	vector<bitSetDom> bit_doms_;
-	bitSetDom bit_tmp_;
+	vector<bitSetVector> bit_doms_;
+	bitSetVector bit_tmp_;
 	vector<int> level_;
 	HVar* hv_;
 	//int curr_level_ = 0;
@@ -263,6 +264,7 @@ public:
 	vector<IntVar*> vars;
 	vector<Tabular*> tabs;
 	unordered_map<IntVar*, vector<Tabular*>> subscription;
+	unordered_map<IntVar*, vector<IntVar* >> neighborhood;
 	//unordered_map<IntVar*, vector<IntVar*>> neighborhood;
 	Network(HModel* h);
 	static void GetFirstValidTuple(IntConVal & c_val, vector<int>& t);
@@ -276,6 +278,7 @@ public:
 	int max_arity() const { return max_arity_; }
 	int max_domain_size() const { return max_dom_size_; }
 	int max_bitDom_size() const { return max_bitDom_size_; }
+	vector<IntVar*> get_neighbor(IntVar* v);
 	void show();
 	~Network();
 private:

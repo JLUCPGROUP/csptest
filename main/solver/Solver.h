@@ -144,6 +144,27 @@ protected:
 	Network *m_;
 };
 
+class var_que {
+public:
+	int& have(const IntVar* v) { return vid_set_[v->id()]; };
+	var_que() {}
+	//var_que(Network* n);
+	virtual ~var_que() {};
+
+	//void initial(Network* n);
+	//void DeleteQue();
+	bool empty() const { return m_data_.empty(); }
+	void reserve(const int size);
+	//bool full() const;
+	void push(IntVar* v);
+	IntVar* pop();
+	void clear();
+
+private:
+	vector<IntVar* > m_data_;
+	vector<int> vid_set_;
+};
+
 class AC {
 public:
 	AC(Network *m);
@@ -167,6 +188,7 @@ protected:
 	LookAhead la_;
 	LookBack lb_;
 };
+
 class AC3 :public AC {
 public:
 	AC3(Network *m);
@@ -249,7 +271,7 @@ public:
 protected:
 	int head(IntVar* v) const;
 	IntVal select_v_value() const;
-	vector<bitSetDom> bitDoms_;
+	vector<bitSetVector> bitDoms_;
 	Network* n_;
 	VarHeu h_;
 	int num_bit_vars_;
@@ -267,6 +289,22 @@ protected:
 	Qsac q_;
 	VarHeu h_;
 	AssignedStack I_;
+};
+
+class RNSQ :AC3bit {
+public:
+	RNSQ(Network *m);
+	ConsistencyState conditionFC(IntVar* v, const int level = 0);
+	ConsistencyState neiborAC(vector<IntVar*>& x_evt, IntVar* x, const int level = 0);
+	ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0) override;
+protected:
+	unordered_map<IntVar*, bitSetVector> neibor_;
+	bool is_neibor(IntVar* x, IntVar* v);
+	vector<IntVar*> q_nei_;
+	var_que q_var_;
+	void insert_(vector<IntVar*>& q, IntVar* x);
+	bool in_neibor_exp(Tabular* t, IntVar* x);
+	bool in_neibor(Tabular* t, IntVar* x);
 };
 
 class MAC {
