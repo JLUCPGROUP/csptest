@@ -51,8 +51,8 @@ int main() {
 		//cout << "nodes = " << ee.statistics().node << endl;
 		delete ss;
 	}
-	cout << ee.statistics().node << endl;
 	cout << t0.elapsed() << endl;
+	cout << ee.statistics().node << endl;
 
 
 

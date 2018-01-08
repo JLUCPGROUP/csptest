@@ -15,23 +15,60 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="folder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="folder2.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="frb.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="GModel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="folder.cpp">
+    <ClCompile Include="queens.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SAC1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="sactest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="test2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="test4.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CPUSolver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BuildGModel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CPUSolver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GModel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SAC1.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="myxml.xml" />
+    <Xml Include="test1.xml" />
     <Xml Include="BMPath.xml">
       <Filter>资源文件</Filter>
     </Xml>

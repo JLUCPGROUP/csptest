@@ -23,66 +23,76 @@
 //int main(const int argc, char ** argv) {
 //
 //	if (argc <= 1) {
-//		cout << "no argument" << endl;
+//		std::cout << "no argument" << endl;
 //		return 0;
 //	}
 //
 //	vector<string> files;
 //	getFilesAll(bmp_root + argv[1], files);
 //
-//	vector<u64> SAC_times;
-//	vector<u64> build_times;
-//	vector<u64> search_times;
-//	vector<u64> nodes;
+//	int64_t sum_but = 0;
+//	int64_t sum_sact = 0;
+//	int64_t sum_st = 0;
+//	int64_t sum_nod = 0;
+//	int64_t num_sac = 0;
+//	int64_t num_sol = 0;
+//	int64_t num_has_sol = 0;
+//	int64_t num_bm = 0;
+//
 //	for (const auto f : files) {
+//		//cout << f << endl;
+//		int64_t solve_time = 0;
+//		++num_bm;
 //
 //		HModel *hm = new HModel();
 //		GetHModel(f, hm);
 //		GModel* gm = new GModel();
 //		BuildGModel(hm, gm);
+//
 //		SAC1 sac1(gm);
 //		Timer t;
 //		const bool result = sac1.enforce();
 //		const int64_t sac_time = t.elapsed();
-//		SAC_times.push_back(sac_time);
+//		sum_sact += sac_time;
+//		solve_time += sac_time;
 //
 //		if (result) {
 //			//sat sac
+//			num_sac++;
 //			const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN, TimeLimit, sac_time);
-//			build_times.push_back(statistics.build_time);
-//			search_times.push_back(statistics.solve_time);
-//			if (!statistics.time_out)
-//				nodes.push_back(statistics.nodes);
+//
+//			sum_but += statistics.build_time;
+//			solve_time += statistics.build_time;
+//
+//			if (!statistics.time_out) {
+//				sum_st += statistics.solve_time;
+//				++num_sol;
+//				num_has_sol += statistics.num_sol;
+//				sum_nod += statistics.nodes;
+//				solve_time += statistics.solve_time;
+//			}
 //			else
-//				nodes.push_back(0);
-//		}
-//		else {
-//			build_times.push_back(0);
-//			search_times.push_back(0);
-//			nodes.push_back(0);
+//				solve_time = TimeLimit;
 //		}
 //
+//		cout << solve_time << endl;
 //		delete hm;
 //		delete gm;
 //	}
 //
-//
-//	cout << "---------------SAC_times---------------" << endl;
-//	for (u64 i : SAC_times) {
-//		cout << i << endl;
-//	}
-//	cout << "---------------build_times---------------" << endl;
-//	for (u64 i : build_times) {
-//		cout << i << endl;
-//	}
-//	cout << "---------------search_times---------------" << endl;
-//	for (u64 i : search_times) {
-//		cout << i << endl;
-//	}
-//	cout << "---------------nodes---------------" << endl;
-//	for (u64 i : nodes) {
-//		cout << i << endl;
-//	}
+//	cout << "---------------sum---------------" << endl;
+//	cout << "SAC time = " << sum_sact <<
+//		" || SAC count = " << num_sac <<
+//		" || Build time = " << sum_but <<
+//		" || num solve = " << num_sol <<
+//		" || Solve time =" << sum_st <<
+//		" || nodes = " << sum_nod <<
+//		" || has solution = " << num_has_sol << endl;
+//	std::cout << "---------------------------------n2-avg---------------------------------" << endl;
+//	std::cout <<
+//		"sum time = " << sum_st / (num_sol) <<
+//		" || brs = " << sum_nod / (num_sol) <<
+//		" || time out = " << num_sac - num_sol << endl;
 //	return 0;
 //}
 //

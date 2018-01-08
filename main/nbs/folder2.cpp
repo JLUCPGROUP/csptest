@@ -23,7 +23,7 @@
 //int main(const int argc, char ** argv) {
 //
 //	if (argc <= 1) {
-//		cout << "no argument" << endl;
+//		std::cout << "no argument" << endl;
 //		return 0;
 //	}
 //
@@ -34,8 +34,8 @@
 //	vector<u64> build_times;
 //	vector<u64> search_times;
 //	vector<u64> nodes;
-//	for (const auto f : files) {
 //
+//	for (const auto f : files) {
 //		HModel *hm = new HModel();
 //		GetHModel(f, hm);
 //		GModel* gm = new GModel();
@@ -46,6 +46,7 @@
 //		const int64_t sac_time = t.elapsed();
 //		SAC_times.push_back(sac_time);
 //
+//
 //		if (result) {
 //			//sat sac
 //			const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN, TimeLimit, sac_time);
@@ -55,6 +56,7 @@
 //				nodes.push_back(statistics.nodes);
 //			else
 //				nodes.push_back(0);
+//
 //		}
 //		else {
 //			build_times.push_back(0);
@@ -65,8 +67,6 @@
 //		delete hm;
 //		delete gm;
 //	}
-//
-//
 //	cout << "---------------SAC_times---------------" << endl;
 //	for (u64 i : SAC_times) {
 //		cout << i << endl;
@@ -83,6 +83,7 @@
 //	for (u64 i : nodes) {
 //		cout << i << endl;
 //	}
+//
 //	return 0;
 //}
 //

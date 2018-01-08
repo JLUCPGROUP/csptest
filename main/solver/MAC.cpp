@@ -22,8 +22,9 @@ MAC::MAC(Network * n, const ACAlgorithm ac_algzm, VarHeu h) :
 	case A_FC_bit:
 		ac_ = new FCbit(n_);
 		break;
-		//case AC_3rm:
-		//	ac_ = new AC3rm(nt_);
+	case A_RNSQ:
+		ac_ = new RNSQ(n_);
+		break;
 	default:
 		break;
 	}

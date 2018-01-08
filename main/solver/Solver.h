@@ -5,7 +5,7 @@
 namespace cudacp {
 
 enum ACAlgorithm {
-	AC_1, AC_2, AC_3, AC_4, AC_6, AC_7, AC_2001, AC_3bit, AC_3rm, STR_1, STR_2, STR_3, A_FC, A_FC_bit
+	AC_1, AC_2, AC_3, AC_4, AC_6, AC_7, AC_2001, AC_3bit, AC_3rm, STR_1, STR_2, STR_3, A_FC, A_FC_bit, A_RNSQ
 };
 enum Consistency {
 	C_AC3, C_AC4, C_AC2001, C_AC3bit, C_AC3rm, C_STR1, C_STRC2, C_STR3, C_FC
@@ -291,7 +291,7 @@ protected:
 	AssignedStack I_;
 };
 
-class RNSQ :AC3bit {
+class RNSQ :public AC3bit {
 public:
 	RNSQ(Network *m);
 	ConsistencyState conditionFC(IntVar* v, const int level = 0);
