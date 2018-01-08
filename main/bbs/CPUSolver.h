@@ -557,7 +557,7 @@ public:
 			SearchState state = n.push_back(val);
 
 			if ((state == S_BRANCH) && I.full()) {
-				cout << I << endl;
+				//cout << I << endl;
 				++statistics.num_sol;
 				statistics.solve_time = t.elapsed();
 				//state = S_FAILED;
