@@ -103,7 +103,8 @@ private:
 
 class AssignedStack {
 public:
-	AssignedStack() {};
+	AssignedStack() {}
+	void update_model_assigned();;
 	AssignedStack(Network* m);
 	void initial(Network* m);
 	~AssignedStack() {};
@@ -291,7 +292,7 @@ protected:
 	AssignedStack I_;
 };
 
-class RNSQ :public AC3bit {
+class RNSQ :public AC3 {
 public:
 	RNSQ(Network *m);
 	ConsistencyState conditionFC(IntVar* v, const int level = 0);
@@ -305,6 +306,7 @@ protected:
 	void insert_(vector<IntVar*>& q, IntVar* x);
 	bool in_neibor_exp(Tabular* t, IntVar* x);
 	bool in_neibor(Tabular* t, IntVar* x);
+	bool has_sigleton_domain_neibor(IntVar* x) const;
 };
 
 class MAC {

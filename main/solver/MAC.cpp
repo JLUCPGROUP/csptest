@@ -111,7 +111,7 @@ SearchStatistics MAC::enforce(const int time_limits) {
 		x_evt_.push_back(v_a.v());
 		consistent_ = ac_->enforce(x_evt_, I.size()).state;
 		x_evt_.clear();
-
+		I.update_model_assigned();
 		if (consistent_&&I.full()) {
 			cout << I << endl;
 			finished_ = true;
@@ -130,6 +130,7 @@ SearchStatistics MAC::enforce(const int time_limits) {
 			x_evt_.push_back(v_a.v());
 			consistent_ = v_a.v()->size() && ac_->enforce(x_evt_, I.size()).state;
 			x_evt_.clear();
+			I.update_model_assigned();
 		}
 
 		if (!consistent_)

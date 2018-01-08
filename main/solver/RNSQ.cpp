@@ -1,6 +1,6 @@
 ﻿#include "Solver.h"
 namespace cudacp {
-RNSQ::RNSQ(Network* m) :AC3bit(m) {
+RNSQ::RNSQ(Network* m) :AC3(m) {
 	const int vars_bit_length = ceil(float(m_->vars.size()) / BITSIZE);
 	for (auto i : m_->vars) {
 		neibor_[i].resize(vars_bit_length, 0);
@@ -52,6 +52,18 @@ ConsistencyState RNSQ::conditionFC(IntVar* x, const int level) {
 			}
 		}
 	}
+	//for (auto v : m_->neighborhood[x]) {
+	//	for (auto c : m_->subscription[v])
+	//		for (auto y : c->scope)
+	//			if (!y->assigned() && y != v &&y != x)
+	//				if (revise(arc(c, y)))
+	//					if (y->faild()) {
+	//						cs.tab = c;
+	//						cs.var = y;
+	//						cs.state = false;
+	//						return cs;
+	//					}
+	//}
 	cs.state = true;
 	return cs;
 }
@@ -65,8 +77,8 @@ ConsistencyState RNSQ::neiborAC(vector<IntVar*>& x_evt, IntVar* w, const int lev
 	insert_(q_nei_, w);
 
 	while (!q_nei_.empty()) {
-		IntVar* x = q_.back();
-		q_.pop_back();
+		IntVar* x = q_nei_.back();
+		q_nei_.pop_back();
 		for (Tabular* c : m_->subscription[x]) {
 			//检查该约束
 			if (in_neibor(c, w)) {
@@ -122,51 +134,65 @@ bool RNSQ::in_neibor(Tabular * t, IntVar * x) {
 	return true;
 }
 
+bool RNSQ::has_sigleton_domain_neibor(IntVar* x) const {
+	for (auto v : m_->neighborhood[x])
+		if (v->size() == 1 && !v->assigned())
+			return true;
+	return false;
+}
+
 ConsistencyState RNSQ::enforce(vector<IntVar*>& x_evt, const int level) {
 	level_ = level;
-	q_.clear();
+	q_var_.clear();
 	cs.level = level;
 	cs.num_delete = 0;
 	bool deletion = false;
-	for (auto v : x_evt)
-		q_var_.push(v);
+
+	//if (level == 0 || x_evt[0]->assigned()) {
+	if (level == 0)
+		for (auto v : x_evt)
+			q_var_.push(v);
+	else
+		for (auto v : m_->neighborhood[x_evt[0]])
+			q_var_.push(v);
+
 
 	while (!q_var_.empty()) {
 		IntVar* x = q_var_.pop();
 		deletion = false;
 
 		for (auto a : x->values()) {
-			x->ReduceTo(a, level + 1);
-			x->assign(true);
-			bool result = conditionFC(x, level + 1).state;
+			if (x->have(a)) {
+				x->ReduceTo(a, level + 1);
+				x->assign(true);
+				bool result = conditionFC(x, level + 1).state;
+				level_ = level;
 
-			if (!result) {
-				m_->RestoreUpto(level);
-				x->assign(false);
-				x->RemoveValue(a, level);
-				deletion = true;
-			}
-			else {
-				int b = false;
-				for (auto v : m_->neighborhood[x]) {
-					if (v->size() == 1 && !v->assigned()) {
-						b = true;
+				if (!result) {
+					//cout << IntVal(x, a) << "!result" << endl;
+					m_->RestoreUpto(level);
+					x->assign(false);
+					x->RemoveValue(a, level);
+					deletion = true;
+				}
+				else {
+					m_->RestoreUpto(level);
+					x->assign(false);
+					if (has_sigleton_domain_neibor(x)) {
+						result = neiborAC(m_->neighborhood[x], x, level + 1).state;
+						if (!result) {
+							m_->RestoreUpto(level);
+							x->assign(false);
+							x->RemoveValue(a, level);
+							deletion = true;
+						}
 					}
 				}
-				if (b) {
-					result = neiborAC(m_->neighborhood[x], x, level + 1).state;
-					if (!result) {
-						m_->RestoreUpto(level);
-						x->assign(false);
-						x->RemoveValue(a, level);
-						deletion = true;
-					}
-				}
-			}
 
-			if (x->size() == 0) {
-				cs.state = false;
-				return cs;
+				if (x->size() == 0) {
+					cs.state = false;
+					return cs;
+				}
 			}
 		}
 
@@ -176,7 +202,7 @@ ConsistencyState RNSQ::enforce(vector<IntVar*>& x_evt, const int level) {
 				q_var_.push(v);
 		}
 	}
-
+	//}
 	cs.state = true;
 	return cs;
 }

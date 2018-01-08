@@ -105,6 +105,11 @@ ostream & operator<<(ostream & os, AssignedStack * I) {
 	return os;
 }
 
+void AssignedStack::update_model_assigned() {
+	for (auto val : vals_) 
+		val.v()->assign(true);
+}
+
 ///////////////////////////////////////////////////////////////////////
 DeleteExplanation::DeleteExplanation(Network* m) :
 	m_(m) {
