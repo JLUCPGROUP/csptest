@@ -140,8 +140,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib;$(GECODEDIR)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libxml2.lib;iconv.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;$(SolutionDir)lib;$(GECODEDIR)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>model.lib;libxml2.lib;iconv.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -149,11 +149,6 @@
     <ClCompile Include="GModel.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SAC1.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\model\model.vcxproj">
-      <Project>{4f77c693-21b3-486a-8ab8-b8494eab532f}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="BMPath.xml">

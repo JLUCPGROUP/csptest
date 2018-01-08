@@ -4,16 +4,31 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "solver", "solver\solver.vcxproj", "{E078888F-1E0B-4CDF-9261-78B830713DD2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4F77C693-21B3-486A-8AB8-B8494EAB532F} = {4F77C693-21B3-486A-8AB8-B8494EAB532F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "model", "model\model.vcxproj", "{4F77C693-21B3-486A-8AB8-B8494EAB532F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GecodeSolver", "GecodeSolver\GecodeSolver.vcxproj", "{71625331-E1AD-4B5C-9E7D-4C5AA942F122}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4F77C693-21B3-486A-8AB8-B8494EAB532F} = {4F77C693-21B3-486A-8AB8-B8494EAB532F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bbs", "bbs\bbs.vcxproj", "{B59F5D60-5FBD-41AC-B839-0B5B29646070}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4F77C693-21B3-486A-8AB8-B8494EAB532F} = {4F77C693-21B3-486A-8AB8-B8494EAB532F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nbs", "nbs\nbs.vcxproj", "{4A949417-062E-4F20-88F0-F24F1CA7C2E9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4F77C693-21B3-486A-8AB8-B8494EAB532F} = {4F77C693-21B3-486A-8AB8-B8494EAB532F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OTSolver", "..\..\xcsp3solver\solver\OTSolver\OTSolver.vcxproj", "{A54853F9-072B-4C0E-ACBE-D4EC11B0A79C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4F77C693-21B3-486A-8AB8-B8494EAB532F} = {4F77C693-21B3-486A-8AB8-B8494EAB532F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
