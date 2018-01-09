@@ -154,16 +154,22 @@ public:
 
 	//void initial(Network* n);
 	//void DeleteQue();
-	bool empty() const { return m_data_.empty(); }
+	bool have(IntVar* v);
+	bool empty() const;
 	void reserve(const int size);
-	//bool full() const;
+	bool full() const;
 	void push(IntVar* v);
 	IntVar* pop();
+	bool full();
 	void clear();
+	int max_size() const;
 
 private:
-	vector<IntVar* > m_data_;
+	vector<IntVar*> m_data_;
 	vector<int> vid_set_;
+	size_t max_size_;
+	int m_front_;
+	int m_rear_;
 };
 
 class AC {

@@ -43,7 +43,7 @@ int main(const int argc, char ** argv) {
 		GetHModel(f, hm);
 		Network* n = new Network(hm);
 
-		MAC mac(n, AC_3bit, DOM);
+		MAC mac(n, AC_3bit, DOM_WDEG);
 		const SearchStatistics statistics = mac.enforce(TimeLimit);
 		solve_time.push_back(statistics.solve_time);
 		positive.push_back(statistics.num_positive);

@@ -52,11 +52,7 @@ int main(const int argc, char ** argv) {
 			const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN, TimeLimit, sac_time);
 			build_times.push_back(statistics.build_time);
 			search_times.push_back(statistics.solve_time);
-			if (!statistics.time_out)
-				nodes.push_back(statistics.nodes);
-			else
-				nodes.push_back(0);
-
+			nodes.push_back(statistics.nodes);
 		}
 		else {
 			build_times.push_back(0);

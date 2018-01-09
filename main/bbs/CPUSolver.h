@@ -548,6 +548,7 @@ public:
 
 			if (t.elapsed() > time_limit) {
 				//cout << t.elapsed() << endl;
+				statistics.solve_time = t.elapsed();
 				statistics.time_out = true;
 				return statistics;
 			}
