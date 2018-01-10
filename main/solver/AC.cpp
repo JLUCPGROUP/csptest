@@ -25,5 +25,10 @@ void AC::insert(IntVar* v) {
 	stamp_var_[v->id()] = t_;
 }
 
+void AC::q_insert(IntVar* v) {
+	q__.push(v);
+	++t_;
+	stamp_var_[v->id()] = t_;
+}
 
 }

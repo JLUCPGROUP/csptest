@@ -180,12 +180,13 @@ public:
 	virtual bool enforce(VarEvt* x_evt, const int level = 0) = 0;
 	virtual ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0) = 0;
 	virtual ConsistencyState enforce_arc(vector<IntVar*>& x_evt, const int level) = 0;
-	void insert(IntVar* v);
 	ConsistencyState cs;
-
+	void q_insert(IntVar* v);
+	void insert(IntVar* v);
 	int del() const { return delete_; }
 protected:
 	vector<IntVar*> q_;
+	var_que q__;
 	Network *m_;
 	vector<unsigned> stamp_var_;
 	vector<unsigned> stamp_tab_;

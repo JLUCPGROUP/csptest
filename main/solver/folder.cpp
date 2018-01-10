@@ -75,14 +75,11 @@ void getFilesAll(const string path, vector<string>& files) {
 	if ((h_file = _findfirst(p.assign(path).append("\\*").c_str(), &fileinfo)) != -1) {
 		do {
 			if ((fileinfo.attrib & _A_SUBDIR)) {
-				if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0) {
-					//files.push_back(p.assign(path).append("\\").append(fileinfo.name) );
+				if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
 					getFilesAll(p.assign(path).append("\\").append(fileinfo.name), files);
-				}
 			}
-			else {
+			else
 				files.push_back(p.assign(path).append("\\").append(fileinfo.name));
-			}
 		} while (_findnext(h_file, &fileinfo) == 0);
 		_findclose(h_file);
 	}

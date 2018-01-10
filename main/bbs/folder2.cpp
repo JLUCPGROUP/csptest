@@ -35,7 +35,7 @@ int main(const int argc, char ** argv) {
 	vector<u64> search_times;
 	vector<u64> nodes;
 	for (const auto f : files) {
-
+		cout << f << endl;
 		HModel *hm = new HModel();
 		GetHModel(f, hm);
 		GModel* gm = new GModel();

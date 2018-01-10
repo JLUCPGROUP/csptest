@@ -186,9 +186,9 @@ bool var_que::empty() const {
 }
 
 void var_que::reserve(const int size) {
-	m_data_.resize(size, nullptr);
-	vid_set_.resize(size, 0);
 	max_size_ = size + 1;
+	m_data_.resize(max_size_, nullptr);
+	vid_set_.resize(max_size_, 0);
 	m_front_ = 0;
 	m_rear_ = 0;
 }

@@ -2,7 +2,8 @@
 namespace cudacp {
 AC3::AC3(Network* m) :
 	AC(m) {
-	inital_q_arc();
+	//inital_q_arc();
+	q__.reserve(m->vars.size());
 }
 
 bool AC3::enforce(VarEvt* x_evt, const int level) {
@@ -42,17 +43,60 @@ bool AC3::enforce(VarEvt* x_evt, const int level) {
 	return true;
 }
 
+//ConsistencyState AC3::enforce(vector<IntVar*>& x_evt, const int level) {
+//	level_ = level;
+//	q_.clear();
+//	cs.level = level;
+//	cs.num_delete = 0;
+//
+//	for (auto v : x_evt)
+//		insert(v);
+//	while (!q_.empty()) {
+//		IntVar* x = q_.back();
+//		q_.pop_back();
+//		for (Tabular* c : m_->subscription[x]) {
+//			if (stamp_var_[x->id()] > stamp_tab_[c->id()]) {
+//				for (auto y : c->scope) {
+//					if (!y->assigned()) {
+//						bool aa = false;
+//						for (auto z : c->scope)
+//							if ((z != x) && stamp_var_[z->id()] > stamp_tab_[c->id()])
+//								aa = true;
+//
+//						if ((y != x) || aa)
+//							if (revise(arc(c, y))) {
+//								if (y->faild()) {
+//									cs.tab = c;
+//									cs.var = y;
+//									++(c->weight);
+//									//cout << c->id()<<": weight = "<<c->weight << endl;
+//									cs.state = false;
+//									return cs;
+//								}
+//								insert(y);
+//							}
+//					}
+//				}
+//				++t_;
+//				stamp_tab_[c->id()] = t_;
+//			}
+//		}
+//	}
+//	cs.state = true;
+//	return cs;
+//}
+
 ConsistencyState AC3::enforce(vector<IntVar*>& x_evt, const int level) {
 	level_ = level;
-	q_.clear();
+	q__.clear();
 	cs.level = level;
 	cs.num_delete = 0;
 
 	for (auto v : x_evt)
-		insert(v);
-	while (!q_.empty()) {
-		IntVar* x = q_.back();
-		q_.pop_back();
+		q_insert(v);
+	while (!q__.empty()) {
+		IntVar* x = q__.pop();
+		//q_.pop_back();
 		for (Tabular* c : m_->subscription[x]) {
 			if (stamp_var_[x->id()] > stamp_tab_[c->id()]) {
 				for (auto y : c->scope) {
@@ -72,7 +116,7 @@ ConsistencyState AC3::enforce(vector<IntVar*>& x_evt, const int level) {
 									cs.state = false;
 									return cs;
 								}
-								insert(y);
+								q_insert(y);
 							}
 					}
 				}
@@ -151,7 +195,7 @@ bool AC3::seek_support(IntConVal & c_val) {
 	return false;
 }
 
-void AC3::inital_q_arc() {
-	Q.MakeQue(m_->tabs.size(), m_->max_arity());
-}
+//void AC3::inital_q_arc() {
+//	Q.MakeQue(m_->tabs.size(), m_->max_arity());
+//}
 }
