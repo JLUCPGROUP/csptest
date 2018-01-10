@@ -156,13 +156,13 @@ public:
 	//void DeleteQue();
 	bool have(IntVar* v);
 	bool empty() const;
-	void reserve(const int size);
+	void initial(const int size);
 	bool full() const;
 	void push(IntVar* v);
 	IntVar* pop();
-	bool full();
 	void clear();
 	int max_size() const;
+	int size() const;
 
 private:
 	vector<IntVar*> m_data_;
@@ -170,6 +170,7 @@ private:
 	size_t max_size_;
 	int m_front_;
 	int m_rear_;
+	int size_;
 };
 
 class AC {
@@ -177,20 +178,20 @@ public:
 	AC(Network *m);
 	AC(Network *m, const LookAhead look_ahead, const LookBack look_back);
 	virtual ~AC() {};
-	virtual bool enforce(VarEvt* x_evt, const int level = 0) = 0;
+	//virtual bool enforce(VarEvt* x_evt, const int level = 0) = 0;
 	virtual ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0) = 0;
-	virtual ConsistencyState enforce_arc(vector<IntVar*>& x_evt, const int level) = 0;
+	//virtual ConsistencyState enforce_arc(vector<IntVar*>& x_evt, const int level) = 0;
 	ConsistencyState cs;
-	void q_insert(IntVar* v);
+	//void q_insert(IntVar* v);
 	void insert(IntVar* v);
 	int del() const { return delete_; }
 protected:
-	vector<IntVar*> q_;
-	var_que q__;
+	//vector<IntVar*> q_;
+	var_que q_;
 	Network *m_;
-	vector<unsigned> stamp_var_;
-	vector<unsigned> stamp_tab_;
-	unsigned t_ = 0;
+	vector<u64> stamp_var_;
+	vector<u64> stamp_tab_;
+	u64 t_ = 0;
 	vector<int> tmp_tuple_;
 	int delete_ = 0;
 	LookAhead la_;
@@ -201,18 +202,18 @@ class AC3 :public AC {
 public:
 	AC3(Network *m);
 	virtual ~AC3() {};
-	bool enforce(VarEvt* x_evt, const int level = 0) override;
+	//bool enforce(VarEvt* x_evt, const int level = 0) override;
 	ConsistencyState enforce(vector<IntVar*>& x_evt, const int level = 0) override;
-	ConsistencyState enforce_arc(vector<IntVar*>& x_evt, const int level = 0) override;
+	//ConsistencyState enforce_arc(vector<IntVar*>& x_evt, const int level = 0) override;
 	//SearchError se;
 
 protected:
 	//pro_que<T> q;
-	arc_que Q;
-	int level_;
+	//arc_que Q;
+	int level_ = 0;
 	virtual bool revise(arc& c_x);
 	virtual bool seek_support(IntConVal& c_val);
-	void inital_q_arc();
+	//void inital_q_arc();
 	//private:
 	//	void inital_Q_arc();
 };
@@ -308,9 +309,9 @@ public:
 protected:
 	unordered_map<IntVar*, bitSetVector> neibor_;
 	bool is_neibor(IntVar* x, IntVar* v);
-	vector<IntVar*> q_nei_;
+	var_que q_nei_;
 	var_que q_var_;
-	void insert_(vector<IntVar*>& q, IntVar* x);
+	void insert_(var_que& q, IntVar* v);
 	bool in_neibor_exp(Tabular* t, IntVar* x);
 	bool in_neibor(Tabular* t, IntVar* x);
 	bool has_sigleton_domain_neibor(IntVar* x) const;

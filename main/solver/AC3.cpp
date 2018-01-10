@@ -3,45 +3,45 @@ namespace cudacp {
 AC3::AC3(Network* m) :
 	AC(m) {
 	//inital_q_arc();
-	q__.reserve(m->vars.size());
+	//q_.reserve(m->vars.size());
 }
 
-bool AC3::enforce(VarEvt* x_evt, const int level) {
-	level_ = level;
-	q_.clear();
-
-	for (int i = 0; i < x_evt->size(); ++i)
-		insert(x_evt->at(i));
-
-	while (!q_.empty()) {
-		IntVar* x = q_.back();
-		for (Tabular* c : m_->subscription[x]) {
-			if (stamp_var_[x->id()] > stamp_tab_[c->id()]) {
-				for (auto y : c->scope) {
-					if (!y->assigned()) {
-						bool aa = false;
-						for (auto z : c->scope)
-							if ((z != x) && stamp_var_[z->id()] > stamp_tab_[c->id()])
-								aa = true;
-
-						if ((y != x) || aa) {
-							if (revise(arc(c, y))) {
-								if (y->size() == 0) {
-									return false;
-								}
-								insert(y);
-							}
-						}
-
-					}
-				}
-				++t_;
-				stamp_tab_[c->id()] = t_;
-			}
-		}
-	}
-	return true;
-}
+//bool AC3::enforce(VarEvt* x_evt, const int level) {
+//	level_ = level;
+//	q_.clear();
+//
+//	for (int i = 0; i < x_evt->size(); ++i)
+//		insert(x_evt->at(i));
+//
+//	while (!q_.empty()) {
+//		IntVar* x = q_.back();
+//		for (Tabular* c : m_->subscription[x]) {
+//			if (stamp_var_[x->id()] > stamp_tab_[c->id()]) {
+//				for (auto y : c->scope) {
+//					if (!y->assigned()) {
+//						bool aa = false;
+//						for (auto z : c->scope)
+//							if ((z != x) && stamp_var_[z->id()] > stamp_tab_[c->id()])
+//								aa = true;
+//
+//						if ((y != x) || aa) {
+//							if (revise(arc(c, y))) {
+//								if (y->size() == 0) {
+//									return false;
+//								}
+//								insert(y);
+//							}
+//						}
+//
+//					}
+//				}
+//				++t_;
+//				stamp_tab_[c->id()] = t_;
+//			}
+//		}
+//	}
+//	return true;
+//}
 
 //ConsistencyState AC3::enforce(vector<IntVar*>& x_evt, const int level) {
 //	level_ = level;
@@ -88,14 +88,14 @@ bool AC3::enforce(VarEvt* x_evt, const int level) {
 
 ConsistencyState AC3::enforce(vector<IntVar*>& x_evt, const int level) {
 	level_ = level;
-	q__.clear();
+	q_.clear();
 	cs.level = level;
 	cs.num_delete = 0;
 
 	for (auto v : x_evt)
-		q_insert(v);
-	while (!q__.empty()) {
-		IntVar* x = q__.pop();
+		insert(v);
+	while (!q_.empty()) {
+		IntVar* x = q_.pop();
 		//q_.pop_back();
 		for (Tabular* c : m_->subscription[x]) {
 			if (stamp_var_[x->id()] > stamp_tab_[c->id()]) {
@@ -116,7 +116,7 @@ ConsistencyState AC3::enforce(vector<IntVar*>& x_evt, const int level) {
 									cs.state = false;
 									return cs;
 								}
-								q_insert(y);
+								insert(y);
 							}
 					}
 				}
@@ -129,41 +129,41 @@ ConsistencyState AC3::enforce(vector<IntVar*>& x_evt, const int level) {
 	return cs;
 }
 
-ConsistencyState AC3::enforce_arc(vector<IntVar*>& x_evt, const int level) {
-	level_ = level;
-	delete_ = 0;
-	cs.level = level;
-	cs.num_delete = 0;
-	for (int i = 0; i < x_evt.size(); ++i)
-		for (Tabular* c : m_->subscription[x_evt[i]])
-			for (IntVar* x : c->scope)
-				if (x != x_evt[i])
-					Q.push(arc(c, x));
-
-	while (!Q.empty()) {
-		arc c_x = Q.pop();
-		//cout << "--" << c_x << endl;
-
-		if (revise(c_x)) {
-			if (c_x.v()->faild()) {
-				cs.tab = c_x.c();
-				cs.var = c_x.v();
-				cs.state = false;
-				++(c_x.c()->weight);
-				//cout << c_x.c()->id() << ": weight = " << c_x.c()->weight << endl;
-				return cs;
-			}
-
-			for (Tabular* c : m_->subscription[c_x.v()])
-				if (c != c_x.c())
-					for (IntVar* v : c->scope)
-						if ((v != c_x.v()) && (!v->assigned()))
-							Q.push(arc(c, v));
-		}
-	}
-	cs.state = true;
-	return cs;
-}
+//ConsistencyState AC3::enforce_arc(vector<IntVar*>& x_evt, const int level) {
+//	level_ = level;
+//	delete_ = 0;
+//	cs.level = level;
+//	cs.num_delete = 0;
+//	for (int i = 0; i < x_evt.size(); ++i)
+//		for (Tabular* c : m_->subscription[x_evt[i]])
+//			for (IntVar* x : c->scope)
+//				if (x != x_evt[i])
+//					Q.push(arc(c, x));
+//
+//	while (!Q.empty()) {
+//		arc c_x = Q.pop();
+//		//cout << "--" << c_x << endl;
+//
+//		if (revise(c_x)) {
+//			if (c_x.v()->faild()) {
+//				cs.tab = c_x.c();
+//				cs.var = c_x.v();
+//				cs.state = false;
+//				++(c_x.c()->weight);
+//				//cout << c_x.c()->id() << ": weight = " << c_x.c()->weight << endl;
+//				return cs;
+//			}
+//
+//			for (Tabular* c : m_->subscription[c_x.v()])
+//				if (c != c_x.c())
+//					for (IntVar* v : c->scope)
+//						if ((v != c_x.v()) && (!v->assigned()))
+//							Q.push(arc(c, v));
+//		}
+//	}
+//	cs.state = true;
+//	return cs;
+//}
 
 bool AC3::revise(arc& c_x) {
 	const int num_elements = c_x.v()->size();

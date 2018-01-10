@@ -121,7 +121,7 @@ protected:
 	int init_size_;
 	int curr_size_;
 	int value_ = -1;
-	int stamp_ = 0;
+	u64 stamp_ = 0;
 	bool assigned_ = false;
 	int last_limit_;
 	int num_bit_;
@@ -134,7 +134,6 @@ protected:
 	//int curr_level_ = 0;
 	static int get_value(const int i, const int j);
 	vector<u64> tmp_;
-
 };
 
 class IntVal {
@@ -185,7 +184,7 @@ public:
 private:
 	int id_;
 	vector<vector<int>>& tuples_;
-	int stamp_;
+	u64 stamp_ = 0;
 };
 
 class arc {

@@ -185,12 +185,13 @@ bool var_que::empty() const {
 	return m_front_ == m_rear_;
 }
 
-void var_que::reserve(const int size) {
+void var_que::initial(const int size) {
 	max_size_ = size + 1;
 	m_data_.resize(max_size_, nullptr);
 	vid_set_.resize(max_size_, 0);
 	m_front_ = 0;
 	m_rear_ = 0;
+	size_ = 0;
 }
 
 bool var_que::full() const {
@@ -203,23 +204,21 @@ void var_que::push(IntVar* v) {
 	m_data_[m_rear_] = v;
 	m_rear_ = (m_rear_ + 1) % max_size_;
 	vid_set_[v->id()] = 1;
+	++size_;
 }
 
 IntVar* var_que::pop() {
 	IntVar* tmp = m_data_[m_front_];
 	m_front_ = (m_front_ + 1) % max_size_;
 	vid_set_[tmp->id()] = 0;
-
+	--size_;
 	return tmp;
-}
-
-bool var_que::full() {
-	return m_front_ == (m_rear_ + 1) % max_size_;
 }
 
 void var_que::clear() {
 	m_front_ = 0;
 	m_rear_ = 0;
+	size_ = 0;
 	vid_set_.assign(vid_set_.size(), 0);
 }
 
@@ -227,4 +226,7 @@ int var_que::max_size() const {
 	return max_size_;
 }
 
+int var_que::size() const {
+	return size_;
+}
 }

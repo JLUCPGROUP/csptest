@@ -9,8 +9,8 @@ RNSQ::RNSQ(Network* m) :AC3(m) {
 			neibor_[i][get<0>(a)].set(get<1>(a));
 		}
 	}
-	q_var_.reserve(m_->vars.size());
-	q_nei_.reserve(m_->vars.size());
+	q_var_.initial(m_->vars.size());
+	q_nei_.initial(m_->vars.size());
 }
 bool RNSQ::is_neibor(IntVar* x, IntVar* v) {
 	auto a = GetBitIdx(v->id());
@@ -77,8 +77,7 @@ ConsistencyState RNSQ::neiborAC(vector<IntVar*>& x_evt, IntVar* w, const int lev
 	insert_(q_nei_, w);
 
 	while (!q_nei_.empty()) {
-		IntVar* x = q_nei_.back();
-		q_nei_.pop_back();
+		IntVar* x = q_nei_.pop();
 		for (Tabular* c : m_->subscription[x]) {
 			//检查该约束
 			if (in_neibor(c, w)) {
@@ -114,8 +113,8 @@ ConsistencyState RNSQ::neiborAC(vector<IntVar*>& x_evt, IntVar* w, const int lev
 	return cs;
 }
 
-void RNSQ::insert_(vector<IntVar*>& q, IntVar* v) {
-	q.push_back(v);
+void RNSQ::insert_(var_que& q, IntVar* v) {
+	q.push(v);
 	++t_;
 	stamp_var_[v->id()] = t_;
 }
