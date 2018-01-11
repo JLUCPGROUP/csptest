@@ -62,11 +62,11 @@ int main(const int argc, char ** argv) {
 		delete gm;
 	}
 
-	cout << "---------------nodes---------------" << endl;
-	for (auto i : nodes)
-		cout << i << endl;
 	cout << "---------------Gecode_time---------------" << endl;
 	for (auto i : solve_time)
+		cout << i << endl;
+	cout << "---------------nodes---------------" << endl;
+	for (auto i : nodes)
 		cout << i << endl;
 
 	return 0;

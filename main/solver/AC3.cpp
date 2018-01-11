@@ -87,6 +87,9 @@ AC3::AC3(Network* m) :
 //}
 
 ConsistencyState AC3::enforce(vector<IntVar*>& x_evt, const int level) {
+	stamp_var_.assign(stamp_var_.size(), 0);
+	stamp_tab_.assign(stamp_tab_.size(), 0);
+	t_ = 0;
 	level_ = level;
 	q_.clear();
 	cs.level = level;
