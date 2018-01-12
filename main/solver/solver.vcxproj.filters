@@ -71,6 +71,9 @@
     <ClCompile Include="RNSQ.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="NSACQ.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IntVar2.h">

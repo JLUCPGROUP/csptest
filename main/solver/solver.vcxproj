@@ -170,6 +170,7 @@
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="IntVar2.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="NSACQ.cpp" />
     <ClCompile Include="RNSQ.cpp" />
     <ClCompile Include="SAC1.cpp" />
     <ClCompile Include="SAC3.cpp" />
