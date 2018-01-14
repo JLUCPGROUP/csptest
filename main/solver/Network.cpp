@@ -318,9 +318,9 @@ void Network::RestoreUpto(const int level) {
 
 vector<IntVar*> Network::get_neighbor(IntVar* v) {
 	unordered_set<IntVar*> vs;
-	for (auto c : subscription[v]) 
-		for (auto x : c->scope) 
-			if (x != v) 
+	for (auto c : subscription[v])
+		for (auto x : c->scope)
+			if (x != v)
 				vs.insert(x);
 
 	return vector<IntVar*>(vs.begin(), vs.end());
@@ -358,5 +358,27 @@ const IntConVal& IntConVal::operator=(const IntConVal& rhs) {
 	a_ = rhs.a_;
 
 	return *this;
+}
+void dynamic_bitset::resize(const int size, bool a) {
+	const int s = ceil(float(size) / BITSIZE);
+	limit_ = s / BITSIZE;
+	if (a) {
+		data_.resize(s, ULLONG_MAX);
+		if (BITSIZE - limit_) 
+			data_.back() >>= BITSIZE - limit_;
+	}
+	else
+		data_.resize(s, 0);
+}
+auto& dynamic_bitset::operator[](const int i) {
+	const auto index = get_index(i);
+	return data_[get<0>(index)][get<1>(index)];
+}
+
+tuple<int, int> dynamic_bitset::get_index(const int i) const {
+	tuple<int, int> a;
+	get<0>(a) = i / BITSIZE;
+	get<1>(a) = i % BITSIZE;
+	return a;
 }
 }

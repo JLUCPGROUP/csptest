@@ -1,6 +1,6 @@
 ﻿#include "Solver.h"
 namespace cudacp {
-RNSQ::RNSQ(Network* m) :AC3(m) {
+RNSQ::RNSQ(Network* m) :AC3bit(m) {
 	const int vars_bit_length = ceil(float(m_->vars.size()) / BITSIZE);
 	for (auto i : m_->vars) {
 		neibor_[i].resize(vars_bit_length, 0);
@@ -12,15 +12,11 @@ RNSQ::RNSQ(Network* m) :AC3(m) {
 	q_var_.initial(m_->vars.size());
 	q_nei_.initial(m_->vars.size());
 }
-bool RNSQ::is_neibor(IntVar* x, IntVar* v) {
-	auto a = GetBitIdx(v->id());
-	return neibor_[x][get<0>(a)].test(get<1>(a));
-}
 
 ConsistencyState RNSQ::conditionFC(IntVar* x, const int level) {
 	level_ = level;
 	//在subscription上检查相容性
-	for (Tabular* c : m_->subscription[x]) {
+	for (auto c : m_->subscription[x]) {
 		for (auto y : c->scope) {
 			if (!y->assigned() && y != x) {
 				if (revise(arc(c, y))) {
@@ -40,13 +36,15 @@ ConsistencyState RNSQ::conditionFC(IntVar* x, const int level) {
 	for (auto c : m_->tabs) {
 		if (in_neibor_exp(c, x)) {
 			for (auto v : c->scope) {
-				if (revise(arc(c, v))) {
-					if (v->faild()) {
-						cs.tab = c;
-						cs.var = v;
-						++(c->weight);
-						cs.state = false;
-						return cs;
+				if (!v->assigned()) {
+					if (revise(arc(c, v))) {
+						if (v->faild()) {
+							cs.tab = c;
+							cs.var = v;
+							++(c->weight);
+							cs.state = false;
+							return cs;
+						}
 					}
 				}
 			}
@@ -125,7 +123,10 @@ bool RNSQ::in_neibor_exp(Tabular* t, IntVar* x) {		//临域检查
 			return false;
 	return true;
 }
-
+bool RNSQ::is_neibor(IntVar* x, IntVar* v) {
+	auto a = GetBitIdx(v->id());
+	return neibor_[x][get<0>(a)].test(get<1>(a));
+}
 bool RNSQ::in_neibor(Tabular * t, IntVar * x) {
 	for (auto v : t->scope)
 		if (!is_neibor(x, v) && v != x)
@@ -153,7 +154,9 @@ ConsistencyState RNSQ::enforce(vector<IntVar*>& x_evt, const int level) {
 			q_var_.push(v);
 	else
 		for (auto v : m_->neighborhood[x_evt[0]])
+			//if (!v->assigned()) {
 			q_var_.push(v);
+	//}
 
 
 	while (!q_var_.empty()) {
@@ -177,16 +180,17 @@ ConsistencyState RNSQ::enforce(vector<IntVar*>& x_evt, const int level) {
 				else {
 					m_->RestoreUpto(level);
 					x->assign(false);
-					if (has_sigleton_domain_neibor(x)) {
-						result = neiborAC(m_->neighborhood[x], x, level + 1).state;
-						if (!result) {
-							m_->RestoreUpto(level);
-							x->assign(false);
-							x->RemoveValue(a, level);
-							deletion = true;
-						}
-					}
 				}
+				//	if (has_sigleton_domain_neibor(x)) {
+				//		result = neiborAC(m_->neighborhood[x], x, level + 1).state;
+				//		if (!result) {
+				//			m_->RestoreUpto(level);
+				//			x->assign(false);
+				//			x->RemoveValue(a, level);
+				//			deletion = true;
+				//		}
+				//	}
+				//}
 
 				if (x->size() == 0) {
 					cs.state = false;
@@ -196,9 +200,11 @@ ConsistencyState RNSQ::enforce(vector<IntVar*>& x_evt, const int level) {
 		}
 
 		if (deletion) {
-			q_var_.clear();
+			//q_var_.clear();
 			for (auto v : m_->neighborhood[x])
-				q_var_.push(v);
+				if (!v->assigned()) {
+					q_var_.push(v);
+				}
 		}
 	}
 	//}

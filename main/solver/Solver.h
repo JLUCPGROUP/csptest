@@ -300,7 +300,7 @@ protected:
 	AssignedStack I_;
 };
 
-class RNSQ :public AC3 {
+class RNSQ :public AC3bit {
 public:
 	RNSQ(Network *m);
 	ConsistencyState conditionFC(IntVar* v, const int level = 0);

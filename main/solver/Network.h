@@ -76,6 +76,17 @@ const int ABSENT = 0;
 const int BITSIZE = 64;
 typedef vector<bitset<BITSIZE>> bitSetVector;
 
+class dynamic_bitset {
+public:
+	dynamic_bitset() {};
+	void resize(const int size, bool a = false);
+	auto& operator[](const int i);
+protected:
+	tuple<int, int> get_index(const int i) const;
+	vector<bitset<BITSIZE>> data_;
+	int limit_;
+};
+
 static int GetValue(const int i, const int j) {
 	return  i*BITSIZE + j;
 }
