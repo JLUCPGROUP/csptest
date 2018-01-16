@@ -41,8 +41,8 @@ int main() {
 	Search::TimeStop ts(TimeLimit);
 	Search::Options options;
 	options.stop = &ts;
-	//branch(*gm, gm->vs, INT_VAR_AFC_SIZE_MAX(), INT_VALUES_MIN());
-	branch(*gm, gm->vs, INT_VAR_SIZE_MIN(), INT_VALUES_MIN());
+	branch(*gm, gm->vs, INT_VAR_AFC_SIZE_MAX(), INT_VALUES_MIN());
+	//branch(*gm, gm->vs, INT_VAR_SIZE_MIN(), INT_VALUES_MIN());
 	DFS<GModel> ee(gm, options);
 
 	Timer t0;
