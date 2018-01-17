@@ -9,7 +9,7 @@
     <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/QueensKnights-m1-s1/QueensKnights-008-05-add.xml</BMFile>-->
     <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/Random-RB-2-30-15f/rand-2-30-15-306-230f-01.xml</BMFile>-->
     <!--<BMFile id ="0">E:/Projects/benchmarks/xcsp/Random-D-t080/rand-2-40-80-103-080-55.xml</BMFile>-->
-    <BMFile id ="0">E:/Projects/benchmarks/xcsp/Rlfap-m1-graphs/Rlfap-graph-01.xml</BMFile>
+    <BMFile id ="0">E:\Projects\benchmarks\xcsp\t9092\rand-2-40-180-84-090-94.xml</BMFile>
     <!--<BMFile id ="0">E:/Projects/benchmarks/ModelRB/frb30-15/frb30-15/frb30-15-1_ext.xml</BMFile>-->
   </BMFiles>
 </BenchMark>

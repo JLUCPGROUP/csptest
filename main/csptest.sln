@@ -25,10 +25,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nbs", "nbs\nbs.vcxproj", "{
 		{4F77C693-21B3-486A-8AB8-B8494EAB532F} = {4F77C693-21B3-486A-8AB8-B8494EAB532F}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OTSolver", "..\..\xcsp3solver\solver\OTSolver\OTSolver.vcxproj", "{A54853F9-072B-4C0E-ACBE-D4EC11B0A79C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{4F77C693-21B3-486A-8AB8-B8494EAB532F} = {4F77C693-21B3-486A-8AB8-B8494EAB532F}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OTSolver", "OTSolver\OTSolver.vcxproj", "{A54853F9-072B-4C0E-ACBE-D4EC11B0A79C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
