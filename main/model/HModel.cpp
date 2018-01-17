@@ -514,6 +514,17 @@ ExpType HModel::get_type(const int expr) {
 void HModel::subscript(HTab *t) {
 	for (auto v : t->scope)
 		subscriptions[v].push_back(t);
+	neighbor(t);
+}
+
+void HModel::neighbor(HTab* t) {
+	if (neighborhoods.empty())
+		neighborhoods.resize(vars.size(), vector<vector<int>>(vars.size()));
+
+	for (auto x : t->scope)
+		for (auto y : t->scope)
+			if (x != y)
+				neighborhoods[x->id][y->id].push_back(t->id);
 }
 
 void HModel::get_scope(vector<string>& scp_str, vector<HVar*>& scp) {

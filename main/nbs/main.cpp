@@ -68,7 +68,7 @@
 //			if (result) {
 //				//sat sac
 //				num_sac++;
-//				const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN, TimeLimit, sac_time);
+//				const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN, TimeLimit, true, sac_time);
 //				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN_INC);
 //				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MAX_INC);
 //				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN_DOM);

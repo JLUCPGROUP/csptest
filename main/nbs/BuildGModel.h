@@ -16,16 +16,17 @@ enum PROP {
 	PROP_DISTINCT ///< Use three distinct constraints
 };
 namespace cudacp {
-static void BuildGModel(const HModel* h_model, GModel* gm) {
-	gm->vs = IntVarArray(*gm, h_model->vars.size());
-	gm->mds = h_model->max_domain_size();
-	for (size_t i = 0; i < h_model->vars.size(); ++i) {
-		HVar* v = h_model->vars[i];
+static void BuildGModel(const HModel* hm, GModel* gm) {
+	gm->neighborhoods = hm->neighborhoods;
+	gm->vs = IntVarArray(*gm, hm->vars.size());
+	gm->mds = hm->max_domain_size();
+	for (size_t i = 0; i < hm->vars.size(); ++i) {
+		HVar* v = hm->vars[i];
 		gm->vs[i] = IntVar(*gm, IntSet(&*(v->vals.begin()), v->vals.size()));
 	}
 
-	for (size_t i = 0; i < h_model->tabs.size(); ++i) {
-		HTab* tab = h_model->tabs[i];
+	for (size_t i = 0; i < hm->tabs.size(); ++i) {
+		HTab* tab = hm->tabs[i];
 		TupleSet ts;
 		const int size = tab->tuples.size();
 		const int arity = tab->scope.size();

@@ -190,6 +190,9 @@ public:
 	vector<HVar*> vars;
 	vector<HTab*> tabs;
 	unordered_map<HVar*, vector<HTab*>> subscriptions;
+	//两个矩阵组成的矩阵,矩阵内容为，作用在两个变量之间约束的个数
+	//.empty()表示无约束作用在该两个变量之间
+	vector<vector<vector<int>>> neighborhoods;
 
 	HModel();
 	virtual ~HModel();
@@ -209,6 +212,7 @@ private:
 	tuple<ExpType, int> get_type(string expr);
 	static ExpType get_type(const int expr);
 	void subscript(HTab *t);
+	void neighbor(HTab* t);
 	void get_scope(vector<string>& scp_str, vector<HVar*>& scp);
 	int get_var_id(const int id) const;
 	int generate_exp_uid();

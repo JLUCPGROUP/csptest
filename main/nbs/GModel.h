@@ -20,6 +20,7 @@ class GModel: public Space {
 public:
 	IntVarArray vs;
 	int mds;
+	vector<vector<vector<int>>> neighborhoods;
 	GModel();
 	GModel(bool share, GModel& s);
 	Space* copy(bool share) override;
