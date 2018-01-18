@@ -64,7 +64,9 @@ namespace Heuristic {
 enum Var {
 	VRH_LEX,
 	VRH_MIN_DOM,
-	VRH_VWDEG
+	VRH_VWDEG,
+	VRH_DOM_DEG_MIN,
+	VRH_DOM_WDEG_MIN
 };
 
 enum Val {
@@ -125,9 +127,10 @@ public:
 	void initial(GModel* gm) {
 		mds = gm->mds;
 		vs_size = gm->vs.size();
-
 		bsd.resize(vs_size, vector<vector<T>>(mds, vector<T>(vs_size)));
 		bd.resize(vs_size, 0);
+		deg.resize(vs_size, 0);
+		wdeg.resize(vs_size, vector<int64_t>(vs_size, 1));
 
 		for (size_t i = 0; i < gm->vs.size(); i++) {
 			const IntVar v = gm->vs[i];
@@ -147,6 +150,11 @@ public:
 		}
 
 		nei = gm->neighborhoods;
+		for (int i = 0; i < vs_size; ++i) {
+			for (int j = 0; j < vs_size; ++j) {
+				deg[i] += nei[i][j].size();
+			}
+		}
 	}
 
 	virtual ~BitSetModel() {};
@@ -171,6 +179,8 @@ public:
 	int mds;
 	int vs_size;
 	vector<vector<vector<int>>> nei;
+	vector<int> deg;
+	vector<vector<int64_t>> wdeg;
 protected:
 	GModel *gm_;
 };
@@ -284,8 +294,11 @@ public:
 		if (!nei) {
 			for (size_t i = 0; i < vs_size_; i++) {
 				s_[pre + 1][i] = s_[pre][i] & bm_.bsd[val.v][val.a][i];
-				if (!s_[pre + 1][i].any())
+				if (!s_[pre + 1][i].any()) {
+					++bm_.wdeg[val.v][i];
+					++bm_.wdeg[i][val.v];
 					return S_FAILED;
+				}
 			}
 		}
 		else {
@@ -293,8 +306,11 @@ public:
 				//val.v Óëi ÊÇÁÙÓò
 				if (!bm_.nei[val.v][i].empty()) {
 					s_[pre + 1][i] = s_[pre][i] & bm_.bsd[val.v][val.a][i];
-					if (!s_[pre + 1][i].any())
+					if (!s_[pre + 1][i].any()) {
+						++bm_.wdeg[val.v][i];
+						++bm_.wdeg[i][val.v];
 						return S_FAILED;
+					}
 				}
 				else {
 					s_[pre + 1][i] = s_[pre][i];
@@ -399,6 +415,48 @@ public:
 
 		case  Heuristic::VRH_LEX:
 			return I_->size();
+
+		case Heuristic::VRH_DOM_DEG_MIN:
+		{
+			double smt = DBL_MAX;
+			int idx = 0;
+			for (size_t i = 0; i < vs_size_; ++i) {
+				if (!I_->assiged(i)) {
+					const double cnt = double(s_[top_ - 1][i].count()) / bm_.deg[i];
+					if (cnt < smt) {
+						smt = cnt;
+						idx = i;
+					}
+				}
+			}
+			return idx;
+		}
+
+		case Heuristic::VRH_DOM_WDEG_MIN: {
+			double smt = DBL_MAX;
+			int idx = 0;
+			for (size_t i = 0; i < vs_size_; ++i) {
+				if (!I_->assiged(i)) {
+					const double dom = double(s_[top_ - 1][i].count());
+					double wdeg = 0.0;
+					double dom_wdeg;
+					for (size_t j = 0; j < vs_size_; ++j)
+						if (!I_->assiged(j))
+							wdeg += bm_.wdeg[i][j];
+
+					if (dom == 1 || wdeg == 0)
+						dom_wdeg = -1;
+					else
+						dom_wdeg = dom / wdeg;
+
+					if (dom_wdeg < smt) {
+						smt = dom_wdeg;
+						idx = i;
+					}
+				}
+			}
+			return idx;
+		}
 
 		default:
 			break;
