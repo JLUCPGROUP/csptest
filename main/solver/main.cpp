@@ -26,15 +26,17 @@ int main() {
 	GetHModel(bm_path, hm);
 	//hm->show();
 	Network* n = new Network(hm);
-	//AC3bit ac(n);
-	//ac.enforce_arc(n->vars, 0);
+	//AC3 ac(n);
+	//ac.enforce(n->vars, 0);
 	//SAC3 sac(n, AC_3bit, DOM);
 	//sac.enforce(n->vars, 0);
-	MAC mac(n, AC_3bit, DOM);
+
+	MAC mac(n, AC_3bit, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MIN);
 	const SearchStatistics statistics = mac.enforce(TimeLimit);
 	cout << "time = " << statistics.solve_time << endl;
 	cout << "positive = " << statistics.num_positive << endl;
 	cout << "negative = " << statistics.num_negative << endl;
+
 	//n->show();
 	//SAC1 sac(n, AC_3bit);
 	//sac.enforce(n->vars, 0);

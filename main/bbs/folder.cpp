@@ -57,7 +57,7 @@
 //		if (result) {
 //			//sat sac
 //			num_sac++;
-//			const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN, TimeLimit, sac_time);
+//			const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MIN, TimeLimit, sac_time);
 //
 //			sum_but += statistics.build_time;
 //			solve_time += statistics.build_time;

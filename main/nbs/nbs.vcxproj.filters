@@ -51,6 +51,9 @@
     <ClCompile Include="CPUSolver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="nbs_nei_folder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BuildGModel.h">

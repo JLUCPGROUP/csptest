@@ -46,7 +46,7 @@
 //		if (result) {
 //
 //			cout << " || sac! ";
-//			const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN, TimeLimit, sac_time);
+//			const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MIN, TimeLimit, sac_time);
 //			cout << " || build time = " << statistics.build_time;
 //
 //			if (!statistics.time_out) {

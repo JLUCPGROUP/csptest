@@ -63,15 +63,19 @@
 //			Timer t;
 //			const bool result = sac1.enforce();
 //			const int64_t sac_time = t.elapsed();
-//			sum_sact += sac_time;
+//
+//			////Timer t;
+//			////const SpaceStatus ss = gm->status();
+//			////const bool result = (ss != SS_FAILED);
+//			////const int64_t sac_time = t.elapsed();
 //
 //			if (result) {
 //				//sat sac
 //				num_sac++;
-//				const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN, TimeLimit, true, sac_time);
-//				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN_INC);
-//				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MAX_INC);
-//				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN_DOM);
+//				const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MIN, TimeLimit, true, sac_time);
+//				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MIN_INC);
+//				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MAX_INC);
+//				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MIN_DOM);
 //				//const string  slv_str = (statistics.num_sol > 0) ? "SAT!!" : "UNSAT";
 //
 //				sum_but += statistics.build_time;

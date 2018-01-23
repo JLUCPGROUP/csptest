@@ -24,6 +24,29 @@ enum VarHeu {
 	DOM, DOM_WDEG
 };
 
+namespace Heuristic {
+enum Var {
+	VRH_LEX,
+	VRH_DOM_MIN,
+	VRH_VWDEG,
+	VRH_DOM_DEG_MIN,
+	VRH_DOM_WDEG_MIN
+};
+
+enum Val {
+	VLH_MIN,
+	VLH_MIN_DOM,
+	VLH_MIN_INC,
+	VLH_MAX_INC,
+	VLH_VWDEG
+};
+
+enum DecisionScheme {
+	DS_BI,
+	DS_NB
+};
+};
+
 struct SearchStatistics {
 	u64 num_sol = 0;
 	u64 num_positive = 0;
@@ -319,7 +342,7 @@ protected:
 
 class MAC {
 public:
-	MAC(Network *n, ACAlgorithm ac_algzm, VarHeu h);
+	MAC(Network *n, ACAlgorithm ac_algzm, const Heuristic::Var varh, const Heuristic::Val valh);
 	SearchStatistics enforce(const int time_limits);
 	SearchStatistics enforce_fc(const int time_limits);
 	virtual ~MAC();
@@ -335,40 +358,43 @@ private:
 	ACAlgorithm ac_algzm_;
 	AssignedStack I;
 	IntVal select_v_value() const;
+	int select_val(const IntVar* v) const;
+	IntVar* select_var() const;
 	bool consistent_;
 	bool finished_ = false;
 	SearchStatistics statistics_;
-	VarHeu h_;
+	Heuristic::Var varh_;
+	Heuristic::Val valh_;
 };
 
-class Search {
-public:
-	Search(Network *n, const LookAhead look_ahead, const LookBack look_back, const Consistency consistency);
-	//SearchStatistics enforce(const int time_limits);
-	virtual ~Search();
-	int sol_count() const { return sol_count_; }
-	void sol_count(const int val) { sol_count_ = val; }
-	virtual vector<IntVal> HandleEmptyDomain(IntVar* v);
-	//virtual vector<IntVal> CheckConsistencyAfterAssignment(IntVar *v);
-	//virtual vector<IntVal> CheckConsistencyAfterRefutati(IntVar *v);
-	virtual void UndoAssignment(IntVal v_a);
-
-private:
-	int sol_count_ = 0;
-	Network *n_;
-	AC* ac_;
-	vector<IntVar*> x_evt_;
-	//VarEvt* x_evt_;
-	Consistency c_type_;
-	vector<IntVal> nogood;
-	AssignedStack I;
-	IntVal select_v_value() const;
-	bool consistent_;
-	bool finished_ = false;
-	SearchStatistics statistics_;
-	LookAhead la_;
-	LookBack lb_;
-	DeleteExplanation expl;
-};
+//class Search {
+//public:
+//	Search(Network *n, const LookAhead look_ahead, const LookBack look_back, const Consistency consistency);
+//	//SearchStatistics enforce(const int time_limits);
+//	virtual ~Search();
+//	int sol_count() const { return sol_count_; }
+//	void sol_count(const int val) { sol_count_ = val; }
+//	virtual vector<IntVal> HandleEmptyDomain(IntVar* v);
+//	//virtual vector<IntVal> CheckConsistencyAfterAssignment(IntVar *v);
+//	//virtual vector<IntVal> CheckConsistencyAfterRefutati(IntVar *v);
+//	virtual void UndoAssignment(IntVal v_a);
+//
+//private:
+//	int sol_count_ = 0;
+//	Network *n_;
+//	AC* ac_;
+//	vector<IntVar*> x_evt_;
+//	//VarEvt* x_evt_;
+//	Consistency c_type_;
+//	vector<IntVal> nogood;
+//	AssignedStack I;
+//	IntVal select_v_value() const;
+//	bool consistent_;
+//	bool finished_ = false;
+//	SearchStatistics statistics_;
+//	LookAhead la_;
+//	LookBack lb_;
+//	DeleteExplanation expl;
+//};
 
 }

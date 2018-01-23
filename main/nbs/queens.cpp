@@ -65,7 +65,7 @@
 //	}
 //
 //	cout << "------------------modeling------------------" << endl;
-//	const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN, time_limit);
+//	const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MIN, time_limit);
 //	const string  slv_str = (statistics.num_sol > 0) ? "SAT!!" : "UNSAT";
 //	delete gm;
 //	cout << "SAC time = " << sac_time << "|| Build time = " << statistics.build_time << endl;

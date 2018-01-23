@@ -17,6 +17,7 @@ enum PROP {
 };
 namespace cudacp {
 static void BuildGModel(const HModel* h_model, GModel* gm) {
+	gm->neighborhoods = h_model->neighborhoods;
 	gm->vs = IntVarArray(*gm, h_model->vars.size());
 	gm->mds = h_model->max_domain_size();
 	for (size_t i = 0; i < h_model->vars.size(); ++i) {

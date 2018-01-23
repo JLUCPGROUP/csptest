@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="deg_folder.cpp" />
     <ClCompile Include="folder.cpp" />
     <ClCompile Include="folder2.cpp" />
     <ClCompile Include="frb.cpp" />

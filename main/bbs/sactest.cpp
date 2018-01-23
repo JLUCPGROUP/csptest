@@ -131,7 +131,7 @@
 //				continue;
 //			}
 //
-//			const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN);
+//			const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MIN);
 //			const string  slv_str = (statistics.num_sol > 0) ? "SAT!!" : "UNSAT";
 //			delete hm;
 //			delete gm;

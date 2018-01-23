@@ -15,33 +15,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="frb.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="folder.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="folder2.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="deg_folder.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="BMPath.xml">
-      <Filter>资源文件</Filter>
-    </Xml>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Text.txt">
-      <Filter>资源文件</Filter>
-    </Text>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="nbs_nei.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

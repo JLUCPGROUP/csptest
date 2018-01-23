@@ -68,10 +68,10 @@
 //			if (result) {
 //				//sat sac
 //				num_sac++;
-//				const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN, TimeLimit, sac_time);
-//				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN_INC);
-//				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MAX_INC);
-//				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_MIN_DOM, Heuristic::VLH_MIN_DOM);
+//				const SearchStatistics statistics = StartSearch(gm, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MIN, TimeLimit, sac_time);
+//				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MIN_INC);
+//				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MAX_INC);
+//				//const SearchStatistics statistics = StartSearch(hm, gm, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MIN_DOM);
 //				//const string  slv_str = (statistics.num_sol > 0) ? "SAT!!" : "UNSAT";
 //
 //				sum_but += statistics.build_time;

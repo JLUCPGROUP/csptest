@@ -2,13 +2,14 @@
 using namespace std;
 namespace cudacp {
 
-MAC::MAC(Network * n, const ACAlgorithm ac_algzm, VarHeu h) :
+MAC::MAC(Network * n, const ACAlgorithm ac_algzm, const Heuristic::Var varh, const Heuristic::Val valh) :
 	n_(n),
 	ac_algzm_(ac_algzm),
-	h_(h) {
+	varh_(varh),
+	valh_(valh) {
 	x_evt_.reserve(n_->vars.size());
 	I.initial(n_);
-	//= new AssignedStack(n_);
+
 	switch (ac_algzm) {
 	case AC_3:
 		ac_ = new AC3(n_);
@@ -22,8 +23,8 @@ MAC::MAC(Network * n, const ACAlgorithm ac_algzm, VarHeu h) :
 	case A_FC_bit:
 		ac_ = new FCbit(n_);
 		break;
-	case A_RNSQ:
-		ac_ = new RNSQ(n_);
+		//case A_RNSQ:
+		//	ac_ = new RNSQ(n_);
 		break;
 	default:
 		break;
@@ -204,27 +205,61 @@ MAC::~MAC() {
 }
 
 IntVal MAC::select_v_value() const {
-	//IntVar* v = n_->vars[I->size()];
-	//return IntVal(v, v->head());
-	IntVal val(nullptr, -1);
-	switch (h_) {
-	case DOM: {
-		float min_size = INT_MAX;
+	IntVar* v = select_var();
+	const int a = select_val(v);
+	IntVal val(v, a);
+	return val;
+}
+
+int MAC::select_val(const IntVar* v) const {
+	int val = -1;
+	switch (valh_) {
+	case Heuristic::VLH_MIN:
+		val = v->head();
+		break;
+	case Heuristic::VLH_MIN_DOM: break;
+	case Heuristic::VLH_MIN_INC: break;
+	case Heuristic::VLH_MAX_INC: break;
+	case Heuristic::VLH_VWDEG: val = -1; break;
+	default:;
+	}
+	return val;
+}
+
+IntVar* MAC::select_var() const {
+	IntVar* var = nullptr;
+	double min_size = DBL_MAX;
+	switch (varh_) {
+	case Heuristic::VRH_DOM_MIN: {
 		for (auto v : n_->vars)
 			if (!v->assigned())
 				if (v->size() < min_size) {
 					min_size = v->size();
-					val.v(v);
+					var = v;
 				}
-		val.a(val.v()->head());
 	}
-			  break;
-	case DOM_WDEG: {
-		float min_size = FLT_MAX;
+								 break;
+	case Heuristic::VRH_LEX:
+		var = n_->vars[I.size() + 1];
+		break;
+	case Heuristic::VRH_VWDEG: break;
+	case Heuristic::VRH_DOM_DEG_MIN: {
+		for (auto v : n_->vars)
+			if (!v->assigned()) {
+				const int dom_deg = v->size() / n_->neighborhood[v].size();
+				if (dom_deg < min_size) {
+					min_size = dom_deg;
+					var = v;
+				}
+			}
+	}
+									 break;
+	case Heuristic::VRH_DOM_WDEG_MIN:
+
 		for (auto x : n_->vars) {
 			if (!x->assigned()) {
-				float x_w = 0.0;
-				float x_dw = 0.0;
+				double x_w = 0.0;
+				double x_dw = 0.0;
 				for (auto c : n_->subscription[x]) {
 					int cnt = 0;
 					for (auto y : c->scope)
@@ -240,17 +275,15 @@ IntVal MAC::select_v_value() const {
 					x_dw = x->size() / x_w;
 				if (x_dw < min_size) {
 					min_size = x_dw;
-					val.v(x);
+					var = x;
 				}
 			}
 		}
-		val.a(val.v()->head());
+		break;
+	default:
+		var = nullptr;
+		break;
 	}
-				   break;
-	default:;
-	}
-	return val;
+	return var;
 }
-
-
 }
