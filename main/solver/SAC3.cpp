@@ -21,7 +21,7 @@ void Qsac::initial(Network* n, const VarHeu h) {
 	vars_assigned_old_ = vars_assigned_;
 	tmp_empty_ = vars_assigned_;
 	bitDoms_.resize(n_->vars.size(), bitSetVector(n_->max_bitDom_size()));
-	for (int i = 0; i < n_->max_bitDom_size(); ++i)
+	for (int i = 0; i < n_->vars.size(); ++i)
 		bitDoms_[i].assign(n_->vars[i]->bitDom().begin(), n_->vars[i]->bitDom().end());
 }
 
@@ -172,7 +172,7 @@ bool SAC3::enforce(vector<IntVar*> x_evt, const int level) {
 			IntVal val = BuildBranch();
 			n_->RestoreUpto(level_);
 			//此处assigned 要处下理下
-			if (val == Nil_Val) {
+			if (val != Nil_Val) {
 				val.v()->RemoveValue(val.a(), level_);
 				x_evt_.push_back(val.v());
 				cs = ac_->enforce(x_evt_, level_);

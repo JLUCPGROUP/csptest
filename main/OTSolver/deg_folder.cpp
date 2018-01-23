@@ -19,7 +19,72 @@ const string XPath = "BMPath.xml";
 const string bmp_root = "E:\\Projects\\benchmarks\\xcsp\\";
 const string bmp_ext = ".xml";
 void getFilesAll(string path, vector<string>& files);
+namespace {
+class DegreeDecisionBuilder : public DecisionBuilder {
+public:
+	DegreeDecisionBuilder(const int size, const vector<IntVar*>& vars, const vector<int>& deg) :
+		size_(size), vars_(vars), deg(deg) {
+		CHECK_EQ(vars_.size(), size_);
+	}
+	~DegreeDecisionBuilder() {}
+	vector<int> deg;
+	// Select a variable with the smallest domain starting from the center
+	IntVar* SelectVar(Solver* const s) const {
+		IntVar* selected_var = nullptr;
+		int64 id = -1;
+		double min_domain_size = DBL_MAX;
+		for (int64 i = 0; i < size_; ++i) {
+			IntVar* const var = vars_[i];
+			const double dom_deg = var->Size() / deg[i];
+			if (!var->Bound() && dom_deg < min_domain_size) {
+				selected_var = var;
+				id = i;
+				min_domain_size = dom_deg;
+			}
+		}
 
+		if (id == -1) {
+			return nullptr;
+		}
+		else {
+			return selected_var;
+		}
+	}
+
+	//  For a given variable, take the row with the least compatible columns, starting from the center
+	int64 SelectValue(const IntVar* const v) const {
+		CHECK_GE(v->Size(), 2);
+		int64 selected_value = -1;
+		const int64 vmin = v->Min();
+		const int64 vmax = v->Max();
+
+		for (int64 i = vmin; i <= vmax; i++)
+			if (v->Contains(i))
+				selected_value = i;
+		CHECK_NE(selected_value, -1);
+		return selected_value;
+	}
+
+	Decision* Next(Solver* const s) override {
+		IntVar* const var = SelectVar(s);
+		if (nullptr != var) {
+			const int64 value = SelectValue(var);
+			return s->MakeAssignVariableValue(var, value);
+		}
+
+		return nullptr;
+	}
+
+private:
+	const int size_;
+	const vector<IntVar*> vars_;
+
+}; //  class DegreeDecisionBuilder
+}  // namespace
+
+DecisionBuilder* MakeNQueensDecisionBuilder(Solver* const s, const int size, const vector<IntVar*>& vars, vector<int>& deg) {
+	return s->RevAlloc(new DegreeDecisionBuilder(size, vars, deg));
+}
 class MySearchMonitor : public SearchMonitor {
 public:
 	explicit MySearchMonitor(Solver* s)
@@ -47,114 +112,6 @@ private:
 	int64 p_ = 0;
 };
 
-namespace {
-
-class NQueensDecisionBuilder : public DecisionBuilder {
-public:
-	vector<int> deg;
-	NQueensDecisionBuilder(const int size, const vector<IntVar*>& vars) :
-		size_(size), vars_(vars), deg(vector<int>()) {
-		CHECK_EQ(vars_.size(), size_);
-	}
-	~NQueensDecisionBuilder() {}
-
-	// Select a variable with the smallest domain starting from the center
-	IntVar* SelectVar(Solver* const s) const {
-		IntVar* selected_var = nullptr;
-		int64 id = -1;
-		int64 min_domain_size = kint64max;
-		// go left on the chessboard
-		for (int64 i = middle_var_index_; i >= 0; --i) {
-			IntVar* const var = vars_[i];
-			if (!var->Bound() && var->Size() < min_domain_size) {
-				selected_var = var;
-				id = i;
-				min_domain_size = var->Size();
-			}
-		}
-
-		// go right on the chessboard
-		for (int64 i = middle_var_index_ + 1; i < size_; ++i) {
-			IntVar* const var = vars_[i];
-			if (!var->Bound() && var->Size() < min_domain_size) {
-				selected_var = var;
-				id = i;
-				min_domain_size = var->Size();
-			}
-		}
-
-		if (id == -1) {
-			return nullptr;
-		}
-		else {
-			return selected_var;
-		}
-	}
-
-	int64 count_number_of_row_incompatibilities(const int64 row) const {
-		int64 count = 0;
-		for (int64 i = 0; i < size_; ++i) {
-			if (!vars_[i]->Contains(row)) {
-				++count;
-			}
-		}
-		return count;
-	}
-
-	//  For a given variable, take the row with the least compatible columns, starting from the center
-	int64 SelectValue(const IntVar* const v) const {
-		CHECK_GE(v->Size(), 2);
-
-		int64 max_incompatible_columns = -1;
-		int64 selected_value = -1;
-
-		const int64 vmin = v->Min();
-		const int64 vmax = v->Max();
-		const int64 v_middle = (vmin + vmax) / 2;
-
-		for (int64 i = v_middle; i >= vmin; --i) {
-			if (v->Contains(i)) {
-				const int64 nbr_of_incompatibilities = count_number_of_row_incompatibilities(i);
-				if (nbr_of_incompatibilities > max_incompatible_columns) {
-					max_incompatible_columns = nbr_of_incompatibilities;
-					selected_value = i;
-
-				}
-			}
-		}
-
-		for (int64 i = v_middle; i <= vmin; ++i) {
-			if (v->Contains(i)) {
-				const int64 nbr_of_incompatibilities = count_number_of_row_incompatibilities(i);
-				if (nbr_of_incompatibilities > max_incompatible_columns) {
-					max_incompatible_columns = nbr_of_incompatibilities;
-					selected_value = i;
-
-				}
-			}
-		}
-
-		CHECK_NE(selected_value, -1);
-
-		return selected_value;
-	}
-
-	Decision* Next(Solver* const s) override {
-		IntVar* const var = SelectVar(s);
-		if (nullptr != var) {
-			const int64 value = SelectValue(var);
-			return s->MakeAssignVariableValue(var, value);
-		}
-
-		return nullptr;
-	}
-
-private:
-	const int size_;
-	const vector<IntVar*> vars_;
-}; //  class NQueensDecisionBuilder
-
-}  // namespace
 
 int main(const int argc, char ** argv) {
 
@@ -175,9 +132,11 @@ int main(const int argc, char ** argv) {
 		GetHModel(f, hm);
 		Solver s("CPSimple");
 		vector<IntVar*> vars(hm->vars.size());
-
-		for (auto v : hm->vars)
+		vector<int> deg(vars.size());
+		for (auto v : hm->vars) {
 			vars[v->id] = s.MakeIntVar(v->vals, v->name);
+			deg[v->id] = hm->subscriptions[v].size();
+		}
 
 		for (auto t : hm->tabs) {
 			vector<IntVar*> vs;
@@ -189,7 +148,8 @@ int main(const int argc, char ** argv) {
 			ts.Clear();
 		}
 
-		DecisionBuilder* const db = s.MakePhase(vars, Solver::CHOOSE_MIN_SIZE, Solver::ASSIGN_MIN_VALUE);
+		//DecisionBuilder* const db = s.MakePhase(vars, Solver::CHOOSE_MIN_SIZE, Solver::ASSIGN_MIN_VALUE);
+		DecisionBuilder* db = MakeNQueensDecisionBuilder(&s, vars.size(), vars, deg);
 		SearchLimit* limit = s.MakeTimeLimit(time_limit);
 		MySearchMonitor * const sm = new MySearchMonitor(&s);
 		s.NewSearch(db, limit, sm);

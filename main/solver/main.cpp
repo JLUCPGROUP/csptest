@@ -28,14 +28,14 @@ int main() {
 	Network* n = new Network(hm);
 	//AC3 ac(n);
 	//ac.enforce(n->vars, 0);
-	//SAC3 sac(n, AC_3bit, DOM);
-	//sac.enforce(n->vars, 0);
-
-	MAC mac(n, AC_3bit, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MIN);
-	const SearchStatistics statistics = mac.enforce(TimeLimit);
-	cout << "time = " << statistics.solve_time << endl;
-	cout << "positive = " << statistics.num_positive << endl;
-	cout << "negative = " << statistics.num_negative << endl;
+	SAC3 sac(n, AC_3bit, DOM);
+	sac.enforce(n->vars, 0);
+	n->show();
+	//MAC mac(n, AC_3bit, Heuristic::VRH_DOM_MIN, Heuristic::VLH_MIN);
+	//const SearchStatistics statistics = mac.enforce(TimeLimit);
+	//cout << "time = " << statistics.solve_time << endl;
+	//cout << "positive = " << statistics.num_positive << endl;
+	//cout << "negative = " << statistics.num_negative << endl;
 
 	//n->show();
 	//SAC1 sac(n, AC_3bit);
